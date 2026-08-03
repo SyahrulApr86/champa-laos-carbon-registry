@@ -153,9 +153,9 @@ const LayoutSider = (props: LayoutSiderProps) => {
           {!collapsed && (
             <div>
               <div>
-                <div className="title">{collapsed ? "" : "CARBON MARKET"}</div>
+                <div className="title">{collapsed ? "" : "CHAMPA"}</div>
                 <div className="title-sub">
-                  {collapsed ? "" : "DIGITAL PLATFORM"}
+                  {collapsed ? "" : "LAO PDR CARBON REGISTRY"}
                 </div>
               </div>
               <div className="country-name">

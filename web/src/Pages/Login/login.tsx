@@ -138,8 +138,8 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                       />
                     </div>
                     <div className="login-country-name">
-                      <div className="title">{"CARBON MARKET"}</div>
-                      <div className="title-sub">{"DIGITAL PLATFORM"}</div>
+                      <div className="title">{"CHAMPA"}</div>
+                      <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
                       <span className="country-name">{countryName}</span>
                     </div>
                   </Col>

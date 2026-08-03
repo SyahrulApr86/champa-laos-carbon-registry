@@ -74,6 +74,8 @@ export const handler: Handler = async (event) => {
           ? CompanyRole.INDEPENDENT_CERTIFIER
           : fields[4] == "API"
           ? CompanyRole.API
+          : fields[4] == "Ministry"
+          ? CompanyRole.MINISTRY
           : CompanyRole.PROJECT_DEVELOPER;
       const ur =
         fields[5] == "admin"
@@ -168,7 +170,7 @@ export const handler: Handler = async (event) => {
           state: undefined, //double check this
         });
       } catch (e) {
-        console.log("Fail to create company", fields[1]);
+        console.log("Fail to create company", fields[1], e);
       }
     }
     return;

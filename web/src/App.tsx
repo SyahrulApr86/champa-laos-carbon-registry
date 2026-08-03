@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { ConnectionContextProvider } from "./Context/ConnectionContext/connectionContext";
 import { UserInformationContextProvider } from "./Context/UserInformationContext/userInformationContext";
 import { SettingsContextProvider } from "./Context/SettingsContext/settingsContext";
+import { CurrencyContextProvider } from "./Context/CurrencyContext/currencyContext";
 import { Loading } from "./Components/Loading/loading";
 // import ProgrammeManagement from './Pages/ProgrammeManagement/ProgrammeManagement';
 // import AddProgramme from './Pages/ProgrammeManagement/AddProgramme';
@@ -45,6 +46,7 @@ import { CreditBalancePage } from "./Pages/CreditPages/creditBalancePage";
 import { CreditTransfersPage } from "./Pages/CreditPages/creditTransfersPage";
 import { CreditRetirementsPage } from "./Pages/CreditPages/creditRetirementsPage";
 import Reports from "./Pages/Reports/Reports";
+import PublicProjectSearch from "./Pages/PublicProjectSearch/publicProjectSearch";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -85,6 +87,7 @@ const App = () => {
       >
         <UserInformationContextProvider>
           <SettingsContextProvider>
+            <CurrencyContextProvider>
             <BrowserRouter>
               <Routes>
                 <Route path="login" element={<Login />} />
@@ -102,6 +105,10 @@ const App = () => {
                 <Route path="codeconduct" element={<CodeOfConduct />} />
                 <Route path="cookie" element={<CookiePolicy />} />
                 <Route path="terms" element={<TermsOfUse />} />
+                <Route
+                  path="projects/search"
+                  element={<PublicProjectSearch />}
+                />
                 <Route path="/" element={<Homepage />} />
                 <Route path="/" element={<PrivateRoute />}>
                   <Route
@@ -217,6 +224,7 @@ const App = () => {
                 <Route path="/*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
+            </CurrencyContextProvider>
           </SettingsContextProvider>
         </UserInformationContextProvider>
       </ConnectionContextProvider>

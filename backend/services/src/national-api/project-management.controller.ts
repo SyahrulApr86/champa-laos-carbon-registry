@@ -53,11 +53,22 @@ export class ProjectManagementController {
     return this.projectManagementService.getProjectById(programmeId, req.user);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) =>
     ability.can(Action.Read, ProjectEntity)
   )
   @Get("logs")
   getLogs(@Query("refId") refId: string, @Request() req) {
-    return this.projectManagementService.getLogs(refId);
+    return this.projectManagementService.getLogs(refId, req.user);
+  }
+
+  // Public, unauthenticated endpoint: intentionally has no @UseGuards/@CheckPolicies.
+  // Only non-sensitive, high-level project information is returned by the
+  // service layer (see ProjectManagementService.publicSearch) — no approval
+  // details, internal identifiers, or personal data.
+  @Get("public/search")
+  async publicSearch(@Query("q") q: string) {
+    return this.projectManagementService.publicSearch(q);
   }
 }

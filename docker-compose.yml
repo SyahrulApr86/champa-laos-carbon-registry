@@ -33,18 +33,19 @@ services:
       DB_USER: root
       DB_PASSWORD: "<ANY PASSOWORD>"
       RUN_MODULE: national-api
-      rootEmail: <ROOT EMAIL>
-      cfAdminEmail: <CLIMATE FUND ADMIN EMAIL>
-      exComAdminEmail: <EXCECUTIVE COMMITTEE ADMIN EMAIL>
+      rootEmail: "admin@champa.la"
+      cfAdminEmail: "climatefund@champa.la"
+      exComAdminEmail: "excom@champa.la"
       Ministry: ""
       Department: ""
-      systemCountryCode: "NG"
-      systemCountryName: "CountryX"
-      systemContinentName: "CountryX"
-      countryClimateFundName: "CountryX Climate Fund (Pvt) Ltd"
-      name: "Antactic Region"
-      climateFundName: "Zimbabwe Climate Fund"
+      systemCountryCode: "LA"
+      systemCountryName: "Lao PDR"
+      systemContinentName: "Asia"
+      countryClimateFundName: "Lao PDR Climate Fund"
+      name: "Ministry of Agriculture and Environment"
+      climateFundName: "Lao PDR Climate Fund"
       exComName: "Executive Committee"
+      # TODO: replace with base64-encoded MAE/Champa logo before production use
       logoBase64: "sss"
       IS_EMAIL_DISABLED: "true"
       DISABLE_LOW_PRIORITY_EMAIL: "true"

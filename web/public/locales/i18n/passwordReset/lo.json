@@ -1,0 +1,10 @@
+{
+    "changePassword": "ປ່ຽນລະຫັດຜ່ານ",
+    "oldPassword": "ລະຫັດຜ່ານເກົ່າ",
+    "newPassword": "ລະຫັດຜ່ານໃໝ່",
+    "confirmNewPassword":"ຢືນຢັນລະຫັດຜ່ານໃໝ່",
+    "setPassword":"ຕັ້ງລະຫັດຜ່ານ",
+    "cancel":"ຍົກເລີກ",
+    "isRequired": "ແມ່ນຈຳເປັນ",
+    "passwordsNotMatchedErr":"ລະຫັດຜ່ານບໍ່ກົງກັນ"
+  }

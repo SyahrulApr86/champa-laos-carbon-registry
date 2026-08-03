@@ -41,6 +41,10 @@ const LanguageSelection: FC<LanguageSelectionProps> = (props: LanguageSelectionP
               value: 'fr',
               label: 'Français',
             },
+            {
+              value: 'lo',
+              label: 'ລາວ',
+            },
           ]}
         />
       </span>

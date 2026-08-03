@@ -73,8 +73,8 @@ services:
       RATE_LIMIT_ORGANISATION_DURATION: 60
     volumes:
       - filestore:/app/backend/services/public
-      - ./users.csv:/app/backend/services/users.csv
-      - ./organisations.csv:/app/backend/services/organisations.csv
+      - ./backend/services/users.csv:/app/backend/services/users.csv
+      - ./backend/services/organisations.csv:/app/backend/services/organisations.csv
   stats:
     build:
       context: .

@@ -18,6 +18,8 @@ export const API_PATHS = {
   //PROJECT
   PROJECT_CREATE: "national/projectManagement/create",
   GET_PROJECT: "national/projectManagement/query",
+  PUBLIC_PROJECT_SEARCH: (q: string) =>
+    `national/projectManagement/public/search?q=${encodeURIComponent(q)}`,
   PROJECT_BY_ID: "national/programmeSl/getProjectById",
   ALL_PROJECTS: "national/programme/query",
   ADD_PROJECT_DOC: "national/programme/addDocument",
@@ -169,5 +171,7 @@ export const API_PATHS = {
   POPUP_ACTION: (endpoint: string) => `national/programme/${endpoint}`,
   // AEF RECORDS:
   QUERY_AEF_RECORDS: `national/reportsManagement/queryAefRecords`,
-  DOWNLOAD_AEF_RECORDS: `national/reportsManagement/downloadAefReport`
+  DOWNLOAD_AEF_RECORDS: `national/reportsManagement/downloadAefReport`,
+  // PUBLIC ANALYTICS (no auth required)
+  PUBLIC_ANALYTICS_SUMMARY: "national/analytics/public/summary",
 };

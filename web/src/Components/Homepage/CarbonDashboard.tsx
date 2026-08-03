@@ -1,20 +1,76 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Trans, useTranslation } from "react-i18next";
+import { useConnection } from "../../Context/ConnectionContext/connectionContext";
+import { API_PATHS } from "../../Config/apiConfig";
 import "./Dashboard.scss";
+
+interface PublicAnalyticsSummary {
+  totalProjects: number;
+  projectsByStatus: {
+    authorised: number;
+    pending: number;
+    rejected: number;
+  };
+  credits: {
+    authorised: number;
+    issued: number;
+    transferred: number;
+    retired: number;
+    available: number;
+  };
+}
+
+const emptySummary: PublicAnalyticsSummary = {
+  totalProjects: 0,
+  projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
+  credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
+};
 
 const CarbonDashboard = () => {
   const { i18n, t } = useTranslation(["common", "homepage"]);
+  const { get } = useConnection();
+  const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
   const [projectCount, setProjectCount] = useState(0);
-  const [creditCount, setCreditCount] = useState(300000);
+  const [creditCount, setCreditCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const statsRef = useRef(null);
 
+  useEffect(() => {
+    const fetchPublicSummary = async () => {
+      try {
+        const response: any = await get(API_PATHS.PUBLIC_ANALYTICS_SUMMARY);
+        if (response?.data) {
+          const data = response.data;
+          setSummary({
+            totalProjects: data.totalProjects ?? 0,
+            projectsByStatus: {
+              authorised: data.projectsByStatus?.authorised ?? 0,
+              pending: data.projectsByStatus?.pending ?? 0,
+              rejected: data.projectsByStatus?.rejected ?? 0,
+            },
+            credits: {
+              authorised: data.credits?.authorised ?? 0,
+              issued: data.credits?.issued ?? 0,
+              transferred: data.credits?.transferred ?? 0,
+              retired: data.credits?.retired ?? 0,
+              available: data.credits?.available ?? 0,
+            },
+          });
+        }
+      } catch (error) {
+        console.log("Error fetching public analytics summary", error);
+      }
+    };
+
+    fetchPublicSummary();
+  }, [get]);
+
   const animateCounters = useCallback(() => {
-    const targetProjectCount = 228;
-    const targetCreditCount = 345890;
-    const startingCreditCount = 300000;
+    const targetProjectCount = summary.totalProjects;
+    const targetCreditCount = summary.credits.authorised;
+    const startingCreditCount = 0;
     const duration = 1500;
     const startTime = Date.now();
 
@@ -48,7 +104,7 @@ const CarbonDashboard = () => {
     };
 
     requestAnimationFrame(updateCounters);
-  }, []);
+  }, [summary]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -78,16 +134,16 @@ const CarbonDashboard = () => {
   }, [animateCounters, hasAnimated]);
 
   const projectData = [
-    { value: 150, title: t("homepage:authorised") },
-    { value: 50, title: t("homepage:pending") },
-    { value: 28, title: t("homepage:rejected") },
+    { value: summary.projectsByStatus.authorised, title: t("homepage:authorised") },
+    { value: summary.projectsByStatus.pending, title: t("homepage:pending") },
+    { value: summary.projectsByStatus.rejected, title: t("homepage:rejected") },
   ];
 
   const creditData = [
-    { value: 345890, title: t("homepage:authorised") },
-    { value: 200890, title: t("homepage:issued") },
-    { value: 100890, title: t("homepage:transferred") },
-    { value: 120890, title: t("homepage:retired") },
+    { value: summary.credits.authorised, title: t("homepage:authorised") },
+    { value: summary.credits.issued, title: t("homepage:issued") },
+    { value: summary.credits.transferred, title: t("homepage:transferred") },
+    { value: summary.credits.retired, title: t("homepage:retired") },
   ];
 
   return (

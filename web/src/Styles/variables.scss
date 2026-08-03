@@ -4,8 +4,13 @@ $primary-font-family: "Inter";
 $secondary-font-family: "Sohne-Breit";
 $common-form-input-border: #d9d9d9;
 $note-light-text: rgba(58, 53, 65, 0.5);
-$primary-purple: #9155fd;
-$primary-color: #16b1ff;
+// Champa (Lao PDR) theme colors - kept in sync with
+// ../Config/colorConfigs.ts (COLOR_CONFIGS). $primary-purple is
+// consolidated onto the Lao flag blue so the various "active/selected"
+// accents across the app (previously an unrelated UNDP purple) read as
+// one consistent brand color instead of two competing accents.
+$primary-purple: #0d2e63;
+$primary-color: #0d2e63;
 $primary-color-light-bg: rgba(222, 205, 254, 0.4);
 $common-input-color: #8c8c8c;
 
@@ -15,13 +20,20 @@ $dark-text-color: #ffffff;
 $common-filter-color: rgba(58, 53, 65, 0.8);
 
 $line-colors: #d9d9d9;
-$error-color: rgba(#ff4d4f, 0.8);
+$error-color: rgba(#ce1126, 0.8);
 $background-color: #f4f5fa;
-$background-color-dark: #232e3d;
+// Footer background: Lao flag blue instead of the old generic UNDP navy.
+$background-color-dark: #0d2e63;
 $outside-background-color: #ffffff;
 
-$gradient-background-start: #6acdff;
-$gradient-background-end: rgba(#16b1ff, 0.94);
+// Active-nav-item highlight gradient (Sider, Login, Homepage hero,
+// company registration) - lighter Lao blue fading into the deep primary.
+$gradient-background-start: #2c5da8;
+$gradient-background-end: rgba(#0d2e63, 0.94);
+// Dok Champa gold accent, reserved for thin highlight strokes /
+// active-state indicators where it won't be used as text-on-background
+// (gold on white or white-on-gold both fail AA contrast for text).
+$accent-gold: #f2b705;
 
 $confirm-modal-message-color: #3a3541cc;
 $confirm-modal-submessage-color: "#3A354180";
@@ -44,12 +56,14 @@ $dev-bg-color: rgba(254, 241, 173, 0.55);
 $dev-color: #ffa070;
 
 $white: #ffffff;
-$primary-blue: #16b1ff;
+$primary-blue: #0d2e63;
 $card-title: rgba(58, 53, 65, 0.8);
 $card-labels: rgba(58, 53, 65, 0.5);
 
-$danger-btn: #ff4d4f;
-$danger-btn-border: #ff8183;
+// Lao flag red - aligns with COLOR_CONFIGS.PRIMARY_RED_COLOR /
+// FAILED_RESPONSE_COLOR for destructive/danger actions.
+$danger-btn: #ce1126;
+$danger-btn-border: #e2596b;
 
 $box-shadow-v1: rgba(0, 0, 0, 0.25);
 

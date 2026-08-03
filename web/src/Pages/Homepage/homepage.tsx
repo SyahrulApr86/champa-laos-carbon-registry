@@ -150,7 +150,7 @@ const Homepage = () => {
                   <div>
                     <div style={{ display: "flex" }}>
                       <div className="title">
-                        {"CARBON MARKET DIGITAL PLATFORM"}
+                        {"CHAMPA - LAO PDR CARBON REGISTRY"}
                       </div>
                     </div>
                     <div className="country-name">

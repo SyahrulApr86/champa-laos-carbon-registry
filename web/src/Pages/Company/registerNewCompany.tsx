@@ -34,7 +34,7 @@ const RegisterNewCompany = () => {
               <div>
                 <div style={{ display: "flex" }}>
                   <div className="title">
-                    {"CARBON MARKET DIGITAL PLATFORM"}
+                    {"CHAMPA - LAO PDR CARBON REGISTRY"}
                   </div>
                   {/* <div className="title-sub">{'REGISTRY'}</div> */}
                 </div>

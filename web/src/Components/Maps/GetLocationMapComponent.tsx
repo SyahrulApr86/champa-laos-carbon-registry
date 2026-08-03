@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { MapSourceData } from "../../Definitions/Definitions/mapComponent.definitions";
 import { MapComponent } from "./mapComponent";
-import { FormInstance } from "antd";
+import { FormInstance, Checkbox } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import { useNFMSBoundary } from "../../Hooks/useNFMSBoundary";
 
 interface CMAMapComponentProps {
   form: FormInstance;
@@ -62,6 +63,18 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
   const updateZoomLevel = (zoom: number) => {
     setZoomLevel(zoom);
   };
+
+  // Optional overlay: Lao PDR National Forest Monitoring System (NFMS)
+  // REDD+/VCS project boundary polygons. Off by default so the existing
+  // manual polygon drawing flow is unaffected unless the user opts in.
+  const [showNFMSBoundaries, setShowNFMSBoundaries] = useState(false);
+  const {
+    nfmsMapSource,
+    nfmsFillLayer,
+    nfmsOutlineLayer,
+    loading: nfmsLoading,
+    error: nfmsError,
+  } = useNFMSBoundary({ enabled: showNFMSBoundaries });
 
   useEffect(() => {
     setProjectLocationMapCenter(
@@ -138,6 +151,22 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
   };
 
   const mapComponentMemoizedValue = useMemo(() => {
+    // mapboxComponent.tsx already supports arrays for mapSource/layer/
+    // outlineLayer, so the NFMS boundary layer is appended alongside the
+    // existing projectLocation source/layer without touching their shape.
+    const combinedMapSource =
+      showNFMSBoundaries && nfmsMapSource
+        ? [projectLocationMapSource, nfmsMapSource]
+        : projectLocationMapSource;
+    const combinedLayer =
+      showNFMSBoundaries && nfmsFillLayer
+        ? [projectLocationMapLayer, nfmsFillLayer]
+        : projectLocationMapLayer;
+    const combinedOutlineLayer =
+      showNFMSBoundaries && nfmsOutlineLayer
+        ? [projectLocationMapOutlineLayer, nfmsOutlineLayer]
+        : projectLocationMapOutlineLayer;
+
     return (
       <>
         {isShowCordinate && (
@@ -148,6 +177,14 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
             value={JSON.stringify(projectLocation)}
           ></TextArea>
         )}
+        <Checkbox
+          checked={showNFMSBoundaries}
+          onChange={(e) => setShowNFMSBoundaries(e.target.checked)}
+          style={{ marginBottom: 5 }}
+        >
+          Show NFMS Forest Boundaries {nfmsLoading ? "(loading...)" : ""}
+          {nfmsError ? ` (error: ${nfmsError})` : ""}
+        </Checkbox>
         <MapComponent
           mapType={mapType}
           center={projectLocationMapCenter}
@@ -157,9 +194,9 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
           style="mapbox://styles/mapbox/light-v11"
           accessToken={accessToken}
           onPolygonComplete={!disabled ? onPolygonComplete : undefined}
-          mapSource={projectLocationMapSource}
-          layer={projectLocationMapLayer}
-          outlineLayer={projectLocationMapOutlineLayer}
+          mapSource={combinedMapSource}
+          layer={combinedLayer}
+          outlineLayer={combinedOutlineLayer}
         ></MapComponent>
       </>
     );
@@ -168,6 +205,12 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
     projectLocationMapSource,
     projectLocationMapLayer,
     projectLocationMapOutlineLayer,
+    showNFMSBoundaries,
+    nfmsMapSource,
+    nfmsFillLayer,
+    nfmsOutlineLayer,
+    nfmsLoading,
+    nfmsError,
   ]);
 
   return mapComponentMemoizedValue;

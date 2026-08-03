@@ -5,6 +5,7 @@ export enum ProjectSectorEnum {
     EDUCATION = 'Education',
     TRANSPORT = 'Transport',
     MANUFACTURING = 'Manufacturing',
+    IPPU = 'Industrial Processes and Product Use',
     HOSPITALITY = 'Hospitality',
     FORESTRY = 'Forestry',
     WASTE = 'Waste',

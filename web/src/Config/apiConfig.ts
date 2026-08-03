@@ -174,4 +174,8 @@ export const API_PATHS = {
   DOWNLOAD_AEF_RECORDS: `national/reportsManagement/downloadAefReport`,
   // PUBLIC ANALYTICS (no auth required)
   PUBLIC_ANALYTICS_SUMMARY: "national/analytics/public/summary",
+  // METHODOLOGY DIRECTORY
+  METHODOLOGY_PUBLIC_LIST: "national/methodology/public",
+  METHODOLOGY_CREATE: "national/methodology",
+  METHODOLOGY_UPDATE: (id: string | number) => `national/methodology/${id}`,
 };

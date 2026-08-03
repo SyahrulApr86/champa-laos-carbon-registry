@@ -1,0 +1,83 @@
+@use '../../Assets/Fonts/fonts.scss';
+@use '../../Styles/variables.scss';
+
+.methodology-directory-container {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: variables.$background-color;
+
+  .methodology-header-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    height: 90px;
+    padding-top: 15px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0rem 0rem 0 0vw;
+    cursor: pointer;
+
+    .title {
+      font-family: 'MuseoSans';
+      font-size: 1.2rem;
+      color: variables.$logo-text-color;
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+
+    .title-sub {
+      font-weight: 100 !important;
+      font-family: 'MuseoSans';
+      font-size: 1.2rem;
+      color: variables.$logo-text-color;
+    }
+
+    .logo {
+      height: 53px;
+      padding-left: 2vw;
+
+      img {
+        object-fit: cover;
+        height: auto;
+        height: 70%;
+        margin-top: 6px;
+      }
+    }
+
+    .country-name {
+      font-size: 0.65rem;
+      color: variables.$logo-text-color;
+      margin-top: -5px;
+      font-family: 'MuseoSans';
+    }
+  }
+
+  .methodology-body-container {
+    background-color: #fff;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 30px 5vw 60px 5vw;
+
+    .methodology-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: variables.$title-text-color;
+      font-family: 'MuseoSans';
+    }
+
+    .methodology-sub {
+      color: variables.$title-text-color;
+      padding-bottom: 20px;
+    }
+
+    .methodology-filters {
+      margin-bottom: 20px;
+    }
+
+    .methodology-description {
+      color: variables.$title-text-color;
+      padding: 8px 12px;
+    }
+  }
+}

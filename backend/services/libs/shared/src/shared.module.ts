@@ -25,6 +25,7 @@ import { CreditBlocksManagementModule } from "./credit-blocks-management/credit-
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { CreditTransactionsManagementModule } from "./credit-transactions-management/credit-transactions-management.module";
 import { AefReportManagementModule } from "./aef-report-management/aef-report-management.module";
+import { MethodologyModule } from "./methodology/methodology.module";
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { AefReportManagementModule } from "./aef-report-management/aef-report-ma
     AnalyticsModule,
     CreditTransactionsManagementModule,
     AefReportManagementModule,
+    MethodologyModule,
   ],
   providers: [SharedService],
   exports: [
@@ -82,6 +84,7 @@ import { AefReportManagementModule } from "./aef-report-management/aef-report-ma
     AnalyticsModule,
     CreditTransactionsManagementModule,
     AefReportManagementModule,
+    MethodologyModule,
   ],
 })
 export class SharedModule {}

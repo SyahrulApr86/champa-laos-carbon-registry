@@ -46,6 +46,7 @@ import { CreditBalancePage } from "./Pages/CreditPages/creditBalancePage";
 import { CreditTransfersPage } from "./Pages/CreditPages/creditTransfersPage";
 import { CreditRetirementsPage } from "./Pages/CreditPages/creditRetirementsPage";
 import Reports from "./Pages/Reports/Reports";
+import MethodologyDirectory from "./Pages/Methodology/methodology";
 import PublicProjectSearch from "./Pages/PublicProjectSearch/publicProjectSearch";
 
 const App = () => {
@@ -105,6 +106,7 @@ const App = () => {
                 <Route path="codeconduct" element={<CodeOfConduct />} />
                 <Route path="cookie" element={<CookiePolicy />} />
                 <Route path="terms" element={<TermsOfUse />} />
+                <Route path="methodology" element={<MethodologyDirectory />} />
                 <Route
                   path="projects/search"
                   element={<PublicProjectSearch />}

@@ -15,6 +15,7 @@ import { DocumentManagementController } from "./document.controller";
 import { AnalyticsController } from "./analytics.controller";
 import { CreditTransactionsManagementController } from "./credit.transactions.management.controller";
 import { ReportsManagementController } from "./reports.management.controller";
+import { MethodologyController } from "./methodology.controller";
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ReportsManagementController } from "./reports.management.controller";
     AnalyticsController,
     CreditTransactionsManagementController,
     ReportsManagementController,
+    MethodologyController,
   ],
   providers: [NationalAPIService, Logger],
 })

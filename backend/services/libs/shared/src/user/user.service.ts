@@ -59,8 +59,8 @@ import { FilterEntry } from "../dto/filter.entry";
 import { EmailHelperService } from "../email-helper/email-helper.service";
 import { HttpUtilService } from "../util/http.util.service";
 import { SYSTEM_TYPE } from "../enum/system.names.enum";
-import { GovDepartment, ministryOrgs } from "../enum/govDep.enum";
-import { Ministry } from "../enum/ministry.enum";
+import { GovDepartment } from "../enum/govDep.enum";
+import { Ministry, ministryOrgs } from "../enum/ministry.enum";
 
 @Injectable()
 export class UserService {

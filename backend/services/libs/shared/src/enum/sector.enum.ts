@@ -4,6 +4,7 @@ export enum Sector {
     Education = 'Education',
     Transport = 'Transport',
     Manufacturing = 'Manufacturing',
+    IPPU = 'Industrial Processes and Product Use',
     Hospitality = 'Hospitality',
     Forestry = 'Forestry',
     Waste = 'Waste',

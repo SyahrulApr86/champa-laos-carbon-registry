@@ -123,13 +123,26 @@ export const handler: Handler = async (event) => {
         continue;
       }
       fields = fields.map((f) => f.trim());
-      // (name: string, companyRole: CompanyRole, taxId: string, password: string, email: string, userRole: string
+      // Columns: NAME, EMAIL, PHONE, ORGANISATION TAX ID,
+      // ORGANISATION TYPE(Developer|Certifier|API|DNA|Ministry), SECTORAL SCOPE
+      // (pipe-separated SectoralScope codes, e.g. "1|4"), MINISTER NAME
       const cr =
         fields[4] == "IC"
           ? CompanyRole.INDEPENDENT_CERTIFIER
           : fields[4] == "API"
           ? CompanyRole.API
+          : fields[4] == "DNA"
+          ? CompanyRole.DESIGNATED_NATIONAL_AUTHORITY
+          : fields[4] == "Ministry"
+          ? CompanyRole.MINISTRY
           : CompanyRole.PROJECT_DEVELOPER;
+
+      const sectoralScope =
+        fields[5] && fields[5].length > 0
+          ? (fields[5].split("|").map((s) => s.trim()) as any)
+          : undefined;
+      const nameOfMinister =
+        fields[6] && fields[6].length > 0 ? fields[6] : undefined;
 
       try {
         const org = await companyService.create({
@@ -140,8 +153,8 @@ export const handler: Handler = async (event) => {
           email: fields[1],
           phoneNo: fields[2],
           faxNo: undefined,
-          nameOfMinister: undefined,
-          sectoralScope: undefined,
+          nameOfMinister: nameOfMinister,
+          sectoralScope: sectoralScope,
           ministry: undefined,
           govDep: undefined,
           website: undefined,

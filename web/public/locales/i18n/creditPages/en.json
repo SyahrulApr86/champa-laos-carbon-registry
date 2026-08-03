@@ -196,6 +196,7 @@
     "reference": "Reference Id",
     "date": "Date & Time",
     "credits": "Credits",
+    "estValue": "Est. value",
     "status": "Status",
     "retirementType": "Retirement Type",
     "action": "Action",

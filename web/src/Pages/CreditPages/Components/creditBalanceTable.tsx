@@ -37,6 +37,9 @@ import moment from "moment";
 import { addCommSep } from "../../../Definitions/Definitions/programme.definitions";
 import { Role } from "../../../Definitions/Enums/role.enum";
 import { COLOR_CONFIGS } from "../../../Config/colorConfigs";
+import { CurrencyToggle } from "../../../Components/Common/CurrencyToggle";
+import { useCurrencyContext } from "../../../Context/CurrencyContext/currencyContext";
+import { formatCurrency } from "../../../Utils/currencyConverter";
 
 const { Search } = Input;
 
@@ -66,6 +69,7 @@ export const CreditBalanceTableComponent = (props: any) => {
 
   const { post } = useConnection();
   const { userInfoState } = useUserContext();
+  const { currency } = useCurrencyContext();
   const isInitialRender = useRef(false);
   const [totalProgramme, setTotalProgramme] = useState<number>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -312,7 +316,12 @@ export const CreditBalanceTableComponent = (props: any) => {
       render: (record: CreditBalanceInterface) => {
         return (
           <span style={{ marginLeft: "20px" }}>
-            {addCommSep(String(record?.creditAmount))}
+            <span>{addCommSep(String(record?.creditAmount))}</span>
+            {record?.creditAmount !== undefined && (
+              <div className="credit-value-equivalent" style={{ fontSize: "0.75rem", color: "#8c8c8c" }}>
+                {t("estValue")}: {formatCurrency(Number(record.creditAmount), currency)}
+              </div>
+            )}
           </span>
         );
       },
@@ -544,6 +553,9 @@ export const CreditBalanceTableComponent = (props: any) => {
                 onChange={(e) => setSearch(e.target.value)}
                 style={{ width: 285 }}
               />
+            </div>
+            <div className="currency-toggle-bar" style={{ marginLeft: "10px" }}>
+              <CurrencyToggle />
             </div>
           </div>
         </Col>

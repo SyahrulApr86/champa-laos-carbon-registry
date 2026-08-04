@@ -1,44 +1,26 @@
 import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
 import { AnalyticsService } from "@app/shared/analytics/analytics.service";
+import { ProgrammeService } from "@app/shared/programme/programme.service";
 import { ProjectDataRequestDTO } from "@app/shared/dto/project-data-request.dto";
 import { PoliciesGuard } from "@app/shared/casl/policy.guard";
-import { User } from "@app/shared/entities/user.entity";
 
 @Controller("analytics")
 export class AnalyticsController {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly programmeService: ProgrammeService
+  ) {}
 
   // Public, unauthenticated endpoint for the marketing/homepage dashboard.
   // Intentionally NOT guarded with JwtAuthGuard/PoliciesGuard - only exposes
   // aggregate counts/sums, never per-project or per-proponent detail.
+  // Reads from ProgrammeService (Programme table) rather than the
+  // ProjectEntity/audit-trail based methods below, because ProjectEntity is
+  // never populated by the replicator in this fork.
   @Get("public/summary")
   async getPublicSummary() {
-    const emptyFilters = new ProjectDataRequestDTO();
-    const anonymousUser = {} as User;
-
-    const [statusSummary, sectorSummary, creditSummary] = await Promise.all([
-      this.analyticsService.getProjectStatusSummary(emptyFilters, anonymousUser),
-      this.analyticsService.getProjectCountBySector(emptyFilters, anonymousUser),
-      this.analyticsService.getCreditSummary(emptyFilters, anonymousUser),
-    ]);
-
-    return {
-      totalProjects: statusSummary.totalProjects,
-      projectsByStatus: {
-        authorised: statusSummary.authorisedCount,
-        pending: statusSummary.pendingCount,
-        rejected: statusSummary.rejectedCount,
-      },
-      projectsBySector: sectorSummary,
-      credits: {
-        authorised: creditSummary.authorisedAmount,
-        issued: creditSummary.issuedAmount,
-        transferred: creditSummary.transferredAmount,
-        retired: creditSummary.retiredAmount,
-        available: creditSummary.issuedAmount - creditSummary.retiredAmount,
-      },
-    };
+    return this.programmeService.getPublicSummary();
   }
 
   @UseGuards(JwtAuthGuard, PoliciesGuard)

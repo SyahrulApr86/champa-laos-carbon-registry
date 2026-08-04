@@ -3,7 +3,6 @@ import { User } from "../entities/user.entity";
 import { CompanyRole } from "../enum/company.role.enum";
 import { HelperService } from "../util/helpers.service";
 import { CompanyService } from "../company/company.service";
-import { ProjectProposalStage } from "../enum/projectProposalStage.enum";
 import { TxType } from "../enum/txtype.enum";
 import { plainToClass } from "class-transformer";
 import { ProjectEntity } from "../entities/projects.entity";
@@ -54,54 +53,6 @@ export class ProjectManagementService {
     private readonly documentManagementService: DocumentManagementService,
     private readonly auditLogService: AuditLogsService
   ) {}
-
-  // Maps the internal, fine-grained project proposal stage to a coarse,
-  // public-friendly status. Deliberately collapses everything that is not a
-  // final authorisation into "Under Review" so internal workflow/approval
-  // detail (who rejected/approved, at which step) is never exposed publicly.
-  private toPublicStatus(stage: string): string {
-    const registeredStages = [
-      ProjectProposalStage.AUTHORISED,
-      ProjectProposalStage.AUTHORIZED,
-      ProjectProposalStage.APPROVED_CMA,
-      ProjectProposalStage.PDD_APPROVED_BY_DNA,
-      ProjectProposalStage.VALIDATION_DNA_APPROVED,
-      ProjectProposalStage.APPROVED,
-    ];
-    return registeredStages.includes(stage as ProjectProposalStage)
-      ? "Registered"
-      : "Under Review";
-  }
-
-  // Public, unauthenticated project search. Only returns non-sensitive,
-  // high-level fields: registration/reference number, project title,
-  // sector, a coarse public status, and the proponent organisation name.
-  // Never returns internal ids (companyId), credit balances, documents,
-  // certifier lists, or any personal data.
-  async publicSearch(q: string): Promise<any[]> {
-    const keyword = (q || "").trim();
-    if (!keyword) {
-      return [];
-    }
-
-    const results = await this.projectViewRepo
-      .createQueryBuilder("document_entity")
-      .where(
-        `"document_entity"."refId" ILIKE :keyword OR "document_entity"."title" ILIKE :keyword`,
-        { keyword: `%${keyword}%` }
-      )
-      .orderBy(`"document_entity"."createdTime"`, "DESC")
-      .limit(20)
-      .getMany();
-
-    return results.map((project) => ({
-      registrationNumber: project.refId,
-      title: project.title,
-      sector: project.sector,
-      status: this.toPublicStatus(project.projectProposalStage),
-      proponent: project.name,
-    }));
-  }
 
   async getLogs(refId: string, user: User) {
     // Ensure the requesting user is entitled to view this project before

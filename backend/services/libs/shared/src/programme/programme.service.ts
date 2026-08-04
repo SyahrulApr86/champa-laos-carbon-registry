@@ -7626,4 +7626,103 @@ export class ProgrammeService {
     creditAuditLog.country = country;
     await this.creditAuditLogRepo.save(creditAuditLog);
   }
+
+  // Public status collapses internal ProgrammeStage detail (New,
+  // AwaitingAuthorization, Rejected) into a single "Under Review" bucket so
+  // unauthenticated callers never learn who rejected a project or why.
+  private toPublicProgrammeStatus(stage: ProgrammeStage): string {
+    return stage === ProgrammeStage.AUTHORISED ? "Registered" : "Under Review";
+  }
+
+  // Public, unauthenticated project search reading directly from the
+  // Programme table (the model that create/authorize actually writes to),
+  // instead of the read-only ProjectEntity table which the replicator never
+  // populates in this fork. Only non-sensitive, high-level fields are
+  // returned: registration number, title, sector, coarse status, proponent.
+  async publicSearch(q: string): Promise<any[]> {
+    const keyword = (q || "").trim();
+    if (!keyword) {
+      return [];
+    }
+
+    const results = await this.programmeViewRepo
+      .createQueryBuilder("programme")
+      .where(
+        `"programme"."programmeId" ILIKE :keyword OR "programme"."title" ILIKE :keyword`,
+        { keyword: `%${keyword}%` }
+      )
+      .orderBy(`"programme"."txTime"`, "DESC")
+      .limit(20)
+      .getMany();
+
+    return results.map((programme) => ({
+      registrationNumber: programme.programmeId,
+      title: programme.title,
+      sector: programme.sector,
+      status: this.toPublicProgrammeStatus(programme.currentStage),
+      proponent: programme.company?.[0]?.name ?? null,
+    }));
+  }
+
+  // Public, unauthenticated aggregate summary for the homepage dashboard.
+  // Reads Programme directly for the same reason as publicSearch above.
+  async getPublicSummary(): Promise<any> {
+    const programmes = await this.programmeRepo.find();
+
+    let authorisedCount = 0;
+    let pendingCount = 0;
+    let rejectedCount = 0;
+    let issued = 0;
+    let retired = 0;
+    let transferred = 0;
+    let balance = 0;
+
+    const projectsBySector: Record<string, number> = {};
+    Object.values(Sector).forEach((sector) => {
+      projectsBySector[sector] = 0;
+    });
+
+    for (const programme of programmes) {
+      if (programme.currentStage === ProgrammeStage.AUTHORISED) {
+        authorisedCount++;
+      } else if (programme.currentStage === ProgrammeStage.REJECTED) {
+        rejectedCount++;
+      } else {
+        pendingCount++;
+      }
+
+      if (programme.sector) {
+        projectsBySector[programme.sector] =
+          (projectsBySector[programme.sector] || 0) + 1;
+      }
+
+      issued += Number(programme.creditIssued) || 0;
+      balance += Number(programme.creditBalance) || 0;
+      retired += (programme.creditRetired || []).reduce(
+        (sum, v) => sum + (Number(v) || 0),
+        0
+      );
+      transferred += (programme.creditTransferred || []).reduce(
+        (sum, v) => sum + (Number(v) || 0),
+        0
+      );
+    }
+
+    return {
+      totalProjects: programmes.length,
+      projectsByStatus: {
+        authorised: authorisedCount,
+        pending: pendingCount,
+        rejected: rejectedCount,
+      },
+      projectsBySector,
+      credits: {
+        authorised: issued,
+        issued,
+        transferred,
+        retired,
+        available: balance,
+      },
+    };
+  }
 }

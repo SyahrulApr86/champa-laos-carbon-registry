@@ -7,6 +7,7 @@ import { ProjectCreateDto } from "@app/shared/dto/project.create.dto";
 import { QueryDto } from "@app/shared/dto/query.dto";
 import { ProjectEntity } from "@app/shared/entities/projects.entity";
 import { ProjectManagementService } from "@app/shared/project-management/project-management.service";
+import { ProgrammeService } from "@app/shared/programme/programme.service";
 import {
   Body,
   Controller,
@@ -24,7 +25,10 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 @ApiBearerAuth()
 @Controller("projectManagement")
 export class ProjectManagementController {
-  constructor(private projectManagementService: ProjectManagementService) {}
+  constructor(
+    private projectManagementService: ProjectManagementService,
+    private programmeService: ProgrammeService
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, PoliciesGuard)
@@ -64,11 +68,13 @@ export class ProjectManagementController {
   }
 
   // Public, unauthenticated endpoint: intentionally has no @UseGuards/@CheckPolicies.
-  // Only non-sensitive, high-level project information is returned by the
-  // service layer (see ProjectManagementService.publicSearch) — no approval
-  // details, internal identifiers, or personal data.
+  // Reads from ProgrammeService (backed by the Programme table, the model the
+  // create/authorize flow actually writes to) rather than ProjectEntity, which
+  // the replicator never populates in this fork. Only non-sensitive,
+  // high-level project information is returned — no approval details,
+  // internal identifiers, or personal data.
   @Get("public/search")
   async publicSearch(@Query("q") q: string) {
-    return this.projectManagementService.publicSearch(q);
+    return this.programmeService.publicSearch(q);
   }
 }

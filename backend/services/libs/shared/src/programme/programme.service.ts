@@ -138,6 +138,21 @@ import { Region } from "../entities/region.entity";
 import { CreditAuditLog } from "../entities/credit.audit.log.entity";
 import { CreditAuditLogType } from "../enum/credit.audit.log.type.enum";
 
+export interface PublicCertificate {
+  accountHolder: string | null;
+  activity: string;
+  sector: string;
+  registryNo: string;
+  startVintage: number | null;
+  endVintage: number | null;
+  status: "Active" | "Retired";
+  issuedUnits: number;
+  availableUnits: number;
+  retiredUnits: number;
+  cancelledUnits: number;
+  issuedDate: string | null;
+}
+
 export declare function PrimaryGeneratedColumn(
   options: PrimaryGeneratedColumnType
 ): Function;
@@ -7938,5 +7953,75 @@ export class ProgrammeService {
         .filter((name): name is string => !!name),
       createdTime: programme.createdTime,
     };
+  }
+
+  // Public, unauthenticated per-certificate listing for the Mitigation tab's
+  // "Emission Reduction Certificates" table (mirrors SRN Indonesia's SPE
+  // registry). Projects real Programme credit-issuance fields into the
+  // SRN-equivalent shape instead of a separate manually-entered table -
+  // there is no credit-cancellation flow in this fork yet, so
+  // cancelledUnits is honestly always 0 rather than fabricated.
+  async getPublicCertificates(
+    q: string,
+    page = 1,
+    size = 10
+  ): Promise<{ data: PublicCertificate[]; total: number }> {
+    const keyword = (q || "").trim().toLowerCase();
+    const safePage = Math.max(1, page);
+    const safeSize = Math.min(50, Math.max(1, size));
+
+    const programmes = await this.programmeViewRepo
+      .createQueryBuilder("programme")
+      .where(`"programme"."creditIssued" > 0`)
+      .orderBy(`"programme"."creditUpdateTime"`, "DESC")
+      .getMany();
+
+    const certificates = programmes.map((programme) => {
+      const issuedUnits = Number(programme.creditIssued) || 0;
+      const availableUnits = Number(programme.creditBalance) || 0;
+      const retiredUnits = (programme.creditRetired || []).reduce(
+        (sum, v) => sum + (Number(v) || 0),
+        0
+      );
+      // No credit-cancellation mechanism exists yet in Champa's ledger.
+      const cancelledUnits = 0;
+      const status: "Active" | "Retired" =
+        availableUnits <= 0 && retiredUnits > 0 ? "Retired" : "Active";
+
+      return {
+        accountHolder: programme.company?.[0]?.name ?? null,
+        activity: programme.title,
+        sector: programme.sector,
+        registryNo: programme.programmeId,
+        startVintage: programme.startTime
+          ? new Date(Number(programme.startTime) * 1000).getFullYear()
+          : null,
+        endVintage: programme.endTime
+          ? new Date(Number(programme.endTime) * 1000).getFullYear()
+          : null,
+        status,
+        issuedUnits,
+        availableUnits,
+        retiredUnits,
+        cancelledUnits,
+        issuedDate: programme.creditUpdateTime
+          ? this.helperService.formatTimestamp(programme.creditUpdateTime) ??
+            null
+          : null,
+      };
+    });
+
+    const filtered = keyword
+      ? certificates.filter((c) =>
+          [c.accountHolder, c.activity, c.registryNo]
+            .filter((f): f is string => !!f)
+            .some((f) => f.toLowerCase().includes(keyword))
+        )
+      : certificates;
+
+    const total = filtered.length;
+    const start = (safePage - 1) * safeSize;
+
+    return { data: filtered.slice(start, start + safeSize), total };
   }
 }

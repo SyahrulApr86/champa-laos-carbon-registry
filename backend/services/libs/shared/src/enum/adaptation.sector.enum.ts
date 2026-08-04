@@ -1,8 +1,11 @@
 export enum AdaptationSector {
-  AGRICULTURE = "Agriculture",
-  WATER_RESOURCES = "Water Resources",
-  FORESTRY = "Forestry",
-  PUBLIC_HEALTH = "Public Health",
+  HEALTH = "Health",
+  ECOSYSTEM_RESILIENCE = "Ecosystem Resilience",
+  MULTI_SECTOR = "Multi-sector",
   INFRASTRUCTURE = "Infrastructure",
-  OTHER = "Other",
+  COASTAL_AND_SMALL_ISLANDS = "Coastal and Small Islands",
+  ENERGY_SELF_RELIANCE = "Energy Self-reliance",
+  FOOD_SECURITY = "Food Security",
+  URBAN_AND_RURAL_SETTLEMENTS = "Urban and Rural Settlements",
+  WATER_SECURITY = "Water Security",
 }

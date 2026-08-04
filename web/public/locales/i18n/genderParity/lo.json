@@ -1,14 +1,14 @@
 {
-  "yes": "YES",
-  "no": "NO",
-  "benifit1": "Does the action contribute to ending discrimination against girls/women (e.g.Non-discrimination of employment based on sex)?",
-  "benifit2": "Does the action contribute to ending violence against girls/women (e.g.trafficking or sexual exploitation)?",
-  "benifit3": "Does the action contribute to ending harmful practices against girls / women (e.g.Child marriage, genital mutilation etc.)?",
-  "benifit4": "Does the action contribute to promoting equal rights to economic resources to women (e.g.ownership of land)?",
-  "benifit5": "Does the action contribute to promoting equal rights to reproductive health and reproductive rights (e.g. use of contraceptives, access to health services etc.)?",
-  "benifit6": "Number of women employed under the action",
-  "benifit7": "Number of women trained under the action",
-  "benifit8": "Number of women selected for decision making position (e.g. senior managers, community leaders, etc.)",
-  "benifit9": "Number of women provided with access to modern technology and/or finance (e.g. microfinance, mobile phones etc.)"
+  "yes": "ແມ່ນ",
+  "no": "ບໍ່ແມ່ນ",
+  "benifit1": "ກິດຈະກຳນີ້ຊ່ວຍຢຸດການຈຳແນກຕໍ່ເດັກຍິງ/ແມ່ຍິງບໍ (ຕົວຢ່າງ: ບໍ່ຈຳແນກການຈ້າງງານໂດຍອີງໃສ່ເພດ)?",
+  "benifit2": "ກິດຈະກຳນີ້ຊ່ວຍຢຸດຄວາມຮຸນແຮງຕໍ່ເດັກຍິງ/ແມ່ຍິງບໍ (ຕົວຢ່າງ: ການຄ້າມະນຸດ ຫຼື ການລ່ວງລະເມີດທາງເພດ)?",
+  "benifit3": "ກິດຈະກຳນີ້ຊ່ວຍຢຸດການປະຕິບັດທີ່ເປັນອັນຕະລາຍຕໍ່ເດັກຍິງ/ແມ່ຍິງບໍ (ຕົວຢ່າງ: ການແຕ່ງງານແຕ່ຍັງນ້ອຍ, ການຕັດອະໄວຍະວະເພດ ແລະ ອື່ນໆ)?",
+  "benifit4": "ກິດຈະກຳນີ້ຊ່ວຍສົ່ງເສີມສິດເທົ່າທຽມກັນໃນການເຂົ້າເຖິງຊັບພະຍາກອນເສດຖະກິດຂອງແມ່ຍິງບໍ (ຕົວຢ່າງ: ການເປັນເຈົ້າຂອງທີ່ດິນ)?",
+  "benifit5": "ກິດຈະກຳນີ້ຊ່ວຍສົ່ງເສີມສິດເທົ່າທຽມກັນໃນດ້ານສຸຂະພາບອະນາໄມການເຈີນພັນ ແລະ ສິດອະນາໄມການເຈີນພັນບໍ (ຕົວຢ່າງ: ການໃຊ້ຢາຄຸມກຳເນີດ, ການເຂົ້າເຖິງບໍລິການສຸຂະພາບ ແລະ ອື່ນໆ)?",
+  "benifit6": "ຈຳນວນແມ່ຍິງທີ່ຖືກຈ້າງງານພາຍໃຕ້ກິດຈະກຳນີ້",
+  "benifit7": "ຈຳນວນແມ່ຍິງທີ່ໄດ້ຮັບການຝຶກອົບຮົມພາຍໃຕ້ກິດຈະກຳນີ້",
+  "benifit8": "ຈຳນວນແມ່ຍິງທີ່ໄດ້ຮັບຄັດເລືອກໃຫ້ດຳລົງຕຳແໜ່ງການຕັດສິນໃຈ (ຕົວຢ່າງ: ຜູ້ບໍລິຫານລະດັບສູງ, ຜູ້ນຳຊຸມຊົນ ແລະ ອື່ນໆ)",
+  "benifit9": "ຈຳນວນແມ່ຍິງທີ່ໄດ້ຮັບການເຂົ້າເຖິງເຕັກໂນໂລຢີທັນສະໄໝ ແລະ/ຫຼື ການເງິນ (ຕົວຢ່າງ: ໄມໂຄຣຟິແນນ, ໂທລະສັບມືຖື ແລະ ອື່ນໆ)"
 }
 

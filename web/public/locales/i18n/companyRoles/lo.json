@@ -1,11 +1,11 @@
 {
-  "ProgrammeDeveloper": "Project Developer",
-  "Government": "Designated National Authority",
-  "Certifier": "Independent Certifier",
-  "ClimateFund": "{{countryName}} Climate Fund",
-  "ExecutiveCommittee": "Executive Committee",
-  "Ministry": "Ministry",
+  "ProgrammeDeveloper": "ຜູ້ພັດທະນາໂຄງການ",
+  "Government": "ອົງການແຫ່ງຊາດທີ່ໄດ້ຮັບການແຕ່ງຕັ້ງ",
+  "Certifier": "ຜູ້ຮັບຮອງເອກະລາດ",
+  "ClimateFund": "ກອງທຶນດ້ານສະພາບອາກາດ {{countryName}}",
+  "ExecutiveCommittee": "ຄະນະບໍລິຫານ",
+  "Ministry": "ກະຊວງ",
   "DNA": "DNA",
-  "IC": "Independent Certifier",
-  "PD": "Project Developer"
+  "IC": "ຜູ້ຮັບຮອງເອກະລາດ",
+  "PD": "ຜູ້ພັດທະນາໂຄງການ"
 }

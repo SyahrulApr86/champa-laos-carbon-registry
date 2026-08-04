@@ -1,76 +1,76 @@
 {
-  "reportsTitle": "Reports",
+  "reportsTitle": "ລາຍງານ",
 
-  "ACTIONS": "Actions Report",
+  "ACTIONS": "ລາຍງານກິດຈະກຳ",
 
-  "HOLDINGS": "Holdings Report",
+  "HOLDINGS": "ລາຍງານການຄອບຄອງ",
 
-  "recordId": "ARTICLE 6 DATABASE RECORD ID",
+  "recordId": "ລະຫັດບັນທຶກຖານຂໍ້ມູນມາດຕາ 6",
 
-  "cooperativeApproach": "COOPERATIVE APPROACH",
+  "cooperativeApproach": "ວິທີການຮ່ວມມື",
 
   "itmo": "ITMO",
 
-  "uniqueIdentifier": "UNIQUE IDENTIFIER",
+  "uniqueIdentifier": "ລະຫັດເອກະລັກສະເພາະ",
 
-  "firstUniqueIdentifier": "FIRST UNIQUE IDENTIFIER",
+  "firstUniqueIdentifier": "ລະຫັດເອກະລັກສະເພາະທຳອິດ",
 
-  "lastUniqueIdentifier": "LAST UNIQUE IDENTIFIER",
+  "lastUniqueIdentifier": "ລະຫັດເອກະລັກສະເພາະສຸດທ້າຍ",
 
-  "underlyingUnitBlockStartId": "UNDERLYING UNIT BLOCK START ID",
+  "underlyingUnitBlockStartId": "ລະຫັດເລີ່ມຕົ້ນຂອງບລັອກໜ່ວຍພື້ນຖານ",
 
-  "underlyingUnitLastBlockId": "UNDERLYING UNIT BLOCK LAST ID",
+  "underlyingUnitLastBlockId": "ລະຫັດສຸດທ້າຍຂອງບລັອກໜ່ວຍພື້ນຖານ",
 
-  "metricAndQuantity": "METRIC AND QUANTITY",
+  "metricAndQuantity": "ຫົວໜ່ວຍວັດ ແລະ ຈຳນວນ",
 
-  "metric": "METRIC",
+  "metric": "ຫົວໜ່ວຍວັດ",
 
-  "quantity": "QUANTITY (EXPRESSED IN METRIC)",
+  "quantity": "ຈຳນວນ (ສະແດງເປັນຫົວໜ່ວຍວັດ)",
 
-  "quantity2": "QUANTITY (tCO2eq)",
+  "quantity2": "ຈຳນວນ (tCO2eq)",
 
-  "conversionFactor": "CONVERSION FACTOR (REPORTING PARTY)",
+  "conversionFactor": "ຄ່າປັດໄຈປ່ຽນແປງ (ພາຄີລາຍງານ)",
 
-  "itmoDetails": "ITMO DETAILS",
+  "itmoDetails": "ລາຍລະອຽດ ITMO",
 
-  "firstTransferParty": "FIRST TRANSFERRING PARTICIPATING PARTY",
+  "firstTransferParty": "ພາຄີແທ້ຈິງທຳອິດຜູ້ໂອນ",
 
-  "vintage": "VINTAGE",
+  "vintage": "ວິນເທດ (ປີຜະລິດ)",
 
-  "sector": "SECTOR",
+  "sector": "ຂະແໜງການ",
 
-  "activityType": "ACTIVITY TYPE",
+  "activityType": "ປະເພດກິດຈະກຳ",
 
-  "authorizationTitle": "AUTHORIZATION",
+  "authorizationTitle": "ການອະນຸຍາດ",
 
-  "dateOfAuthorization": "DATE OF AUTHORIZATION",
+  "dateOfAuthorization": "ວັນທີໄດ້ຮັບອະນຸຍາດ",
 
-  "authorizationId": "AUTHORIZATION ID",
+  "authorizationId": "ລະຫັດການອະນຸຍາດ",
 
-  "authorizationPurposes": "PURPOSES FOR AUTHORIZATION",
+  "authorizationPurposes": "ຈຸດປະສົງໃນການອະນຸຍາດ",
 
-  "oimpAuthorized": "OIMP AUTHORIZED BY THE PARTY",
+  "oimpAuthorized": "OIMP ທີ່ໄດ້ຮັບອະນຸຍາດຈາກພາຄີ",
 
-  "firstTransferDefinition": "FIRST TRANSFER DEFINITION",
+  "firstTransferDefinition": "ນິຍາມການໂອນຄັ້ງທຳອິດ",
 
-  "actions": "ACTIONS",
+  "actions": "ກິດຈະກຳ",
 
-  "actionDetails": "ACTION DETAILS",
+  "actionDetails": "ລາຍລະອຽດກິດຈະກຳ",
 
-  "actionDate": "ACTION DATE",
+  "actionDate": "ວັນທີກິດຈະກຳ",
 
-  "actionType": "ACTION TYPE",
+  "actionType": "ປະເພດກິດຈະກຳ",
 
-  "transferParty": "TRANSFERRING PARTICIPATING PARTY",
+  "transferParty": "ພາຄີແທ້ຈິງຜູ້ໂອນ",
 
-  "aquiringParty": "ACQUIRING PARTICIPATING PARTY",
+  "aquiringParty": "ພາຄີແທ້ຈິງຜູ້ຮັບ",
 
-  "purposesForCancellation": "PURPOSES FOR CANCELLATION",
+  "purposesForCancellation": "ຈຸດປະສົງໃນການຍົກເລີກ",
 
-  "usingParticipating": "USING PARTICIPATING PARTY OR AUTHORIZED ENTITY OR ENTITIES",
+  "usingParticipating": "ພາຄີແທ້ຈິງຜູ້ນຳໃຊ້ ຫຼື ໜ່ວຍງານ ຫຼື ໜ່ວຍງານທີ່ໄດ້ຮັບອະນຸຍາດ",
 
-  "firstTransfer": "FIRST TRANSFER",
-  "authorization": "Authorization",
-  "transfer": "Transfer",
-  "crossBoarderTransfer": "Cross Boarder Transfer"
+  "firstTransfer": "ການໂອນຄັ້ງທຳອິດ",
+  "authorization": "ການອະນຸຍາດ",
+  "transfer": "ການໂອນ",
+  "crossBoarderTransfer": "ການໂອນຂ້າມຊາຍແດນ"
 }

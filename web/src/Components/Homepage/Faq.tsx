@@ -13,7 +13,7 @@ const FAQ = () => {
   };
 
   return (
-    <div className="faq-container">
+    <div className="faq-container" id="faq">
       <h2 className="header-title">FAQ - Common questions:</h2>
       <div className="faq-list">
         <div className="faq-item">

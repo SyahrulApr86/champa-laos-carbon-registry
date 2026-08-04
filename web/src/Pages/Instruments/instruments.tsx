@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Row, Col } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import LayoutFooter from "../../Components/Footer/layout.footer";
@@ -13,6 +13,16 @@ import "./instruments.scss";
 // honestly as not yet populated rather than filled with placeholder data.
 const Instruments = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
 
   return (
     <div className="instruments-page-container">
@@ -56,7 +66,7 @@ const Instruments = () => {
           </Link>
         </section>
 
-        <section className="instruments-section">
+        <section className="instruments-section" id="vva">
           <h2>Validation and Verification Bodies</h2>
           <p>
             Independent certifiers registered on Champa validate and verify

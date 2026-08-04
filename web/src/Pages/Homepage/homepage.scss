@@ -1039,3 +1039,22 @@ $title-color: #3a8ab5;
     margin: 0;
   }
 }
+
+// Dropdown overlays render into a portal on document.body, so this rule
+// lives outside .homepage-container. Keeps the "About"/"Instruments"
+// sub-menus visually consistent with .homepage-nav-links a above.
+.homepage-nav-dropdown {
+  .ant-dropdown-menu {
+    padding: 0.35rem;
+  }
+
+  .ant-dropdown-menu-item {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $title-color;
+
+    &:hover {
+      background-color: rgba(58, 138, 181, 0.08);
+    }
+  }
+}

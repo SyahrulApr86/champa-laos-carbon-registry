@@ -1,4 +1,12 @@
-import { Button, Col, Collapse, CollapseProps, Row } from "antd";
+import {
+  Button,
+  Col,
+  Collapse,
+  CollapseProps,
+  Dropdown,
+  MenuProps,
+  Row,
+} from "antd";
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trans, useTranslation } from "react-i18next";
@@ -91,6 +99,47 @@ const Homepage = () => {
     }
   }, []);
 
+  const scrollToSection = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, []);
+
+  const aboutMenuItems: MenuProps["items"] = [
+    {
+      key: "about-champa",
+      label: "About Champa",
+      onClick: () => navigate("/about"),
+    },
+    {
+      key: "faq",
+      label: "FAQ",
+      onClick: () => scrollToSection("faq"),
+    },
+  ];
+
+  const instrumentsMenuItems: MenuProps["items"] = [
+    {
+      key: "methodology-directory",
+      label: "Methodology Directory",
+      onClick: () => navigate("/methodology"),
+    },
+    {
+      key: "instruments-overview",
+      label: "Instruments Overview",
+      onClick: () => navigate("/instruments"),
+    },
+    {
+      key: "vva",
+      label: "Validation/Verification Agencies",
+      onClick: () => navigate("/instruments#vva"),
+    },
+  ];
+
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
 
   useEffect(() => {
@@ -156,10 +205,20 @@ const Homepage = () => {
                   </div>
                   <nav className="homepage-nav-links">
                     <a onClick={() => navigate("/")}>Home</a>
-                    <a onClick={() => navigate("/about")}>About</a>
-                    <a onClick={() => navigate("/instruments")}>
-                      Instruments
-                    </a>
+                    <Dropdown
+                      menu={{ items: aboutMenuItems }}
+                      trigger={["click"]}
+                      overlayClassName="homepage-nav-dropdown"
+                    >
+                      <a onClick={(e) => e.preventDefault()}>About</a>
+                    </Dropdown>
+                    <Dropdown
+                      menu={{ items: instrumentsMenuItems }}
+                      trigger={["click"]}
+                      overlayClassName="homepage-nav-dropdown"
+                    >
+                      <a onClick={(e) => e.preventDefault()}>Instruments</a>
+                    </Dropdown>
                   </nav>
                 </div>
               </Col>

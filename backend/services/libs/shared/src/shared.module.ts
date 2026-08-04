@@ -32,6 +32,7 @@ import { EmissionTradingModule } from "./emission-trading/emission.trading.modul
 import { NdcTargetModule } from "./ndc-target/ndc.target.module";
 import { TechnologyTransferModule } from "./technology-transfer/technology.transfer.module";
 import { CapacityBuildingModule } from "./capacity-building/capacity.building.module";
+import { CommunityProgramModule } from "./community-program/community.program.module";
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { CapacityBuildingModule } from "./capacity-building/capacity.building.mo
     NdcTargetModule,
     TechnologyTransferModule,
     CapacityBuildingModule,
+    CommunityProgramModule,
   ],
   providers: [SharedService],
   exports: [
@@ -103,6 +105,7 @@ import { CapacityBuildingModule } from "./capacity-building/capacity.building.mo
     NdcTargetModule,
     TechnologyTransferModule,
     CapacityBuildingModule,
+    CommunityProgramModule,
   ],
 })
 export class SharedModule {}

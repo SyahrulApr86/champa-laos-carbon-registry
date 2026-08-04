@@ -212,4 +212,8 @@ export const API_PATHS = {
   //CAPACITY BUILDING
   CAPACITY_BUILDING_PUBLIC_LIST: "national/capacityBuilding/public/list",
   CAPACITY_BUILDING_CREATE: "national/capacityBuilding",
+  //COMMUNITY CLIMATE PROGRAMS
+  COMMUNITY_PROGRAM_PUBLIC_LIST: "national/communityProgram/public/list",
+  COMMUNITY_PROGRAM_PUBLIC_SUMMARY: "national/communityProgram/public/summary",
+  COMMUNITY_PROGRAM_CREATE: "national/communityProgram",
 };

@@ -40,6 +40,7 @@ import { NdcTargetEntity } from "../entities/ndc.target.entity";
 import { EmissionCeilingEntity } from "../entities/emission.ceiling.entity";
 import { TechnologyTransferEntity } from "../entities/technology.transfer.entity";
 import { CapacityBuildingEntity } from "../entities/capacity.building.entity";
+import { CommunityProgramEntity } from "../entities/community.program.entity";
 type Subjects = InferSubjects<typeof EntitySubject> | "all";
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;
@@ -75,6 +76,7 @@ export class CaslAbilityFactory {
     can([Action.Manage], EmissionCeilingEntity);
     can([Action.Manage], TechnologyTransferEntity);
     can([Action.Manage], CapacityBuildingEntity);
+    can([Action.Manage], CommunityProgramEntity);
         can([Action.Manage], Company);
         cannot([Action.Update, Action.Delete], User, {
           companyId: { $ne: user.companyId },

@@ -57,6 +57,7 @@ import About from "./Pages/About/about";
 import Instruments from "./Pages/Instruments/instruments";
 import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTransferSubmit";
 import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
+import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -270,6 +271,14 @@ const App = () => {
                     }
                   >
                     <Route path="submit" element={<CapacityBuildingSubmit />} />
+                  </Route>
+                  <Route
+                    path="/communityProgram"
+                    element={
+                      <CustomLayout selectedKey="communityProgram/submit" />
+                    }
+                  >
+                    <Route path="submit" element={<CommunityProgramSubmit />} />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

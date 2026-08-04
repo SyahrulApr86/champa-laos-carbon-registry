@@ -132,6 +132,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "capacityBuilding/submit",
           <Icon.MortarboardFill />
         ),
+        getItem(
+          t("nav:recordCommunityProgram"),
+          "communityProgram/submit",
+          <Icon.People />
+        ),
       ])
     );
   }

@@ -71,4 +71,6 @@ export const ROUTES = {
   NDC_TARGET_SUBMIT: '/ndcTarget/submit',
   TECHNOLOGY_TRANSFER_SUBMIT: '/technologyTransfer/submit',
   CAPACITY_BUILDING_SUBMIT: '/capacityBuilding/submit',
+  //COMMUNITY CLIMATE PROGRAMS
+  COMMUNITY_PROGRAM_SUBMIT: '/communityProgram/submit',
 };

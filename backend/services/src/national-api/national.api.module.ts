@@ -22,6 +22,7 @@ import { EmissionTradingController } from "./emission.trading.controller";
 import { NdcTargetController } from "./ndc.target.controller";
 import { TechnologyTransferController } from "./technology.transfer.controller";
 import { CapacityBuildingController } from "./capacity.building.controller";
+import { CommunityProgramController } from "./community.program.controller";
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CapacityBuildingController } from "./capacity.building.controller";
     NdcTargetController,
     TechnologyTransferController,
     CapacityBuildingController,
+    CommunityProgramController,
   ],
   providers: [NationalAPIService, Logger],
 })

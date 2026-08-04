@@ -41,6 +41,7 @@ import { EmissionCeilingEntity } from "../entities/emission.ceiling.entity";
 import { TechnologyTransferEntity } from "../entities/technology.transfer.entity";
 import { CapacityBuildingEntity } from "../entities/capacity.building.entity";
 import { CommunityProgramEntity } from "../entities/community.program.entity";
+import { ReddPlusEntity } from "../entities/redd.plus.entity";
 type Subjects = InferSubjects<typeof EntitySubject> | "all";
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;
@@ -77,6 +78,7 @@ export class CaslAbilityFactory {
     can([Action.Manage], TechnologyTransferEntity);
     can([Action.Manage], CapacityBuildingEntity);
     can([Action.Manage], CommunityProgramEntity);
+    can([Action.Manage], ReddPlusEntity);
         can([Action.Manage], Company);
         cannot([Action.Update, Action.Delete], User, {
           companyId: { $ne: user.companyId },

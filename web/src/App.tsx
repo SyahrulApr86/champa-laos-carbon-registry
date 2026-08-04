@@ -59,6 +59,7 @@ import Instruments from "./Pages/Instruments/instruments";
 import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTransferSubmit";
 import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
 import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSubmit";
+import ReddPlusSubmit from "./Pages/ReddPlus/reddPlusSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -284,6 +285,12 @@ const App = () => {
                     }
                   >
                     <Route path="submit" element={<CommunityProgramSubmit />} />
+                  </Route>
+                  <Route
+                    path="/reddPlus"
+                    element={<CustomLayout selectedKey="reddPlus/submit" />}
+                  >
+                    <Route path="submit" element={<ReddPlusSubmit />} />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

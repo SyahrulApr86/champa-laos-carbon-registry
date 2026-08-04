@@ -137,6 +137,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "communityProgram/submit",
           <Icon.People />
         ),
+        getItem(
+          t("nav:recordReddPlus"),
+          "reddPlus/submit",
+          <Icon.TreeFill />
+        ),
       ])
     );
   }

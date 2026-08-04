@@ -23,6 +23,7 @@ import { NdcTargetController } from "./ndc.target.controller";
 import { TechnologyTransferController } from "./technology.transfer.controller";
 import { CapacityBuildingController } from "./capacity.building.controller";
 import { CommunityProgramController } from "./community.program.controller";
+import { ReddPlusController } from "./redd.plus.controller";
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { CommunityProgramController } from "./community.program.controller";
     TechnologyTransferController,
     CapacityBuildingController,
     CommunityProgramController,
+    ReddPlusController,
   ],
   providers: [NationalAPIService, Logger],
 })

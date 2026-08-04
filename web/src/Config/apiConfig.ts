@@ -223,6 +223,9 @@ export const API_PATHS = {
   COMMUNITY_PROGRAM_PUBLIC_LIST: "national/communityProgram/public/list",
   COMMUNITY_PROGRAM_PUBLIC_SUMMARY: "national/communityProgram/public/summary",
   COMMUNITY_PROGRAM_CREATE: "national/communityProgram",
+  //REDD+ FOREST CARBON
+  REDD_PLUS_PUBLIC_BY_PROVINCE: "national/reddPlus/public/byProvince",
+  REDD_PLUS_CREATE: "national/reddPlus",
   //VALIDATION/VERIFICATION AGENCIES (INDEPENDENT CERTIFIERS)
   CERTIFIERS_PUBLIC_LIST: "national/organisation/public/certifiers",
 };

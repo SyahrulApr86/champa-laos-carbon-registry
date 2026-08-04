@@ -33,6 +33,7 @@ import { NdcTargetModule } from "./ndc-target/ndc.target.module";
 import { TechnologyTransferModule } from "./technology-transfer/technology.transfer.module";
 import { CapacityBuildingModule } from "./capacity-building/capacity.building.module";
 import { CommunityProgramModule } from "./community-program/community.program.module";
+import { ReddPlusModule } from "./redd-plus/redd.plus.module";
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { CommunityProgramModule } from "./community-program/community.program.mo
     TechnologyTransferModule,
     CapacityBuildingModule,
     CommunityProgramModule,
+    ReddPlusModule,
   ],
   providers: [SharedService],
   exports: [
@@ -106,6 +108,7 @@ import { CommunityProgramModule } from "./community-program/community.program.mo
     TechnologyTransferModule,
     CapacityBuildingModule,
     CommunityProgramModule,
+    ReddPlusModule,
   ],
 })
 export class SharedModule {}

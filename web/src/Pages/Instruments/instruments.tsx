@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import LayoutFooter from "../../Components/Footer/layout.footer";
 import sliderLogo from "../../Assets/Images/logo-slider.png";
 import VerificationAgencyList from "./VerificationAgencyList";
+import RosterOfExpertList from "./RosterOfExpertList";
 import "./instruments.scss";
 
 // Static, informational "Instruments" page mirroring SRN Indonesia's
@@ -76,12 +77,13 @@ const Instruments = () => {
           <VerificationAgencyList />
         </section>
 
-        <section className="instruments-section">
+        <section className="instruments-section" id="roster-of-expert">
           <h2>Roster of Experts</h2>
           <p>
-            A public roster of accredited technical experts has not yet
-            been established for Lao PDR&apos;s carbon market.
+            Accredited technical experts registered by DNA/Ministry to
+            support carbon market activities in Lao PDR.
           </p>
+          <RosterOfExpertList />
         </section>
 
         <section className="instruments-section">

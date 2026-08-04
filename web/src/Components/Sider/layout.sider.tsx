@@ -142,6 +142,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "reddPlus/submit",
           <Icon.TreeFill />
         ),
+        getItem(
+          t("nav:recordGuidanceDocument"),
+          "guidanceDocument/submit",
+          <Icon.FileEarmarkPdf />
+        ),
       ])
     );
   }

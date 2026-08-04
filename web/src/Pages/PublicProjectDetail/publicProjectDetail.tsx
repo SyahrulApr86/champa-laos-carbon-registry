@@ -42,6 +42,11 @@ const yearOf = (epochSeconds?: number) =>
 const dateOf = (epochSeconds?: number) =>
   epochSeconds ? new Date(epochSeconds * 1000).toLocaleDateString() : "-";
 
+// createdTime comes from Programme.txTime (Date.getTime()), already in
+// milliseconds - unlike startTime/endTime, which are stored in seconds.
+const dateOfMillis = (epochMillis?: number) =>
+  epochMillis ? new Date(Number(epochMillis)).toLocaleDateString() : "-";
+
 const PublicProjectDetail = () => {
   const navigate = useNavigate();
   const { programmeId } = useParams<{ programmeId: string }>();
@@ -59,7 +64,7 @@ const PublicProjectDetail = () => {
     }
     setLoading(true);
     get(API_PATHS.PUBLIC_PROJECT_DETAIL(programmeId))
-      .then((response: any) => setDetail(response ?? { found: false }))
+      .then((response: any) => setDetail(response?.data ?? { found: false }))
       .catch(() => setDetail({ found: false }))
       .finally(() => setLoading(false));
   }, [programmeId, get]);
@@ -191,7 +196,7 @@ const PublicProjectDetail = () => {
                     {detail.creditEst ?? "-"}
                   </Descriptions.Item>
                   <Descriptions.Item label="Submitted">
-                    {dateOf(detail.createdTime)}
+                    {dateOfMillis(detail.createdTime)}
                   </Descriptions.Item>
                 </Descriptions>
 

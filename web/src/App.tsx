@@ -48,6 +48,10 @@ import { CreditRetirementsPage } from "./Pages/CreditPages/creditRetirementsPage
 import Reports from "./Pages/Reports/Reports";
 import MethodologyDirectory from "./Pages/Methodology/methodology";
 import PublicProjectSearch from "./Pages/PublicProjectSearch/publicProjectSearch";
+import AdaptationSubmit from "./Pages/Adaptation/adaptationSubmit";
+import AdaptationManagement from "./Pages/Adaptation/adaptationManagement";
+import ClimateFinanceSubmit from "./Pages/ClimateFinance/climateFinanceSubmit";
+import EmissionTradingSubmit from "./Pages/EmissionTrading/emissionTradingSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -211,6 +215,29 @@ const App = () => {
                     element={<CustomLayout selectedKey="settings" />}
                   >
                     <Route path="/settings" element={<Settings />} />
+                  </Route>
+                  <Route
+                    path="/adaptation"
+                    element={<CustomLayout selectedKey="adaptation/submit" />}
+                  >
+                    <Route path="submit" element={<AdaptationSubmit />} />
+                    <Route path="manage" element={<AdaptationManagement />} />
+                  </Route>
+                  <Route
+                    path="/climateFinance"
+                    element={
+                      <CustomLayout selectedKey="climateFinance/submit" />
+                    }
+                  >
+                    <Route path="submit" element={<ClimateFinanceSubmit />} />
+                  </Route>
+                  <Route
+                    path="/emissionTrading"
+                    element={
+                      <CustomLayout selectedKey="emissionTrading/submit" />
+                    }
+                  >
+                    <Route path="submit" element={<EmissionTradingSubmit />} />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

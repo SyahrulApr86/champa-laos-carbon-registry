@@ -62,4 +62,10 @@ export const ROUTES = {
   SITE_VISIT_CHECKLIST: (id: string) => `/programmeManagement/siteVisitCheckList/${id}`,
   SITE_VISIT_REPORT_BY_PROGRAMME_ID: (programmeId: any) =>
     `/programmeManagement/siteVisitCheckList/${programmeId}`,
+  //ADAPTATION
+  ADAPTATION_SUBMIT: '/adaptation/submit',
+  ADAPTATION_MANAGE: '/adaptation/manage',
+  //RESOURCES (CLIMATE FINANCE / EMISSION TRADING)
+  CLIMATE_FINANCE_SUBMIT: '/climateFinance/submit',
+  EMISSION_TRADING_SUBMIT: '/emissionTrading/submit',
 };

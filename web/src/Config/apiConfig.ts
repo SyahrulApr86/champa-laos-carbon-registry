@@ -180,4 +180,25 @@ export const API_PATHS = {
   METHODOLOGY_PUBLIC_LIST: "national/methodology/public",
   METHODOLOGY_CREATE: "national/methodology",
   METHODOLOGY_UPDATE: (id: string | number) => `national/methodology/${id}`,
+  //ADAPTATION
+  ADAPTATION_PUBLIC_SEARCH: (q: string, page = 1, size = 10) =>
+    `national/adaptation/public/search?q=${encodeURIComponent(
+      q
+    )}&page=${page}&size=${size}`,
+  ADAPTATION_PUBLIC_SUMMARY: "national/adaptation/public/summary",
+  ADAPTATION_CREATE: "national/adaptation",
+  ADAPTATION_QUERY: "national/adaptation/query",
+  ADAPTATION_UPDATE_STAGE: (id: number) => `national/adaptation/${id}/stage`,
+  //CLIMATE FINANCE
+  CLIMATE_FINANCE_PUBLIC_SEARCH: (q: string, page = 1, size = 10) =>
+    `national/climateFinance/public/search?q=${encodeURIComponent(
+      q
+    )}&page=${page}&size=${size}`,
+  CLIMATE_FINANCE_PUBLIC_SUMMARY: "national/climateFinance/public/summary",
+  CLIMATE_FINANCE_CREATE: "national/climateFinance",
+  //EMISSION CEILING & TRADING
+  EMISSION_TRADING_PUBLIC_SUMMARY: (year?: number) =>
+    `national/emissionTrading/public/summary${year ? `?year=${year}` : ""}`,
+  EMISSION_CEILING_CREATE: "national/emissionTrading/ceiling",
+  EMISSION_TRADING_CREATE: "national/emissionTrading/trading",
 };

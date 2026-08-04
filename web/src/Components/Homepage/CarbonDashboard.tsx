@@ -7,7 +7,7 @@ import { API_PATHS } from "../../Config/apiConfig";
 import { COLOR_CONFIGS } from "../../Config/colorConfigs";
 import "./Dashboard.scss";
 
-const DONUT_PALETTE = [
+export const DONUT_PALETTE = [
   COLOR_CONFIGS.PRIMARY_THEME_COLOR,
   COLOR_CONFIGS.ACCENT_GOLD_COLOR,
   COLOR_CONFIGS.PRIMARY_RED_COLOR,
@@ -16,7 +16,7 @@ const DONUT_PALETTE = [
   "#7C9CBF",
 ];
 
-const DonutBreakdown = ({
+export const DonutBreakdown = ({
   data,
   totalLabel,
 }: {

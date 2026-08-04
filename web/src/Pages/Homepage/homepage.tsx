@@ -42,8 +42,7 @@ import {
 import { ImgWithFallback } from "../../Components/ImgwithFallback/imgWithFallback";
 import CollapsePanel from "antd/lib/collapse/CollapsePanel";
 import { ROUTES } from "../../Config/uiRoutingConfig";
-import CarbonDashboard from "../../Components/Homepage/CarbonDashboard";
-import RegistryTable from "../../Components/Homepage/RegistryTable";
+import RegistryTabs from "../../Components/Homepage/RegistryTabs";
 import DigitalPublicGood from "../../Components/Homepage/DigitalPublic";
 import FeatureCards from "../../Components/Homepage/Keyfeatures";
 
@@ -288,8 +287,7 @@ const Homepage = () => {
           </section>
         </Col>
       </Row>
-      <CarbonDashboard />
-      <RegistryTable />
+      <RegistryTabs />
       {/* <Row gutter={[8, 8]}>
         <Col md={24} lg={24} flex="auto">
           <div className="homepage-content-containerwhite">

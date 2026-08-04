@@ -26,6 +26,9 @@ import { AnalyticsModule } from "./analytics/analytics.module";
 import { CreditTransactionsManagementModule } from "./credit-transactions-management/credit-transactions-management.module";
 import { AefReportManagementModule } from "./aef-report-management/aef-report-management.module";
 import { MethodologyModule } from "./methodology/methodology.module";
+import { AdaptationModule } from "./adaptation/adaptation.module";
+import { ClimateFinanceModule } from "./climate-finance/climate.finance.module";
+import { EmissionTradingModule } from "./emission-trading/emission.trading.module";
 
 @Module({
   imports: [
@@ -55,6 +58,9 @@ import { MethodologyModule } from "./methodology/methodology.module";
     CreditTransactionsManagementModule,
     AefReportManagementModule,
     MethodologyModule,
+    AdaptationModule,
+    ClimateFinanceModule,
+    EmissionTradingModule,
   ],
   providers: [SharedService],
   exports: [
@@ -85,6 +91,9 @@ import { MethodologyModule } from "./methodology/methodology.module";
     CreditTransactionsManagementModule,
     AefReportManagementModule,
     MethodologyModule,
+    AdaptationModule,
+    ClimateFinanceModule,
+    EmissionTradingModule,
   ],
 })
 export class SharedModule {}

@@ -16,6 +16,9 @@ import { AnalyticsController } from "./analytics.controller";
 import { CreditTransactionsManagementController } from "./credit.transactions.management.controller";
 import { ReportsManagementController } from "./reports.management.controller";
 import { MethodologyController } from "./methodology.controller";
+import { AdaptationController } from "./adaptation.controller";
+import { ClimateFinanceController } from "./climate.finance.controller";
+import { EmissionTradingController } from "./emission.trading.controller";
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import { MethodologyController } from "./methodology.controller";
     CreditTransactionsManagementController,
     ReportsManagementController,
     MethodologyController,
+    AdaptationController,
+    ClimateFinanceController,
+    EmissionTradingController,
   ],
   providers: [NationalAPIService, Logger],
 })

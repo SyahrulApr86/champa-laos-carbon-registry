@@ -34,6 +34,9 @@ import { CreditAuditLogViewEntity } from "../view-entities/creditAuditLog.view.e
 import { DocumentEntity } from "../entities/document.entity";
 import { ProjectEntity } from "../entities/projects.entity";
 import { MethodologyEntity } from "../entities/methodology.entity";
+import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
+import { ClimateFinanceEntity } from "../entities/climate.finance.entity";
+import { EmissionCeilingEntity } from "../entities/emission.ceiling.entity";
 
 type Subjects = InferSubjects<typeof EntitySubject> | "all";
 
@@ -64,6 +67,9 @@ export class CaslAbilityFactory {
         can(Action.Manage, User, { role: { $ne: Role.Root } });
         can([Action.Manage], ConfigurationSettings);
         can([Action.Manage], MethodologyEntity);
+    can([Action.Manage], AdaptationProjectEntity);
+    can([Action.Manage], ClimateFinanceEntity);
+    can([Action.Manage], EmissionCeilingEntity);
         can([Action.Manage], Company);
         cannot([Action.Update, Action.Delete], User, {
           companyId: { $ne: user.companyId },

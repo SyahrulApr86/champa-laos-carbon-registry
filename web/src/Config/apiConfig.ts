@@ -18,8 +18,10 @@ export const API_PATHS = {
   //PROJECT
   PROJECT_CREATE: "national/projectManagement/create",
   GET_PROJECT: "national/projectManagement/query",
-  PUBLIC_PROJECT_SEARCH: (q: string) =>
-    `national/projectManagement/public/search?q=${encodeURIComponent(q)}`,
+  PUBLIC_PROJECT_SEARCH: (q: string, page = 1, size = 10) =>
+    `national/projectManagement/public/search?q=${encodeURIComponent(
+      q
+    )}&page=${page}&size=${size}`,
   PROJECT_BY_ID: "national/programmeSl/getProjectById",
   ALL_PROJECTS: "national/programme/query",
   ADD_PROJECT_DOC: "national/programme/addDocument",

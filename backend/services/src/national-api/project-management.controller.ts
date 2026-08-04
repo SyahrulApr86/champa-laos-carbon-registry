@@ -74,7 +74,15 @@ export class ProjectManagementController {
   // high-level project information is returned — no approval details,
   // internal identifiers, or personal data.
   @Get("public/search")
-  async publicSearch(@Query("q") q: string) {
-    return this.programmeService.publicSearch(q);
+  async publicSearch(
+    @Query("q") q: string,
+    @Query("page") page?: string,
+    @Query("size") size?: string
+  ) {
+    return this.programmeService.publicSearch(
+      q,
+      page ? parseInt(page, 10) : 1,
+      size ? parseInt(size, 10) : 10
+    );
   }
 }

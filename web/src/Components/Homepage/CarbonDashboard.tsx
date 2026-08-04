@@ -1,9 +1,77 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
+import Chart from "react-apexcharts";
 import { Trans, useTranslation } from "react-i18next";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
+import { COLOR_CONFIGS } from "../../Config/colorConfigs";
 import "./Dashboard.scss";
+
+const DONUT_PALETTE = [
+  COLOR_CONFIGS.PRIMARY_THEME_COLOR,
+  COLOR_CONFIGS.ACCENT_GOLD_COLOR,
+  COLOR_CONFIGS.PRIMARY_RED_COLOR,
+  "#2E8B67",
+  "#6B7280",
+  "#7C9CBF",
+];
+
+const DonutBreakdown = ({
+  data,
+  totalLabel,
+}: {
+  data: { title: string; value: number }[];
+  totalLabel: string;
+}) => {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  return (
+    <div className="donut-breakdown">
+      <Chart
+        type="donut"
+        width="220"
+        options={{
+          labels: data.map((item) => item.title),
+          colors: DONUT_PALETTE,
+          legend: { show: false },
+          dataLabels: { enabled: false },
+          stroke: { width: 2 },
+          plotOptions: {
+            pie: {
+              donut: {
+                size: "70%",
+                labels: {
+                  show: true,
+                  total: {
+                    show: true,
+                    label: totalLabel,
+                    formatter: () => total.toLocaleString(),
+                  },
+                },
+              },
+            },
+          },
+        }}
+        series={data.map((item) => item.value)}
+      />
+      <ul className="donut-legend">
+        {data.map((item, index) => (
+          <li key={item.title}>
+            <span
+              className="donut-legend-dot"
+              style={{
+                backgroundColor: DONUT_PALETTE[index % DONUT_PALETTE.length],
+              }}
+            />
+            <span className="donut-legend-label">{item.title}</span>
+            <span className="donut-legend-value">
+              {item.value.toLocaleString()}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 interface PublicAnalyticsSummary {
   totalProjects: number;
@@ -206,110 +274,58 @@ const CarbonDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="main-card-example-section">
-            <div className="example">{t("homepage:example")}</div>
-          </div>
         </div>
 
-        {/* Project Distribution Section */}
-        <div className="section">
-          <h3 className="section-title">{t("homepage:projectdistribution")}</h3>
-          <motion.div
-            className="cards-grid cards-grid-3"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 0.8, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            {projectData.map((item, index) => (
-              <div key={index} className="project-card">
-                <div className="project-statistic">
-                  <div className="project-value">{item.value}</div>
-                  <div className="project-title">{item.title}</div>
-                </div>
-                <div className="project-card-example example">
-                  {t("homepage:example")}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Carbon Credit Distribution Section */}
-        <div className="section">
-          <h3 className="section-title">
-            {t("homepage:distributionbystatus")}
-          </h3>
-          <motion.div
-            className="cards-grid cards-grid-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 0.8, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            {creditData.map((item, index) => (
-              <div key={index} className="credit-card">
-                <div className="credit-statistic">
-                  <div className="credit-value">
-                    {item.value.toLocaleString()}
-                  </div>
-                  <div className="credit-title">{item.title}</div>
-                </div>
-                <div className="credit-card-example example">
-                  {t("homepage:example")}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Sector Distribution Section */}
-        {sectorData.length > 0 && (
-          <div className="section">
+        {/* Chart Grid: Project Status / Credit Status / Sector / Proponent */}
+        <motion.div
+          className="donut-grid"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          viewport={{ once: true }}
+        >
+          <div className="donut-card">
             <h3 className="section-title">
-              {t("homepage:sectordistribution")}
+              {t("homepage:projectdistribution")}
             </h3>
-            <motion.div
-              className="cards-grid cards-grid-3"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 0.8, y: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              viewport={{ once: true }}
-            >
-              {sectorData.map((item, index) => (
-                <div key={index} className="project-card">
-                  <div className="project-statistic">
-                    <div className="project-value">{item.value}</div>
-                    <div className="project-title">{item.title}</div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+            <DonutBreakdown
+              data={projectData}
+              totalLabel={t("homepage:totprojects")}
+            />
           </div>
-        )}
 
-        {/* Proponent Distribution Section */}
-        <div className="section">
-          <h3 className="section-title">
-            {t("homepage:proponentdistribution")}
-          </h3>
-          <motion.div
-            className="cards-grid cards-grid-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 0.8, y: 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            viewport={{ once: true }}
-          >
-            {proponentData.map((item, index) => (
-              <div key={index} className="credit-card">
-                <div className="credit-statistic">
-                  <div className="credit-value">{item.value}</div>
-                  <div className="credit-title">{item.title}</div>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+          <div className="donut-card">
+            <h3 className="section-title">
+              {t("homepage:distributionbystatus")}
+            </h3>
+            <DonutBreakdown
+              data={creditData}
+              totalLabel={t("homepage:totcredits")}
+            />
+          </div>
+
+          {sectorData.length > 0 && (
+            <div className="donut-card">
+              <h3 className="section-title">
+                {t("homepage:sectordistribution")}
+              </h3>
+              <DonutBreakdown
+                data={sectorData}
+                totalLabel={t("homepage:totprojects")}
+              />
+            </div>
+          )}
+
+          <div className="donut-card">
+            <h3 className="section-title">
+              {t("homepage:proponentdistribution")}
+            </h3>
+            <DonutBreakdown
+              data={proponentData}
+              totalLabel={t("homepage:totalOrganisations")}
+            />
+          </div>
+        </motion.div>
 
         {/* Footer Text */}
         <div className="footer-section">

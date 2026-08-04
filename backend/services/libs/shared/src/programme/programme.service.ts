@@ -7639,29 +7639,40 @@ export class ProgrammeService {
   // instead of the read-only ProjectEntity table which the replicator never
   // populates in this fork. Only non-sensitive, high-level fields are
   // returned: registration number, title, sector, coarse status, proponent.
-  async publicSearch(q: string): Promise<any[]> {
+  async publicSearch(
+    q: string,
+    page = 1,
+    size = 10
+  ): Promise<{ data: any[]; total: number }> {
     const keyword = (q || "").trim();
-    if (!keyword) {
-      return [];
-    }
+    const safePage = Math.max(1, page);
+    const safeSize = Math.min(50, Math.max(1, size));
 
-    const results = await this.programmeViewRepo
+    const qb = this.programmeViewRepo
       .createQueryBuilder("programme")
-      .where(
+      .orderBy(`"programme"."txTime"`, "DESC")
+      .skip((safePage - 1) * safeSize)
+      .take(safeSize);
+
+    if (keyword) {
+      qb.where(
         `"programme"."programmeId" ILIKE :keyword OR "programme"."title" ILIKE :keyword`,
         { keyword: `%${keyword}%` }
-      )
-      .orderBy(`"programme"."txTime"`, "DESC")
-      .limit(20)
-      .getMany();
+      );
+    }
 
-    return results.map((programme) => ({
-      registrationNumber: programme.programmeId,
-      title: programme.title,
-      sector: programme.sector,
-      status: this.toPublicProgrammeStatus(programme.currentStage),
-      proponent: programme.company?.[0]?.name ?? null,
-    }));
+    const [results, total] = await qb.getManyAndCount();
+
+    return {
+      data: results.map((programme) => ({
+        registrationNumber: programme.programmeId,
+        title: programme.title,
+        sector: programme.sector,
+        status: this.toPublicProgrammeStatus(programme.currentStage),
+        proponent: programme.company?.[0]?.name ?? null,
+      })),
+      total,
+    };
   }
 
   // Public, unauthenticated aggregate summary for the homepage dashboard.

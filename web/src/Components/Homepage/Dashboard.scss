@@ -185,6 +185,86 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
+/* Registry Table Section */
+.registry-table-section {
+  margin-bottom: 3rem;
+
+  .section-title {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.registry-table-subtitle {
+  color: #4A5568;
+  margin-bottom: 1.25rem;
+}
+
+.registry-table-search {
+  max-width: 480px;
+  margin-bottom: 1.5rem;
+}
+
+/* Donut Chart Grid */
+.donut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.donut-card {
+  background: #F1FBFF;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  padding: 1.6rem;
+
+  .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.donut-breakdown {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  min-width: 160px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+}
+
+.donut-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.donut-legend-label {
+  flex: 1;
+  color: #4A5568;
+}
+
+.donut-legend-value {
+  font-weight: 600;
+  color: #00252B;
+}
+
 /* Project and Credit Card Styles */
 .project-card,
 .credit-card {

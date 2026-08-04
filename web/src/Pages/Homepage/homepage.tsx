@@ -43,6 +43,7 @@ import { ImgWithFallback } from "../../Components/ImgwithFallback/imgWithFallbac
 import CollapsePanel from "antd/lib/collapse/CollapsePanel";
 import { ROUTES } from "../../Config/uiRoutingConfig";
 import CarbonDashboard from "../../Components/Homepage/CarbonDashboard";
+import RegistryTable from "../../Components/Homepage/RegistryTable";
 import DigitalPublicGood from "../../Components/Homepage/DigitalPublic";
 import FeatureCards from "../../Components/Homepage/Keyfeatures";
 
@@ -287,6 +288,8 @@ const Homepage = () => {
           </section>
         </Col>
       </Row>
+      <CarbonDashboard />
+      <RegistryTable />
       {/* <Row gutter={[8, 8]}>
         <Col md={24} lg={24} flex="auto">
           <div className="homepage-content-containerwhite">
@@ -650,12 +653,11 @@ const Homepage = () => {
           </div>
         </Col>
       </Row> */}
-      <CarbonDashboard />
-      <DigitalPublicGood />
       <ProcessFlow />
       <FeatureCards />
-      <PartnershipBanner />
       <FAQ />
+      <DigitalPublicGood />
+      <PartnershipBanner />
 
       <Row className="developer-resources-row">
         <Col xs={24} sm={12} md={8} lg={4} xl={4} className="Devresources">

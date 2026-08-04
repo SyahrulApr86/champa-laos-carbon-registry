@@ -48,6 +48,7 @@ import { CreditRetirementsPage } from "./Pages/CreditPages/creditRetirementsPage
 import Reports from "./Pages/Reports/Reports";
 import MethodologyDirectory from "./Pages/Methodology/methodology";
 import PublicProjectSearch from "./Pages/PublicProjectSearch/publicProjectSearch";
+import PublicProjectDetail from "./Pages/PublicProjectDetail/publicProjectDetail";
 import AdaptationSubmit from "./Pages/Adaptation/adaptationSubmit";
 import AdaptationManagement from "./Pages/Adaptation/adaptationManagement";
 import ClimateFinanceSubmit from "./Pages/ClimateFinance/climateFinanceSubmit";
@@ -122,6 +123,10 @@ const App = () => {
                 <Route
                   path="projects/search"
                   element={<PublicProjectSearch />}
+                />
+                <Route
+                  path="public/project/:programmeId"
+                  element={<PublicProjectDetail />}
                 />
                 <Route path="/" element={<Homepage />} />
                 <Route path="/" element={<PrivateRoute />}>

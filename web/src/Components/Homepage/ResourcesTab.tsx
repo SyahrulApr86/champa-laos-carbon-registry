@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Input, Table, Tag } from "antd";
-import { Link } from "react-router-dom";
+import { Input, Table, Tag } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import { ROUTES } from "../../Config/uiRoutingConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
 import "./Dashboard.scss";
 
@@ -222,9 +220,6 @@ const ResourcesTab = () => {
             </div>
           </div>
         </div>
-        <Link to={ROUTES.EMISSION_TRADING_SUBMIT}>
-          <Button type="primary">Record Ceiling/Trading Entry</Button>
-        </Link>
       </section>
 
       <section className="section">
@@ -257,9 +252,6 @@ const ResourcesTab = () => {
             <DonutBreakdown data={channelData} totalLabel="Total LAK" />
           </div>
         </div>
-        <Link to={ROUTES.CLIMATE_FINANCE_SUBMIT}>
-          <Button type="primary">Record a Climate Finance Entry</Button>
-        </Link>
       </section>
 
       <div className="registry-table-section">

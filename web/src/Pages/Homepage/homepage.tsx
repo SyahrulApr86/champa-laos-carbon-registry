@@ -31,7 +31,6 @@ import LayoutFooter from "../../Components/Footer/layout.footer";
 // import { ImgWithFallback } from '@undp/carbon-library';
 import "./homepage.scss";
 import ProcessFlow from "../../Components/Homepage/Howdoesitwork";
-import PartnershipBanner from "../../Components/Homepage/Partners";
 import FAQ from "../../Components/Homepage/Faq";
 import {
   GlobeAmericas,
@@ -211,6 +210,7 @@ const Homepage = () => {
           </div>
         </Col>
       </Row>
+      <RegistryTabs />
       <Row className="vision">
         <Col>
           <section className="vision-section" id="vision" ref={ref}>
@@ -287,7 +287,6 @@ const Homepage = () => {
           </section>
         </Col>
       </Row>
-      <RegistryTabs />
       {/* <Row gutter={[8, 8]}>
         <Col md={24} lg={24} flex="auto">
           <div className="homepage-content-containerwhite">
@@ -655,7 +654,6 @@ const Homepage = () => {
       <FeatureCards />
       <FAQ />
       <DigitalPublicGood />
-      <PartnershipBanner />
 
       <Row className="developer-resources-row">
         <Col xs={24} sm={12} md={8} lg={4} xl={4} className="Devresources">

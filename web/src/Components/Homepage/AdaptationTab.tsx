@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Input, Table, Tag } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Input, Table, Tag } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import { ROUTES } from "../../Config/uiRoutingConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
 import "./Dashboard.scss";
 
@@ -38,7 +36,6 @@ const PAGE_SIZE = 10;
 
 const AdaptationTab = () => {
   const { get } = useConnection();
-  const navigate = useNavigate();
 
   const [summary, setSummary] = useState<AdaptationSummary>(emptySummary);
   const [query, setQuery] = useState("");
@@ -147,24 +144,7 @@ const AdaptationTab = () => {
       </div>
 
       <div className="registry-table-section">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
-          <h3 className="section-title">Adaptation Project Registry</h3>
-          <Button
-            type="primary"
-            onClick={() => navigate(ROUTES.ADAPTATION_SUBMIT)}
-          >
-            Submit an Adaptation Project
-          </Button>
-        </div>
+        <h3 className="section-title">Adaptation Project Registry</h3>
 
         <Input.Search
           placeholder="Search adaptation projects"

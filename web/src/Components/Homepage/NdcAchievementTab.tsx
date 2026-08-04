@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "antd";
-import { Link } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import { ROUTES } from "../../Config/uiRoutingConfig";
 import "./Dashboard.scss";
 
 interface NdcTargetSummary {
@@ -74,11 +71,6 @@ const NdcAchievementTab = () => {
     fetchData();
   }, [get]);
 
-  const recordButton = (
-    <Link to={ROUTES.NDC_TARGET_SUBMIT}>
-      <Button type="primary">Record NDC Target Data</Button>
-    </Link>
-  );
 
   if (summary.latestYear === null) {
     return (
@@ -88,7 +80,6 @@ const NdcAchievementTab = () => {
           <p className="registry-table-subtitle">
             No NDC target data has been recorded yet.
           </p>
-          {recordButton}
         </section>
       </div>
     );
@@ -162,7 +153,6 @@ const NdcAchievementTab = () => {
           </div>
         )}
 
-        {recordButton}
       </section>
     </div>
   );

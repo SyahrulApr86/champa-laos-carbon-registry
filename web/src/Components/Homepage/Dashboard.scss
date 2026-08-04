@@ -553,78 +553,22 @@
   }
 }
 
-/* Public Good - Aligned with Dashboard Container */
-
-.digital-public-good {
+/* Compact open-source attribution line (footer-adjacent, not a section) */
+.open-source-credit {
   max-width: 1360px;
-  margin: auto;
-  padding: 0 2.5rem 2.5rem 2.5rem;
+  margin: 0 auto;
+  padding: 0 2.5rem 1.5rem 2.5rem;
   width: 95%;
-
-  .header-title {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    margin: 0 0 1.5rem 0;
-  }
-}
-
-.digital-public-good-card {
-  background: #F1FBFF;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
-  padding: 2rem;
   font-family: Inter;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #2D3748;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #718096;
+  text-align: center;
 
   a {
-    color: #0D2E63;
+    color: #718096;
     font-weight: 600;
     text-decoration: underline;
-  }
-}
-
-
-
-@media (max-width: 1024px) {
-  .digital-public-good {
-    padding: 2rem;
-    width: 85%;
-  }
-
-  .header-title {
-    font-size: 1.75rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .digital-public-good {
-    padding: 1.5rem;
-    width: 90%;
-  }
-
-  .header-title {
-    font-size: 1.5rem;
-    text-align: center;
-  }
-}
-
-@media (max-width: 576px) {
-  .digital-public-good {
-    padding: 0 2rem;
-    margin: 0;
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .digital-public-good {
-    padding: 1rem;
-  }
-
-  .header-title {
-    font-size: 1.25rem;
   }
 }
 
@@ -850,156 +794,6 @@
 
   .step-description {
     font-size: 14px;
-  }
-}
-/* PartnershipBanner */
-.partnership-banner {
-  max-width: 1360px;
-  margin: 2.5rem auto 2rem auto;
-  padding: 20px;
-  border-radius: 8px;
-
-  .header-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    margin: 0 0 12px 24px;
-  }
-}
-
-.banner-content {
-  margin-bottom: 25px;
-}
-
-
-.banner-description {
-  color: #3A3541CC;
-  font-size: 16px;
-  line-height: 1.8;
-  margin: 0 0 50px 24px;
-}
-
-.banner-description strong {
-  font-weight: 600;
-  color: #003257;
-  text-decoration: underline;
-  text-decoration-color: #0063AC;
-  text-underline-offset: 2px;
-}
-.logos-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 0 0 24px;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.logo-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  flex: 1;
-  min-width: 120px;
-  padding-top: 10px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-  height: 60px;
-}
-
-.logo-img {
-  max-height: 100px;
-  max-width: 160px;
-  object-fit: contain;
-}
-
-.ebrd {
-  max-height: 150px;
-  max-width: 240px;
-}
-
-.logo-main {
-  font-weight: bold;
-  color: #2d3748;
-}
-
-.logo-sub {
-  color: #718096;
-  font-size: 10px;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .logos-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-  }
-
-  .logo-item {
-    min-width: 100px;
-  }
-
-  .logo-img {
-    max-height: 80px;
-    max-width: px;
-  }
-}
-
-@media (max-width: 768px) {
-  .logos-container {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-  }
-
-  .logo-item {
-    min-width: auto;
-  }
-
-  .logo-img {
-    max-height: 100px;
-    max-width: 160px;
-  }
-
-  .banner-description {
-    font-size: 12px;
-  }
-
-  .banner-title {
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 576px) {
-  .partnership-banner {
-    padding: 2rem;
-    margin: 0;
-
-    .header-title,
-    .banner-description,
-    .logos-container {
-      margin-left: 0;
-    }
-
-    .banner-description {
-      text-align: center;
-    }
-
-    .logos-container {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .partnership-banner {
-    padding: 2rem 1rem;
   }
 }
 

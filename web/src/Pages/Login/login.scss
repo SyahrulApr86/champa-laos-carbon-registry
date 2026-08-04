@@ -294,6 +294,46 @@
         cursor: pointer;
       }
     }
+    .login-captcha-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .login-captcha-image-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+        border-radius: 6px;
+        border: 1px solid variables.$line-colors;
+        background-color: variables.$outside-background-color;
+        overflow: hidden;
+
+        .login-captcha-image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            display: block;
+          }
+        }
+
+        .login-captcha-image-loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .login-captcha-refresh-btn {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          color: variables.$title-text-color;
+        }
+      }
+    }
 
     .bottom-forgot-password-section {
       display: flex;

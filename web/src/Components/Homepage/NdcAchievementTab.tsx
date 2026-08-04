@@ -18,6 +18,7 @@ interface NdcTargetSeriesPoint {
   year: number;
   baselineEmissions: number;
   achievedEmissions: number;
+  claimedEmissions: number | null;
 }
 
 const emptySummary: NdcTargetSummary = {
@@ -102,8 +103,16 @@ const NdcAchievementTab = () => {
   const years = series.map((point) => point.year);
   const baselineSeries = series.map((point) => point.baselineEmissions);
   const emissionLevelSeries = series.map((point) => point.achievedEmissions);
-  const emissionReductionSeries = series.map(
+  const verifiedReductionSeries = series.map(
     (point) => point.baselineEmissions - point.achievedEmissions
+  );
+  const hasAnyClaimed = series.some(
+    (point) => point.claimedEmissions !== null
+  );
+  const claimedReductionSeries = series.map((point) =>
+    point.claimedEmissions === null
+      ? null
+      : point.baselineEmissions - point.claimedEmissions
   );
 
   return (
@@ -228,14 +237,33 @@ const NdcAchievementTab = () => {
                       xaxis: { categories: years },
                       yaxis: { title: { text: "MtCO2e" } },
                       dataLabels: { enabled: false },
-                      colors: [COLOR_CONFIGS.ACCENT_GOLD_COLOR],
+                      legend: { show: hasAnyClaimed },
+                      colors: hasAnyClaimed
+                        ? [
+                            COLOR_CONFIGS.ACCENT_GOLD_COLOR,
+                            COLOR_CONFIGS.PRIMARY_THEME_COLOR,
+                          ]
+                        : [COLOR_CONFIGS.PRIMARY_THEME_COLOR],
                     }}
-                    series={[
-                      {
-                        name: "Emission Reduction",
-                        data: emissionReductionSeries,
-                      },
-                    ]}
+                    series={
+                      hasAnyClaimed
+                        ? [
+                            {
+                              name: "Claimed Emission Reduction",
+                              data: claimedReductionSeries,
+                            },
+                            {
+                              name: "Verified Emission Reduction",
+                              data: verifiedReductionSeries,
+                            },
+                          ]
+                        : [
+                            {
+                              name: "Verified Emission Reduction",
+                              data: verifiedReductionSeries,
+                            },
+                          ]
+                    }
                   />
                 </div>
               </div>

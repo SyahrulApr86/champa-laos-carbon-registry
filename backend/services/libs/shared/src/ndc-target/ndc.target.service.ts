@@ -17,6 +17,11 @@ interface NdcTargetSeriesPoint {
   year: number;
   baselineEmissions: number;
   achievedEmissions: number;
+  // Null when no record for this year (or, for the "All" aggregate, not
+  // every sector's record for the year) has a claimed figure entered -
+  // the frontend falls back to a single (verified-only) series rather
+  // than fabricating a claimed value.
+  claimedEmissions: number | null;
 }
 
 const EMPTY_SUMMARY: NdcTargetSummary = {
@@ -174,25 +179,52 @@ export class NdcTargetService {
         year: record.year,
         baselineEmissions: Number(record.baselineEmissions) || 0,
         achievedEmissions: Number(record.achievedEmissions) || 0,
+        claimedEmissions:
+          record.claimedEmissions === null ||
+          record.claimedEmissions === undefined
+            ? null
+            : Number(record.claimedEmissions) || 0,
       }));
     }
 
     const byYear = new Map<
       number,
-      { baselineEmissions: number; achievedEmissions: number }
+      {
+        baselineEmissions: number;
+        achievedEmissions: number;
+        claimedEmissions: number;
+        claimedIncomplete: boolean;
+      }
     >();
     for (const record of records) {
       const entry = byYear.get(record.year) ?? {
         baselineEmissions: 0,
         achievedEmissions: 0,
+        claimedEmissions: 0,
+        claimedIncomplete: false,
       };
       entry.baselineEmissions += Number(record.baselineEmissions) || 0;
       entry.achievedEmissions += Number(record.achievedEmissions) || 0;
+      if (
+        record.claimedEmissions === null ||
+        record.claimedEmissions === undefined
+      ) {
+        entry.claimedIncomplete = true;
+      } else {
+        entry.claimedEmissions += Number(record.claimedEmissions) || 0;
+      }
       byYear.set(record.year, entry);
     }
 
     return Array.from(byYear.entries())
       .sort(([yearA], [yearB]) => yearA - yearB)
-      .map(([year, totals]) => ({ year, ...totals }));
+      .map(([year, totals]) => ({
+        year,
+        baselineEmissions: totals.baselineEmissions,
+        achievedEmissions: totals.achievedEmissions,
+        claimedEmissions: totals.claimedIncomplete
+          ? null
+          : totals.claimedEmissions,
+      }));
   }
 }

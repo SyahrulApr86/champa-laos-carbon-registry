@@ -36,6 +36,11 @@ export class NdcTargetCreateDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNumber()
+  claimedEmissions?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   notes?: string;
 }

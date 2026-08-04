@@ -34,8 +34,20 @@ export class NdcTargetEntity implements EntitySubject {
   @Column({ type: "decimal", precision: 18, scale: 2 })
   targetEmissions2030: number;
 
+  // Verified emission level for the year - reduction achieved is derived
+  // as baselineEmissions - achievedEmissions. Historically the only
+  // figure recorded; now paired with claimedEmissions below.
   @Column({ type: "decimal", precision: 18, scale: 2 })
   achievedEmissions: number;
+
+  // Claimed (self-reported, pre-verification) emission level for the
+  // year, distinct from the verified achievedEmissions above - mirrors
+  // SRN's claimed vs verified mitigation-action series. Nullable so
+  // existing/older records recorded before this distinction existed
+  // remain valid; a null value means claimed was never entered
+  // separately from verified.
+  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  claimedEmissions: number | null;
 
   @Column({ type: "text", nullable: true })
   notes: string;

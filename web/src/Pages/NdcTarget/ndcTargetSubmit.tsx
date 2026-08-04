@@ -15,6 +15,7 @@ interface NdcTargetFormValues {
   baselineEmissions: number;
   targetEmissions2030: number;
   achievedEmissions: number;
+  claimedEmissions?: number;
   notes?: string;
 }
 
@@ -47,6 +48,7 @@ const NdcTargetSubmit = () => {
         baselineEmissions: values.baselineEmissions,
         targetEmissions2030: values.targetEmissions2030,
         achievedEmissions: values.achievedEmissions,
+        claimedEmissions: values.claimedEmissions,
         notes: values.notes,
       };
       await post(API_PATHS.NDC_TARGET_CREATE, payload);
@@ -114,10 +116,16 @@ const NdcTargetSubmit = () => {
           </Form.Item>
           <Form.Item
             name="achievedEmissions"
-            label="Achieved Emissions This Year (Million Tons CO2e)"
+            label="Verified Emission Reduction Achieved (Emission Level, Million Tons CO2e)"
             rules={[
-              { required: true, message: "Achieved emissions is required" },
+              { required: true, message: "Verified emissions is required" },
             ]}
+          >
+            <InputNumber style={{ width: "100%" }} min={0} />
+          </Form.Item>
+          <Form.Item
+            name="claimedEmissions"
+            label="Claimed Emission Reduction (Emission Level, Million Tons CO2e) — optional"
           >
             <InputNumber style={{ width: "100%" }} min={0} />
           </Form.Item>

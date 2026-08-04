@@ -12,9 +12,15 @@ i18n
       // translation file path
       loadPath: '/locales/i18n/{{ns}}/{{lng}}.json',
     },
-    //NOTE - Uncomment to reset the language to english once the user coming back again
-    // lng: 'en',
     fallbackLng: 'en',
+    // Only trust a language the user explicitly picked (cached by the
+    // toggle in LanguageSelection). Without this, the detector falls
+    // through to the browser's navigator/htmlTag locale on first visit,
+    // so a Lao-locale browser would silently skip the English default.
+    detection: {
+      order: ['localStorage'],
+      caches: ['localStorage'],
+    },
     //NOTE - Disabled in production
     debug: true,
     //separate name spaces for each pages

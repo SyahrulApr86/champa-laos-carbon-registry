@@ -729,6 +729,75 @@
   color: #00252B;
 }
 
+/* Climate Finance chart section (Resources tab) */
+.resources-section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(180deg, #0D2E63 0%, #0A2350 100%);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.92;
+  margin-bottom: 1.25rem;
+
+  .anticon {
+    font-size: 0.95rem;
+  }
+}
+
+.resources-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.resources-chart-card {
+  background: #F1FBFF;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  padding: 1.6rem;
+}
+
+.resources-chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  .section-title {
+    margin-bottom: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.resources-chart-dimension-label {
+  background: #ffffff;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0D2E63;
+  white-space: nowrap;
+}
+
+.resources-chart-empty {
+  color: #4A5568;
+  font-size: 0.9rem;
+  padding: 2.5rem 0;
+  text-align: center;
+}
+
+
 /* Project and Credit Card Styles */
 .project-card,
 .credit-card {

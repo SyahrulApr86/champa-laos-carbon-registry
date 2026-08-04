@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Descriptions, Input, Modal, Table, Tag } from "antd";
+import { Button, Descriptions, Input, Modal, Radio, Table, Tag } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import Chart from "react-apexcharts";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import { DonutBreakdown } from "./CarbonDashboard";
+import { COLOR_CONFIGS } from "../../Config/colorConfigs";
+import { DONUT_PALETTE } from "./CarbonDashboard";
 import "./Dashboard.scss";
 
 interface ClimateFinanceSummary {
   totalAmountLAK: number;
   totalAmountUSD: number;
-  bySector: Record<string, number>;
+  bySectorLAK: Record<string, number>;
+  bySectorUSD: Record<string, number>;
   byChannel: Record<string, { amount: number; percentage: number }>;
 }
 
@@ -63,7 +67,8 @@ interface CapacityBuildingRow {
 const emptyFinanceSummary: ClimateFinanceSummary = {
   totalAmountLAK: 0,
   totalAmountUSD: 0,
-  bySector: {},
+  bySectorLAK: {},
+  bySectorUSD: {},
   byChannel: {},
 };
 
@@ -87,6 +92,7 @@ const ResourcesTab = () => {
   const [financeSummary, setFinanceSummary] = useState<ClimateFinanceSummary>(
     emptyFinanceSummary
   );
+  const [sectorCurrency, setSectorCurrency] = useState<"LAK" | "USD">("LAK");
 
   const [query, setQuery] = useState("");
   const [rows, setRows] = useState<ClimateFinanceRow[]>([]);
@@ -119,7 +125,8 @@ const ResourcesTab = () => {
         setFinanceSummary({
           totalAmountLAK: financeResponse?.data?.totalAmountLAK ?? 0,
           totalAmountUSD: financeResponse?.data?.totalAmountUSD ?? 0,
-          bySector: financeResponse?.data?.bySector ?? {},
+          bySectorLAK: financeResponse?.data?.bySectorLAK ?? {},
+          bySectorUSD: financeResponse?.data?.bySectorUSD ?? {},
           byChannel: financeResponse?.data?.byChannel ?? {},
         });
       } catch (error) {
@@ -190,13 +197,24 @@ const ResourcesTab = () => {
     fetchCapacityBuilding();
   }, [get]);
 
-  const sectorData = Object.entries(financeSummary.bySector)
+  const sectorDataLAK = Object.entries(financeSummary.bySectorLAK)
     .filter(([, value]) => value > 0)
     .map(([sector, value]) => ({ title: sector, value }));
 
+  const sectorDataUSD = Object.entries(financeSummary.bySectorUSD)
+    .filter(([, value]) => value > 0)
+    .map(([sector, value]) => ({ title: sector, value }));
+
+  const activeSectorData =
+    sectorCurrency === "LAK" ? sectorDataLAK : sectorDataUSD;
+
   const channelData = Object.entries(financeSummary.byChannel)
     .filter(([, value]) => value.amount > 0)
-    .map(([channel, value]) => ({ title: channel, value: value.amount }));
+    .map(([channel, value]) => ({
+      title: channel,
+      amount: value.amount,
+      percentage: value.percentage,
+    }));
 
   const columns = [
     {
@@ -348,14 +366,102 @@ const ResourcesTab = () => {
             </div>
           </div>
         </div>
-        <div className="donut-grid">
-          <div className="donut-card">
-            <h4 className="section-title">By Sector</h4>
-            <DonutBreakdown data={sectorData} totalLabel="Total LAK" />
+        <div className="resources-section-badge">
+          <InfoCircleOutlined />
+          Climate Finance Breakdown
+        </div>
+        <div className="resources-chart-grid">
+          <div className="resources-chart-card">
+            <div className="resources-chart-card-header">
+              <h4 className="section-title">
+                Amount received (climate-specific) by Sector
+              </h4>
+              <Radio.Group
+                size="small"
+                value={sectorCurrency}
+                onChange={(e) => setSectorCurrency(e.target.value)}
+              >
+                <Radio.Button value="LAK">LAK</Radio.Button>
+                <Radio.Button value="USD">USD</Radio.Button>
+              </Radio.Group>
+            </div>
+            {activeSectorData.length === 0 ? (
+              <p className="resources-chart-empty">
+                No {sectorCurrency} climate finance recorded by sector yet.
+              </p>
+            ) : (
+              <Chart
+                key={`sector-${sectorCurrency}`}
+                type="bar"
+                height={320}
+                options={{
+                  chart: { toolbar: { show: false } },
+                  xaxis: {
+                    categories: activeSectorData.map((item) => item.title),
+                  },
+                  yaxis: {
+                    title: { text: sectorCurrency },
+                  },
+                  dataLabels: { enabled: false },
+                  legend: { show: false },
+                  colors: [COLOR_CONFIGS.PRIMARY_THEME_COLOR],
+                  plotOptions: {
+                    bar: { columnWidth: "45%", borderRadius: 4 },
+                  },
+                  tooltip: {
+                    y: { formatter: (value: number) => value.toLocaleString() },
+                  },
+                }}
+                series={[
+                  {
+                    name: `Amount received (${sectorCurrency})`,
+                    data: activeSectorData.map((item) => item.value),
+                  },
+                ]}
+              />
+            )}
           </div>
-          <div className="donut-card">
-            <h4 className="section-title">By Channel</h4>
-            <DonutBreakdown data={channelData} totalLabel="Total LAK" />
+
+          <div className="resources-chart-card">
+            <div className="resources-chart-card-header">
+              <h4 className="section-title">
+                Amount received (climate-specific) by Category
+              </h4>
+              <span className="resources-chart-dimension-label">Channel</span>
+            </div>
+            {channelData.length === 0 ? (
+              <p className="resources-chart-empty">
+                No climate finance recorded by channel yet.
+              </p>
+            ) : (
+              <Chart
+                type="pie"
+                height={320}
+                options={{
+                  labels: channelData.map((item) => item.title),
+                  colors: DONUT_PALETTE,
+                  dataLabels: {
+                    enabled: true,
+                    formatter: (val: number) => `${val.toFixed(1)}%`,
+                  },
+                  legend: {
+                    show: true,
+                    position: "bottom",
+                    formatter: (
+                      seriesName: string,
+                      opts: { seriesIndex: number }
+                    ) => {
+                      const item = channelData[opts.seriesIndex];
+                      return `${seriesName}: ${item.amount.toLocaleString()} LAK (${item.percentage.toFixed(1)}%)`;
+                    },
+                  },
+                  tooltip: {
+                    y: { formatter: (value: number) => value.toLocaleString() },
+                  },
+                }}
+                series={channelData.map((item) => item.amount)}
+              />
+            )}
           </div>
         </div>
       </section>

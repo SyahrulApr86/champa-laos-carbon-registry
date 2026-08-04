@@ -65,6 +65,7 @@ import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSub
 import ReddPlusSubmit from "./Pages/ReddPlus/reddPlusSubmit";
 import ExpertSubmit from "./Pages/Expert/expertSubmit";
 import GuidanceDocumentSubmit from "./Pages/GuidanceDocument/guidanceDocumentSubmit";
+import RecognizedMitigationSubmit from "./Pages/RecognizedMitigation/recognizedMitigationSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -322,6 +323,17 @@ const App = () => {
                     }
                   >
                     <Route path="submit" element={<GuidanceDocumentSubmit />} />
+                  </Route>
+                  <Route
+                    path="/recognizedMitigation"
+                    element={
+                      <CustomLayout selectedKey="recognizedMitigation/submit" />
+                    }
+                  >
+                    <Route
+                      path="submit"
+                      element={<RecognizedMitigationSubmit />}
+                    />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

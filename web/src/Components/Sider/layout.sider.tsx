@@ -152,6 +152,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "guidanceDocument/submit",
           <Icon.FileEarmarkPdf />
         ),
+        getItem(
+          t("nav:recordRecognizedMitigation"),
+          "recognizedMitigation/submit",
+          <Icon.Award />
+        ),
       ])
     );
   }

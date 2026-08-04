@@ -333,6 +333,36 @@
   margin-bottom: 0.5rem;
 }
 
+/* KPI Summary Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: #F1FBFF;
+  border-radius: 16px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+
+  &-label {
+    color: #5B7A82;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  &-value {
+    color: #00252B;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+  }
+}
+
 /* Donut Chart Grid */
 .donut-grid {
   display: grid;

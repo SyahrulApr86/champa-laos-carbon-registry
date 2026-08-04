@@ -26,6 +26,7 @@ import { CommunityProgramController } from "./community.program.controller";
 import { ReddPlusController } from "./redd.plus.controller";
 import { ExpertController } from "./expert.controller";
 import { GuidanceDocumentController } from "./guidance.document.controller";
+import { RecognizedMitigationController } from "./recognized.mitigation.controller";
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { GuidanceDocumentController } from "./guidance.document.controller";
     ReddPlusController,
     ExpertController,
     GuidanceDocumentController,
+    RecognizedMitigationController,
   ],
   providers: [NationalAPIService, Logger],
 })

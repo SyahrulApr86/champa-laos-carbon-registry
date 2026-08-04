@@ -45,6 +45,7 @@ import { CommunityProgramEntity } from "../entities/community.program.entity";
 import { ReddPlusEntity } from "../entities/redd.plus.entity";
 import { ExpertEntity } from "../entities/expert.entity";
 import { GuidanceDocumentEntity } from "../entities/guidance.document.entity";
+import { RecognizedMitigationEntity } from "../entities/recognized.mitigation.entity";
 type Subjects = InferSubjects<typeof EntitySubject> | "all";
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;
@@ -85,6 +86,7 @@ export class CaslAbilityFactory {
     can([Action.Manage], ReddPlusEntity);
     can([Action.Manage], ExpertEntity);
     can([Action.Manage], GuidanceDocumentEntity);
+    can([Action.Manage], RecognizedMitigationEntity);
         can([Action.Manage], Company);
         cannot([Action.Update, Action.Delete], User, {
           companyId: { $ne: user.companyId },

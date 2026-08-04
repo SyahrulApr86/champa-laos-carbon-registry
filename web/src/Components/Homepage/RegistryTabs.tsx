@@ -8,6 +8,7 @@ import NdcAchievementTab from "./NdcAchievementTab";
 import MapTab from "./MapTab";
 import CommunityProgramTab from "./CommunityProgramTab";
 import ReddPlusTab from "./ReddPlusTab";
+import RecognizedMitigationTab from "./RecognizedMitigationTab";
 import "./Dashboard.scss";
 
 type TabKey =
@@ -17,7 +18,8 @@ type TabKey =
   | "map"
   | "ndc"
   | "community"
-  | "redd";
+  | "redd"
+  | "recognizedMitigation";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "mitigation", label: "Mitigation" },
@@ -27,6 +29,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "ndc", label: "NDC Achievement" },
   { key: "community", label: "Community Programs" },
   { key: "redd", label: "REDD+" },
+  { key: "recognizedMitigation", label: "Recognized Mitigation Actions" },
 ];
 
 // Category tab switcher mirroring the structure of national registry portals
@@ -66,6 +69,7 @@ const RegistryTabs = () => {
       {activeTab === "ndc" && <NdcAchievementTab />}
       {activeTab === "community" && <CommunityProgramTab />}
       {activeTab === "redd" && <ReddPlusTab />}
+      {activeTab === "recognizedMitigation" && <RecognizedMitigationTab />}
     </div>
   );
 };

@@ -36,6 +36,7 @@ import { CommunityProgramModule } from "./community-program/community.program.mo
 import { ReddPlusModule } from "./redd-plus/redd.plus.module";
 import { ExpertModule } from "./expert/expert.module";
 import { GuidanceDocumentModule } from "./guidance-document/guidance.document.module";
+import { RecognizedMitigationModule } from "./recognized-mitigation/recognized.mitigation.module";
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { GuidanceDocumentModule } from "./guidance-document/guidance.document.mo
     ReddPlusModule,
     ExpertModule,
     GuidanceDocumentModule,
+    RecognizedMitigationModule,
   ],
   providers: [SharedService],
   exports: [
@@ -115,6 +117,7 @@ import { GuidanceDocumentModule } from "./guidance-document/guidance.document.mo
     ReddPlusModule,
     ExpertModule,
     GuidanceDocumentModule,
+    RecognizedMitigationModule,
   ],
 })
 export class SharedModule {}

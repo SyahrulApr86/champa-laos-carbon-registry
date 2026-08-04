@@ -109,6 +109,8 @@ interface PublicAnalyticsSummary {
   };
   projectsBySector: Record<string, number>;
   proponentsByRole: Record<string, number>;
+  creditsBySector: Record<string, number>;
+  creditsByProponentRole: Record<string, number>;
 }
 
 const emptySummary: PublicAnalyticsSummary = {
@@ -117,6 +119,8 @@ const emptySummary: PublicAnalyticsSummary = {
   credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
   projectsBySector: {},
   proponentsByRole: {},
+  creditsBySector: {},
+  creditsByProponentRole: {},
 };
 
 interface EmissionTradingSummary {
@@ -166,6 +170,8 @@ const CarbonDashboard = () => {
             },
             projectsBySector: data.projectsBySector ?? {},
             proponentsByRole: data.proponentsByRole ?? {},
+            creditsBySector: data.creditsBySector ?? {},
+            creditsByProponentRole: data.creditsByProponentRole ?? {},
           });
         }
       } catch (error) {
@@ -283,6 +289,19 @@ const CarbonDashboard = () => {
     })
   );
 
+  const creditsBySectorData = Object.entries(summary.creditsBySector)
+    .filter(([, value]) => value > 0)
+    .map(([sector, value]) => ({ value, title: sector }));
+
+  const creditsByProponentData = Object.entries(
+    summary.creditsByProponentRole
+  )
+    .filter(([, value]) => value > 0)
+    .map(([role, value]) => ({
+      value,
+      title: t(`companyRoles:${role}`, { defaultValue: role }),
+    }));
+
   return (
     <div className="carbon-dashboard">
       <div className="dashboard-container">
@@ -377,6 +396,30 @@ const CarbonDashboard = () => {
               totalLabel={t("homepage:totalOrganisations")}
             />
           </div>
+
+          {creditsBySectorData.length > 0 && (
+            <div className="donut-card">
+              <h3 className="section-title">
+                Verified Emission Reduction by Sector
+              </h3>
+              <DonutBreakdown
+                data={creditsBySectorData}
+                totalLabel={t("homepage:totcredits")}
+              />
+            </div>
+          )}
+
+          {creditsByProponentData.length > 0 && (
+            <div className="donut-card">
+              <h3 className="section-title">
+                Verified Emission Reduction by Proponent Type
+              </h3>
+              <DonutBreakdown
+                data={creditsByProponentData}
+                totalLabel={t("homepage:totcredits")}
+              />
+            </div>
+          )}
         </motion.div>
 
         {/* Emission Ceiling & Trading (SRN's PTBAE-PU equivalent) */}

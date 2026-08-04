@@ -7742,9 +7742,21 @@ export class ProgrammeService {
     let balance = 0;
 
     const projectsBySector: Record<string, number> = {};
+    const creditsBySector: Record<string, number> = {};
     Object.values(Sector).forEach((sector) => {
       projectsBySector[sector] = 0;
+      creditsBySector[sector] = 0;
     });
+
+    const creditsByProponentRole: Record<string, number> = {
+      [CompanyRole.PROJECT_DEVELOPER]: 0,
+      [CompanyRole.INDEPENDENT_CERTIFIER]: 0,
+      [CompanyRole.MINISTRY]: 0,
+      [CompanyRole.DESIGNATED_NATIONAL_AUTHORITY]: 0,
+    };
+    const companyRoleById = new Map(
+      companies.map((company) => [company.companyId, company.companyRole])
+    );
 
     for (const programme of programmes) {
       if (programme.currentStage === ProgrammeStage.AUTHORISED) {
@@ -7755,12 +7767,23 @@ export class ProgrammeService {
         pendingCount++;
       }
 
+      const programmeIssued = Number(programme.creditIssued) || 0;
+
       if (programme.sector) {
         projectsBySector[programme.sector] =
           (projectsBySector[programme.sector] || 0) + 1;
+        creditsBySector[programme.sector] =
+          (creditsBySector[programme.sector] || 0) + programmeIssued;
       }
 
-      issued += Number(programme.creditIssued) || 0;
+      for (const companyId of programme.companyId || []) {
+        const role = companyRoleById.get(companyId);
+        if (role && creditsByProponentRole[role] !== undefined) {
+          creditsByProponentRole[role] += programmeIssued;
+        }
+      }
+
+      issued += programmeIssued;
       balance += Number(programme.creditBalance) || 0;
       retired += (programme.creditRetired || []).reduce(
         (sum, v) => sum + (Number(v) || 0),
@@ -7781,6 +7804,8 @@ export class ProgrammeService {
       },
       projectsBySector,
       proponentsByRole,
+      creditsBySector,
+      creditsByProponentRole,
       credits: {
         authorised: issued,
         issued,

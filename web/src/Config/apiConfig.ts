@@ -22,7 +22,10 @@ export const API_PATHS = {
     `national/projectManagement/public/search?q=${encodeURIComponent(
       q
     )}&page=${page}&size=${size}`,
-  PROJECT_MAP_SUMMARY: "national/projectManagement/public/mapSummary",
+  PROJECT_MAP_SUMMARY: (activityType: string) =>
+    `national/projectManagement/public/mapSummary?activityType=${encodeURIComponent(
+      activityType
+    )}`,
   PUBLIC_PROJECT_DETAIL: (programmeId: string) =>
     `national/projectManagement/public/detail/${encodeURIComponent(
       programmeId

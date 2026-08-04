@@ -87,11 +87,14 @@ export class ProjectManagementController {
     );
   }
 
-  // Public, unauthenticated province-level project map summary — see
+  // Public, unauthenticated province-level activity map summary — see
   // ProgrammeService.getPublicMapSummary for the aggregation logic.
+  // `activityType` selects the domain (mitigation | adaptation | community |
+  // redd), mirroring SRN Indonesia's own Activity Type map filter; defaults
+  // to "mitigation" to preserve this endpoint's original behaviour.
   @Get("public/mapSummary")
-  async publicMapSummary() {
-    return this.programmeService.getPublicMapSummary();
+  async publicMapSummary(@Query("activityType") activityType?: string) {
+    return this.programmeService.getPublicMapSummary(activityType);
   }
 
   // Public, unauthenticated single-project detail lookup — see

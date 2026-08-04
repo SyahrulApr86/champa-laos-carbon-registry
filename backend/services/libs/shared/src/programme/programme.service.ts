@@ -61,6 +61,9 @@ import { CounterService } from "../util/counter.service";
 import { ProgrammeLedgerService } from "../programme-ledger/programme-ledger.service";
 import { CompanyService } from "../company/company.service";
 import { EmailTemplates } from "../email-helper/email.template";
+import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
+import { CommunityProgramEntity } from "../entities/community.program.entity";
+import { ReddPlusEntity } from "../entities/redd.plus.entity";
 import { EmailHelperService } from "../email-helper/email-helper.service";
 import { UserService } from "../user/user.service";
 import { Company } from "../entities/company.entity";
@@ -193,7 +196,13 @@ export class ProgrammeService {
     private regionRepo: Repository<Region>,
     @InjectRepository(EventLog) private eventLogRepo: Repository<EventLog>,
     @InjectRepository(CreditAuditLog)
-    private creditAuditLogRepo: Repository<CreditAuditLog>
+    private creditAuditLogRepo: Repository<CreditAuditLog>,
+    @InjectRepository(AdaptationProjectEntity)
+    private adaptationRepo: Repository<AdaptationProjectEntity>,
+    @InjectRepository(CommunityProgramEntity)
+    private communityProgramRepo: Repository<CommunityProgramEntity>,
+    @InjectRepository(ReddPlusEntity)
+    private reddPlusRepo: Repository<ReddPlusEntity>
   ) {}
 
   private fileExtensionMap = new Map([
@@ -7767,27 +7776,93 @@ export class ProgrammeService {
     };
   }
 
-  // Public, unauthenticated province-level project map summary. Tallies
-  // programmes by their geographicalLocation province name(s) (a programme
-  // can list multiple provinces) and joins against the seeded Region table
-  // for map coordinates. Provinces with zero programmes are omitted (the
-  // frontend map only plots markers where there's real data).
-  async getPublicMapSummary(): Promise<
+  // Public, unauthenticated province-level activity map summary. Tallies
+  // activities by province for the selected domain and joins against the
+  // seeded Region table for map coordinates. Provinces with zero activities
+  // are omitted (the frontend map only plots markers where there's real
+  // data). `activityType` mirrors SRN Indonesia's own Activity Type filter
+  // (Mitigasi/Adaptasi/Proklim) - Champa additionally exposes REDD+, its
+  // own tracked mitigation sub-domain, as a fourth option. Any unrecognised
+  // value falls back to "mitigation" to preserve the original endpoint's
+  // behaviour for existing callers.
+  async getPublicMapSummary(activityType?: string): Promise<
     { province: string; projectCount: number; lat: number; lng: number }[]
   > {
-    const programmes = await this.programmeRepo.find();
-    const countByProvince: Record<string, number> = {};
+    const countByProvince = await this.getMapActivityCountByProvince(
+      activityType
+    );
+    return this.buildProvinceMapSummary(countByProvince);
+  }
 
-    for (const programme of programmes) {
-      const locations = programme.programmeProperties?.geographicalLocation;
-      if (!Array.isArray(locations)) {
-        continue;
-      }
-      for (const province of locations) {
-        countByProvince[province] = (countByProvince[province] || 0) + 1;
+  // Tallies raw activity records by province for the requested domain.
+  // Mitigation reads Programme.programmeProperties.geographicalLocation
+  // (a programme can list multiple provinces); the other three domains
+  // each store a single flat province/region string column.
+  private async getMapActivityCountByProvince(
+    activityType?: string
+  ): Promise<Record<string, number>> {
+    switch (activityType) {
+      case "adaptation":
+        return this.countActivitiesByProvinceField(
+          await this.adaptationRepo.find(),
+          "region"
+        );
+      case "community":
+        return this.countActivitiesByProvinceField(
+          await this.communityProgramRepo.find(),
+          "region"
+        );
+      case "redd":
+        return this.countActivitiesByProvinceField(
+          await this.reddPlusRepo.find(),
+          "province"
+        );
+      case "mitigation":
+      default: {
+        const programmes = await this.programmeRepo.find();
+        const countByProvince: Record<string, number> = {};
+        for (const programme of programmes) {
+          const locations =
+            programme.programmeProperties?.geographicalLocation;
+          if (!Array.isArray(locations)) {
+            continue;
+          }
+          for (const province of locations) {
+            countByProvince[province] = (countByProvince[province] || 0) + 1;
+          }
+        }
+        return countByProvince;
       }
     }
+  }
 
+  // Shared tally for the three single-province-column domains (adaptation,
+  // community programs, REDD+).
+  private countActivitiesByProvinceField<T extends Record<string, any>>(
+    records: T[],
+    field: keyof T
+  ): Record<string, number> {
+    const countByProvince: Record<string, number> = {};
+    for (const record of records) {
+      const province = record[field] as unknown as string;
+      if (!province) {
+        continue;
+      }
+      countByProvince[province] = (countByProvince[province] || 0) + 1;
+    }
+    return countByProvince;
+  }
+
+  // Shared province+coordinates join, factored out of the original
+  // mitigation-only getPublicMapSummary so every activity domain resolves
+  // map markers the same way: join the tallied province names against the
+  // seeded Region table, keeping only provinces with valid [lng, lat]
+  // coordinates.
+  private async buildProvinceMapSummary(
+    countByProvince: Record<string, number>
+  ): Promise<
+    { province: string; projectCount: number; lat: number; lng: number }[]
+  > {
     const provinceNames = Object.keys(countByProvince);
     if (provinceNames.length === 0) {
       return [];

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CarbonDashboard from "./CarbonDashboard";
 import RegistryTable from "./RegistryTable";
+import CertificateRegistryTable from "./CertificateRegistryTable";
 import AdaptationTab from "./AdaptationTab";
 import ResourcesTab from "./ResourcesTab";
 import NdcAchievementTab from "./NdcAchievementTab";
@@ -56,6 +57,7 @@ const RegistryTabs = () => {
         <>
           <CarbonDashboard />
           <RegistryTable />
+          <CertificateRegistryTable />
         </>
       )}
       {activeTab === "adaptation" && <AdaptationTab />}

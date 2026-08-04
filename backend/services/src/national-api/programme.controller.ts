@@ -53,6 +53,23 @@ import { ProgrammeService } from "@app/shared/programme/programme.service";
 export class ProgrammeController {
   constructor(private programmeService: ProgrammeService) {}
 
+  // Public, unauthenticated per-certificate listing for the Mitigation
+  // tab's "Emission Reduction Certificates" table (SRN Indonesia's SPE
+  // registry equivalent). Only public-safe fields projected from real
+  // Programme credit-issuance data - see ProgrammeService.getPublicCertificates.
+  @Get("public/certificates")
+  async publicCertificates(
+    @Query("q") q: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string
+  ) {
+    return this.programmeService.getPublicCertificates(
+      q,
+      page ? parseInt(page, 10) : 1,
+      pageSize ? parseInt(pageSize, 10) : 10
+    );
+  }
+
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, PoliciesGuard)
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Programme))

@@ -181,6 +181,11 @@ export const API_PATHS = {
   DOWNLOAD_AEF_RECORDS: `national/reportsManagement/downloadAefReport`,
   // PUBLIC ANALYTICS (no auth required)
   PUBLIC_ANALYTICS_SUMMARY: "national/analytics/public/summary",
+  // CARBON REGISTRY / SPE CERTIFICATES (no auth required)
+  PUBLIC_CERTIFICATES: (q: string, page = 1, pageSize = 10) =>
+    `national/programme/public/certificates?q=${encodeURIComponent(
+      q
+    )}&page=${page}&pageSize=${pageSize}`,
   // METHODOLOGY DIRECTORY
   METHODOLOGY_PUBLIC_LIST: "national/methodology/public",
   METHODOLOGY_CREATE: "national/methodology",

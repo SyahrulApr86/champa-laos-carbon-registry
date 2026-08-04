@@ -206,4 +206,10 @@ export const API_PATHS = {
   NDC_TARGET_PUBLIC_LIST: "national/ndcTarget/public/list",
   NDC_TARGET_PUBLIC_SUMMARY: "national/ndcTarget/public/summary",
   NDC_TARGET_CREATE: "national/ndcTarget",
+  //TECHNOLOGY DEVELOPMENT & TRANSFER
+  TECHNOLOGY_TRANSFER_PUBLIC_LIST: "national/technologyTransfer/public/list",
+  TECHNOLOGY_TRANSFER_CREATE: "national/technologyTransfer",
+  //CAPACITY BUILDING
+  CAPACITY_BUILDING_PUBLIC_LIST: "national/capacityBuilding/public/list",
+  CAPACITY_BUILDING_CREATE: "national/capacityBuilding",
 };

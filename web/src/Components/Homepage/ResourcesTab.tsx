@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Input, Table, Tag } from "antd";
-import { Link } from "react-router-dom";
+import { Button, Descriptions, Input, Modal, Table, Tag } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import { ROUTES } from "../../Config/uiRoutingConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
 import "./Dashboard.scss";
 
@@ -36,6 +34,37 @@ interface ClimateFinanceRow {
   type: string;
 }
 
+interface TechnologyTransferRow {
+  id: number;
+  title: string;
+  description: string;
+  technologyType: string;
+  timeframe: string | null;
+  recipientEntity: string;
+  implementingEntity: string;
+  type: string;
+  sector: string;
+  subsector: string | null;
+  status: string;
+  impactEstimatedResult: string | null;
+  additionalInformation: string | null;
+}
+
+interface CapacityBuildingRow {
+  id: number;
+  title: string;
+  description: string;
+  timeframe: string | null;
+  recipientEntity: string;
+  implementingEntity: string;
+  type: string;
+  sector: string;
+  subsector: string | null;
+  status: string;
+  impactEstimatedResult: string | null;
+  additionalInformation: string | null;
+}
+
 const emptyFinanceSummary: ClimateFinanceSummary = {
   totalAmountLAK: 0,
   totalAmountUSD: 0,
@@ -55,6 +84,12 @@ const statusColor: Record<string, string> = {
   Closed: "default",
 };
 
+const supportStatusColor: Record<string, string> = {
+  Completed: "green",
+  "On-Going": "blue",
+  Terminated: "red",
+};
+
 const PAGE_SIZE = 10;
 
 const ResourcesTab = () => {
@@ -71,6 +106,22 @@ const ResourcesTab = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  const [technologyTransferRows, setTechnologyTransferRows] = useState<
+    TechnologyTransferRow[]
+  >([]);
+  const [technologyTransferLoading, setTechnologyTransferLoading] =
+    useState(false);
+  const [selectedTechnologyTransfer, setSelectedTechnologyTransfer] =
+    useState<TechnologyTransferRow | null>(null);
+
+  const [capacityBuildingRows, setCapacityBuildingRows] = useState<
+    CapacityBuildingRow[]
+  >([]);
+  const [capacityBuildingLoading, setCapacityBuildingLoading] =
+    useState(false);
+  const [selectedCapacityBuilding, setSelectedCapacityBuilding] =
+    useState<CapacityBuildingRow | null>(null);
 
   useEffect(() => {
     const fetchSummaries = async () => {
@@ -135,6 +186,42 @@ const ResourcesTab = () => {
     fetchRows(query, page);
   }, [fetchRows, query, page]);
 
+  useEffect(() => {
+    const fetchTechnologyTransfer = async () => {
+      setTechnologyTransferLoading(true);
+      try {
+        const response = await get<TechnologyTransferRow[]>(
+          API_PATHS.TECHNOLOGY_TRANSFER_PUBLIC_LIST
+        );
+        setTechnologyTransferRows(response?.data ?? []);
+      } catch (error) {
+        setTechnologyTransferRows([]);
+      } finally {
+        setTechnologyTransferLoading(false);
+      }
+    };
+
+    fetchTechnologyTransfer();
+  }, [get]);
+
+  useEffect(() => {
+    const fetchCapacityBuilding = async () => {
+      setCapacityBuildingLoading(true);
+      try {
+        const response = await get<CapacityBuildingRow[]>(
+          API_PATHS.CAPACITY_BUILDING_PUBLIC_LIST
+        );
+        setCapacityBuildingRows(response?.data ?? []);
+      } catch (error) {
+        setCapacityBuildingRows([]);
+      } finally {
+        setCapacityBuildingLoading(false);
+      }
+    };
+
+    fetchCapacityBuilding();
+  }, [get]);
+
   const sectorData = Object.entries(financeSummary.bySector)
     .filter(([, value]) => value > 0)
     .map(([sector, value]) => ({ title: sector, value }));
@@ -186,6 +273,91 @@ const ResourcesTab = () => {
     },
   ];
 
+  const technologyTransferColumns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Technology Type",
+      dataIndex: "technologyType",
+      key: "technologyType",
+    },
+    {
+      title: "Recipient",
+      dataIndex: "recipientEntity",
+      key: "recipientEntity",
+    },
+    {
+      title: "Implementing Entity",
+      dataIndex: "implementingEntity",
+      key: "implementingEntity",
+    },
+    {
+      title: "Sector",
+      dataIndex: "sector",
+      key: "sector",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => (
+        <Tag color={supportStatusColor[status] || "default"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "",
+      key: "detail",
+      render: (_: unknown, record: TechnologyTransferRow) => (
+        <Button size="small" onClick={() => setSelectedTechnologyTransfer(record)}>
+          Detail
+        </Button>
+      ),
+    },
+  ];
+
+  const capacityBuildingColumns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Recipient",
+      dataIndex: "recipientEntity",
+      key: "recipientEntity",
+    },
+    {
+      title: "Implementing Entity",
+      dataIndex: "implementingEntity",
+      key: "implementingEntity",
+    },
+    {
+      title: "Sector",
+      dataIndex: "sector",
+      key: "sector",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => (
+        <Tag color={supportStatusColor[status] || "default"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "",
+      key: "detail",
+      render: (_: unknown, record: CapacityBuildingRow) => (
+        <Button size="small" onClick={() => setSelectedCapacityBuilding(record)}>
+          Detail
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <div className="dashboard-container">
       <section className="section">
@@ -222,9 +394,6 @@ const ResourcesTab = () => {
             </div>
           </div>
         </div>
-        <Link to={ROUTES.EMISSION_TRADING_SUBMIT}>
-          <Button type="primary">Record Ceiling/Trading Entry</Button>
-        </Link>
       </section>
 
       <section className="section">
@@ -257,9 +426,6 @@ const ResourcesTab = () => {
             <DonutBreakdown data={channelData} totalLabel="Total LAK" />
           </div>
         </div>
-        <Link to={ROUTES.CLIMATE_FINANCE_SUBMIT}>
-          <Button type="primary">Record a Climate Finance Entry</Button>
-        </Link>
       </section>
 
       <div className="registry-table-section">
@@ -293,6 +459,135 @@ const ResourcesTab = () => {
           }}
         />
       </div>
+
+      <div className="registry-table-section">
+        <h3 className="section-title">
+          Technology Development &amp; Transfer Support Received
+        </h3>
+        <Table
+          className="registry-table"
+          rowKey="id"
+          columns={technologyTransferColumns}
+          dataSource={technologyTransferRows}
+          loading={technologyTransferLoading}
+          locale={{
+            emptyText: "No technology transfer entries recorded yet.",
+          }}
+        />
+      </div>
+      <Modal
+        title={selectedTechnologyTransfer?.title}
+        open={!!selectedTechnologyTransfer}
+        onCancel={() => setSelectedTechnologyTransfer(null)}
+        footer={null}
+      >
+        {selectedTechnologyTransfer && (
+          <Descriptions column={1} bordered size="small">
+            <Descriptions.Item label="Description">
+              {selectedTechnologyTransfer.description}
+            </Descriptions.Item>
+            <Descriptions.Item label="Technology Type">
+              {selectedTechnologyTransfer.technologyType}
+            </Descriptions.Item>
+            <Descriptions.Item label="Timeframe">
+              {selectedTechnologyTransfer.timeframe || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Recipient Entity">
+              {selectedTechnologyTransfer.recipientEntity}
+            </Descriptions.Item>
+            <Descriptions.Item label="Implementing Entity">
+              {selectedTechnologyTransfer.implementingEntity}
+            </Descriptions.Item>
+            <Descriptions.Item label="Type">
+              {selectedTechnologyTransfer.type}
+            </Descriptions.Item>
+            <Descriptions.Item label="Sector">
+              {selectedTechnologyTransfer.sector}
+            </Descriptions.Item>
+            <Descriptions.Item label="Subsector">
+              {selectedTechnologyTransfer.subsector || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag
+                color={
+                  supportStatusColor[selectedTechnologyTransfer.status] ||
+                  "default"
+                }
+              >
+                {selectedTechnologyTransfer.status}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Impact / Estimated Result">
+              {selectedTechnologyTransfer.impactEstimatedResult || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Additional Information">
+              {selectedTechnologyTransfer.additionalInformation || "-"}
+            </Descriptions.Item>
+          </Descriptions>
+        )}
+      </Modal>
+
+      <div className="registry-table-section">
+        <h3 className="section-title">Capacity Building Support Received</h3>
+        <Table
+          className="registry-table"
+          rowKey="id"
+          columns={capacityBuildingColumns}
+          dataSource={capacityBuildingRows}
+          loading={capacityBuildingLoading}
+          locale={{
+            emptyText: "No capacity building entries recorded yet.",
+          }}
+        />
+      </div>
+      <Modal
+        title={selectedCapacityBuilding?.title}
+        open={!!selectedCapacityBuilding}
+        onCancel={() => setSelectedCapacityBuilding(null)}
+        footer={null}
+      >
+        {selectedCapacityBuilding && (
+          <Descriptions column={1} bordered size="small">
+            <Descriptions.Item label="Description">
+              {selectedCapacityBuilding.description}
+            </Descriptions.Item>
+            <Descriptions.Item label="Timeframe">
+              {selectedCapacityBuilding.timeframe || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Recipient Entity">
+              {selectedCapacityBuilding.recipientEntity}
+            </Descriptions.Item>
+            <Descriptions.Item label="Implementing Entity">
+              {selectedCapacityBuilding.implementingEntity}
+            </Descriptions.Item>
+            <Descriptions.Item label="Type">
+              {selectedCapacityBuilding.type}
+            </Descriptions.Item>
+            <Descriptions.Item label="Sector">
+              {selectedCapacityBuilding.sector}
+            </Descriptions.Item>
+            <Descriptions.Item label="Subsector">
+              {selectedCapacityBuilding.subsector || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag
+                color={
+                  supportStatusColor[selectedCapacityBuilding.status] ||
+                  "default"
+                }
+              >
+                {selectedCapacityBuilding.status}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Impact / Estimated Result">
+              {selectedCapacityBuilding.impactEstimatedResult || "-"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Additional Information">
+              {selectedCapacityBuilding.additionalInformation || "-"}
+            </Descriptions.Item>
+          </Descriptions>
+        )}
+      </Modal>
     </div>
   );
 };

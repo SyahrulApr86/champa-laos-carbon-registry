@@ -14,12 +14,15 @@ interface AdaptationSubmitFormValues {
 }
 
 const ADAPTATION_SECTORS: { value: string; label: string }[] = [
-  { value: "Agriculture", label: "Agriculture" },
-  { value: "Water Resources", label: "Water Resources" },
-  { value: "Forestry", label: "Forestry" },
-  { value: "Public Health", label: "Public Health" },
+  { value: "Health", label: "Health" },
+  { value: "Ecosystem Resilience", label: "Ecosystem Resilience" },
+  { value: "Multi-sector", label: "Multi-sector" },
   { value: "Infrastructure", label: "Infrastructure" },
-  { value: "Other", label: "Other" },
+  { value: "Coastal and Small Islands", label: "Coastal and Small Islands" },
+  { value: "Energy Self-reliance", label: "Energy Self-reliance" },
+  { value: "Food Security", label: "Food Security" },
+  { value: "Urban and Rural Settlements", label: "Urban and Rural Settlements" },
+  { value: "Water Security", label: "Water Security" },
 ];
 
 const AdaptationSubmit = () => {

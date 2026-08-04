@@ -10,11 +10,11 @@ not yet built (reason stated); explicit exceptions are marked and never silently
 - [x] 1. Home — Mitigation NEK stable (KPI/PTBAE/SPE cards, 6 doughnuts, table) — `CarbonDashboard.tsx`, 6-donut parity + stage sidebar + certificate panel built this round
 - [x] 2. Home — Proklim (table, doughnut, pagination) — `CommunityProgramTab.tsx`
 - [x] 3. Home — Adaptation (categories, doughnut, table) — `AdaptationTab.tsx`, 9-category taxonomy
-- [~] 4. Home — Resources (grouped bar by sector, pie by channel, filter dimension, 3 tables) — tables built (`ResourcesTab.tsx`), but chart visual style (multi-series bar w/ horizontal scroll + IDR/Dollar toggle, pie w/ Channel dropdown + % legend) needs a rebuild pass to match SRN's exact layout — **in progress this round**
+- [x] 4. Home — Resources (grouped bar by sector, pie by channel, filter dimension, 3 tables) — `ResourcesTab.tsx`; bar+pie rebuild (LAK/USD toggle, Channel % legend) matching SRN's chart density completed
 - [x] 5. Home — Mitigation Appreciation (KPI, doughnut, table) — built as "Recognized Mitigation Actions" (honest generic name)
 - [x] 6. Home — REDD++ (province selector) — built as "REDD+" tab, 18 real provinces
 - [x] 7. Map (Leaflet, legend, Activity Type filter, Province filter, search, zoom) — dedicated `/map` page this round + legend + 4-domain Activity Type filter
-- [x] 8. NDC — All (KPI, sector filter, combo chart, grouped bar, contribution chart) — 6 sector tabs + 2 charts built; **card visual style + sector-pill style need a rebuild pass to match SRN exactly — in progress this round**
+- [x] 8. NDC — All (KPI, sector filter, combo chart, grouped bar, contribution chart) — 6 sector tabs + 2 charts built; pill-tab sector style + 3-card KPI row rebuilt to match SRN
 - [x] 9. NDC — IPPU (sector filter changes data) — verified live, sector switch works correctly (and does NOT have SRN's own "still says Total All Sectors" label bug)
 - [x] 10. About SRN (background, purpose, role, policy basis) — `about.tsx`
 - [x] 11. FAQ/contact form — homepage-embedded FAQ accordion + contact form
@@ -41,10 +41,10 @@ not yet built (reason stated); explicit exceptions are marked and never silently
 - [x] PTBAE-PU stats (Units/Trading/Companies/Power Units/Daily Trading) — `EmissionCeilingTradingTabs.tsx`
 - [x] Map GeoJSON-equivalent province aggregation, Activity Type categories — built this round
 - [x] NDC 6-sector filter + 2 charts (combo baseline/emission, grouped claimed/verified) — built; claimed/verified distinction added this round
-- [ ] NDC sector-pill visual style (green-filled active pill) — **gap, fixing this round**
-- [ ] NDC 3-card KPI row visual style (white Mitigation Actions card, white Inventory card, 2-tone green Contribution card) — **gap, fixing this round**
+- [x] NDC sector-pill visual style (pill-tab active state, Champa blue) — rebuilt
+- [x] NDC 3-card KPI row visual style (Mitigation Actions / Inventory / Contribution cards) — rebuilt
 - [x] Resources: Financial/Technology/Capacity Building tables, all fields — built
-- [ ] Resources chart visual style (multi-series scrollable bar + IDR/Dollar-equivalent toggle; pie + Channel dropdown + % legend) — **gap, fixing this round**
+- [x] Resources chart visual style (bar by sector w/ LAK/USD toggle; pie by channel w/ % legend) — rebuilt
 - [x] Roster of Expert, LVV detail, Module, SPE certificate, PTBAE 3-tabs — all built this round
 - [x] Registration/Login forms — verified, CAPTCHA added
 
@@ -57,7 +57,11 @@ not yet built (reason stated); explicit exceptions are marked and never silently
 
 ## Production-scale seed data
 
-- [ ] Comprehensive seed script simulating months of real production usage (dozens of programmes/
-  adaptation projects/community programs/REDD+ entries/certificates/experts/PTBAE participants
-  across realistic date ranges) so every page shows SRN-comparable data density when demoed —
-  **not yet built, this round's deliverable**
+- [x] Comprehensive seed script simulating months of real production usage (12 mitigation
+  programmes with a mixed workflow-stage distribution, 8 adaptation projects, 6 community
+  programs, 4 REDD+ activities, 6 climate finance records, 4 technology transfer + 4 capacity
+  building records, a 4-year x 5-sector NDC trajectory, emission ceilings/participants/trading,
+  4 experts, 4 guidance documents, 4 recognized mitigation actions) so every page shows
+  SRN-comparable data density when demoed — `backend/services/src/demo-seeder/`, run via
+  `docker compose run --rm -e RUN_MODULE=demo-seeder national`; verified live in browser across
+  Mitigation/NDC Achievement/Resources/Community Programs tabs

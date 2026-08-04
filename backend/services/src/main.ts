@@ -1,6 +1,7 @@
 import { handler } from "./ledger-replicator/handler";
 import { handler as asyncHandler } from "./async-operations-handler/handler";
 import { handler as importHandler } from "./data-importer/handler";
+import { handler as demoSeederHandler } from "./demo-seeder/handler";
 import * as setupHandler from "@app/shared/setup/handler";
 import { NationalAPIModule } from "./national-api/national.api.module";
 import { join } from "path";
@@ -39,6 +40,10 @@ async function bootstrap() {
         continue;
       case "data-importer":
         await importHandler({ importTypes: process.env.DATA_IMPORT_TYPES });
+        console.log("Module initiated", moduleName);
+        continue;
+      case "demo-seeder":
+        await demoSeederHandler();
         console.log("Module initiated", moduleName);
         continue;
       default:

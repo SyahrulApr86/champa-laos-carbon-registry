@@ -26,9 +26,10 @@ Like the upstream project, Champa is licensed under the **GNU Affero General Pub
 ### Lao language (ພາສາລາວ) localization
 - Added `lo` as a selectable language (`web/src/Components/LanguageSelection/languageSelection.tsx`); no code-level language whitelist exists so this was the only wiring needed.
 - All 48 i18n namespaces under `web/public/locales/i18n/` now have a `lo.json` file (no crashes when Lao is selected).
-- **Fully translated to Lao**: `common`, `nav`, `login`, `forgotPassword`, `resetPassword`, `passwordReset` (all keys), plus the short labels in `dashboard` (83/196 keys) and `homepage` (51/83 keys).
-- **English fallback placeholder** (`lo.json` = copy of `en.json`): the remaining 39 namespaces, and the long-form prose/tooltip strings in `dashboard`/`homepage` that were not translated to avoid guessing inaccurate Lao for dense technical phrasing without native review.
-- Approximately 192 of ~4,000 total UI strings are genuinely translated. **This is a real, ongoing translation task, not a one-time technical fix** — budget for native Lao speaker review before production use.
+- **Fully translated to Lao (all keys)**: `common`, `forgotPassword`, `resetPassword`, `passwordReset`, `companyDetails`, `genderParity`, `mrvdashboard`, `nationalAccounting`, `settings`, `slcfRoadmapTimeline`.
+- **Near-fully translated** (general UI-chrome namespaces expanded in this pass — nav labels, forms, confirmation dialogs, table headers, gender/economic/environmental/social co-benefit questionnaires): `nav`, `login`, `company`, `user`, `addUser`, `addCompany`, `companyProfile`, `companyRoles`, `costQuotation`, `userProfile`, `creditTransfer`, `economic`, `environment`, `social`, `ndc`, `reporting`, plus the short labels in `dashboard` (83/196 keys) and `homepage` (53/83 keys).
+- **English fallback placeholder** (`lo.json` = copy of `en.json`): the deep technical/legal MRV and carbon-accounting namespaces (`PDD`, `monitoringReport`, `validationReport`, `verificationReport`, `projectDetailsView`, `projectList`, `view`, `addProgramme`, `programme`, `ndcAction`, `unfcccSdTool`, `coBenifits`, `socialEnvironmentalRisk`, `ghgInventory`, `safeguards`, `projectProposal`, `slcfProgrammeTimeline`, `validationAgreement`, `creditPages`, `siteVisitCheckList`) plus the long-form prose/tooltip strings in `dashboard`/`homepage` — left untranslated to avoid guessing inaccurate Lao for dense technical/regulatory phrasing without native review.
+- Approximately 846 of ~4,066 total UI strings are now genuinely translated (up from ~192). **This is a real, ongoing translation task, not a one-time technical fix** — budget for native Lao speaker review of the remaining MRV/legal namespaces before production use.
 
 ### NFMS (National Forest Monitoring System) integration
 - New hook `web/src/Hooks/useNFMSBoundary.ts` fetches Lao PDR's public NFMS ArcGIS REST service (`https://nfms.dof.maf.gov.la/arcgis/rest/services/nfms/REDD_Activity/MapServer`) as GeoJSON, verified live via `curl` before implementation.
@@ -76,7 +77,7 @@ Lao-specific setup notes:
 
 **Location data**: only `regions.csv` (provinces) was replaced with real Lao PDR data. `provinces.csv`/`districts.csv`/`dsDivisions.csv`/`cities.csv`/`postalCodes.csv` still model Sri Lanka's administrative hierarchy and were not re-entered (Lao PDR has ~148 districts; this is a data-entry task, not investigated further given time constraints — confirm first whether any user-facing flow actually depends on that finer granularity before doing the work).
 
-**Lao translation coverage**: ~192 of ~4,000 UI strings, concentrated in navigation/login/common. Needs a dedicated translation pass with native review before production use.
+**Lao translation coverage**: ~846 of ~4,066 UI strings, covering navigation/login/common plus general UI-chrome namespaces (organisation/user management, credit transfers, NDC actions, reporting, co-benefit questionnaires). The remaining ~3,220 strings are concentrated in deep technical/legal MRV namespaces (PDD, monitoring/validation/verification reports, safeguards, GHG inventory, project detail views, etc.) that were intentionally left in English pending native Lao speaker review — see Customizations above for the full namespace list.
 
 **No real logo/photo assets**: favicon, header logo, and hero background images are still UNDP/generic stock — cosmetic only, but visible on every page.
 

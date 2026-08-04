@@ -38,6 +38,7 @@ import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
 import { ClimateFinanceEntity } from "../entities/climate.finance.entity";
 import { NdcTargetEntity } from "../entities/ndc.target.entity";
 import { EmissionCeilingEntity } from "../entities/emission.ceiling.entity";
+import { EmissionParticipantEntity } from "../entities/emission.participant.entity";
 import { TechnologyTransferEntity } from "../entities/technology.transfer.entity";
 import { CapacityBuildingEntity } from "../entities/capacity.building.entity";
 import { CommunityProgramEntity } from "../entities/community.program.entity";
@@ -75,6 +76,7 @@ export class CaslAbilityFactory {
     can([Action.Manage], ClimateFinanceEntity);
     can([Action.Manage], NdcTargetEntity);
     can([Action.Manage], EmissionCeilingEntity);
+    can([Action.Manage], EmissionParticipantEntity);
     can([Action.Manage], TechnologyTransferEntity);
     can([Action.Manage], CapacityBuildingEntity);
     can([Action.Manage], CommunityProgramEntity);

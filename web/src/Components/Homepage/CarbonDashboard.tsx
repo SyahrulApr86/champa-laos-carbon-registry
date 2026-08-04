@@ -6,6 +6,7 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { API_PATHS } from "../../Config/apiConfig";
 import { COLOR_CONFIGS } from "../../Config/colorConfigs";
 import "./Dashboard.scss";
+import EmissionCeilingTradingTabs from "./EmissionCeilingTradingTabs";
 
 export const DONUT_PALETTE = [
   COLOR_CONFIGS.PRIMARY_THEME_COLOR,
@@ -412,6 +413,10 @@ const CarbonDashboard = () => {
                 <div className="statistic-title">Total Units Traded</div>
               </div>
             </div>
+          </div>
+
+          <div className="registry-table-section">
+            <EmissionCeilingTradingTabs />
           </div>
         </section>
 

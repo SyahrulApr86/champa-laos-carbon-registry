@@ -206,6 +206,13 @@ export const API_PATHS = {
     `national/emissionTrading/public/summary${year ? `?year=${year}` : ""}`,
   EMISSION_CEILING_CREATE: "national/emissionTrading/ceiling",
   EMISSION_TRADING_CREATE: "national/emissionTrading/trading",
+  EMISSION_PARTICIPANT_CREATE: "national/emissionTrading/participant",
+  EMISSION_TRADING_PUBLIC_SERIES: (page = 1, pageSize = 10) =>
+    `national/emissionTrading/public/series?page=${page}&pageSize=${pageSize}`,
+  EMISSION_TRADING_PUBLIC_TRANSACTIONS: (page = 1, pageSize = 10) =>
+    `national/emissionTrading/public/transactions?page=${page}&pageSize=${pageSize}`,
+  EMISSION_TRADING_PUBLIC_PARTICIPANTS: (page = 1, pageSize = 10) =>
+    `national/emissionTrading/public/participants?page=${page}&pageSize=${pageSize}`,
   //NDC TARGET
   NDC_TARGET_PUBLIC_LIST: "national/ndcTarget/public/list",
   NDC_TARGET_PUBLIC_SUMMARY: (sector?: string) =>

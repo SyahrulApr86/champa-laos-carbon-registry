@@ -88,19 +88,26 @@ const MapTab = () => {
           <p>No geolocated projects registered yet.</p>
         ) : (
           <>
-            <MapboxComponent
-              mapType={MapTypes.Mapbox}
-              accessToken={accessToken}
-              center={LAO_PDR_CENTER}
-              zoom={6}
-              height={500}
-              style="mapbox://styles/mapbox/light-v11"
-              markers={mapSummary.map((entry) => ({
-                location: [entry.lng, entry.lat],
-                color: "#0D2E63",
-                element: buildMarkerElement(entry.projectCount),
-              }))}
-            />
+            {accessToken ? (
+              <MapboxComponent
+                mapType={MapTypes.Mapbox}
+                accessToken={accessToken}
+                center={LAO_PDR_CENTER}
+                zoom={6}
+                height={500}
+                style="mapbox://styles/mapbox/light-v11"
+                markers={mapSummary.map((entry) => ({
+                  location: [entry.lng, entry.lat],
+                  color: "#0D2E63",
+                  element: buildMarkerElement(entry.projectCount),
+                }))}
+              />
+            ) : (
+              <p className="map-tab-no-token-note">
+                Map view is unavailable (no Mapbox access token
+                configured). Showing the province breakdown table below.
+              </p>
+            )}
 
             <Table
               rowKey="province"

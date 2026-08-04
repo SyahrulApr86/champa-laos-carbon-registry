@@ -39,18 +39,6 @@ import { GovDepartment } from '../../../Definitions/Enums/govDep.enum';
 import { formatBytes } from '../../../Utils/utilityHelper';
 import { API_PATHS } from '../../../Config/apiConfig';
 
-const provinces: any = [
-  'Harare',
-  'Bulawayo',
-  'Manicaland',
-  'Mashonaland Central',
-  'Mashonaland East',
-  'Mashonaland West',
-  'Masvingo',
-  'Matabeleland North',
-  'Matabeleland South',
-  'Midlands',
-];
 
 export const AddNewCompanyComponent = (props: any) => {
   const {

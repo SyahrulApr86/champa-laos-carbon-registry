@@ -60,6 +60,7 @@ import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTrans
 import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
 import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSubmit";
 import ReddPlusSubmit from "./Pages/ReddPlus/reddPlusSubmit";
+import ExpertSubmit from "./Pages/Expert/expertSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -291,6 +292,12 @@ const App = () => {
                     element={<CustomLayout selectedKey="reddPlus/submit" />}
                   >
                     <Route path="submit" element={<ReddPlusSubmit />} />
+                  </Route>
+                  <Route
+                    path="/expert"
+                    element={<CustomLayout selectedKey="expert/submit" />}
+                  >
+                    <Route path="submit" element={<ExpertSubmit />} />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

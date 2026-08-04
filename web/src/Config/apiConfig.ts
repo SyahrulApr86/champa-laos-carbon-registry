@@ -228,4 +228,10 @@ export const API_PATHS = {
   REDD_PLUS_CREATE: "national/reddPlus",
   //VALIDATION/VERIFICATION AGENCIES (INDEPENDENT CERTIFIERS)
   CERTIFIERS_PUBLIC_LIST: "national/organisation/public/certifiers",
+  //ROSTER OF EXPERT
+  EXPERT_PUBLIC_LIST: (search: string, page = 1, pageSize = 10) =>
+    `national/expert/public/list?search=${encodeURIComponent(
+      search
+    )}&page=${page}&pageSize=${pageSize}`,
+  EXPERT_CREATE: "national/expert",
 };

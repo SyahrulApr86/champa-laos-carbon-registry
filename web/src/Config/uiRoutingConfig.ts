@@ -68,4 +68,5 @@ export const ROUTES = {
   //RESOURCES (CLIMATE FINANCE / EMISSION TRADING)
   CLIMATE_FINANCE_SUBMIT: '/climateFinance/submit',
   EMISSION_TRADING_SUBMIT: '/emissionTrading/submit',
+  NDC_TARGET_SUBMIT: '/ndcTarget/submit',
 };

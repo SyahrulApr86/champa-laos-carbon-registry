@@ -19,6 +19,7 @@ import { MethodologyController } from "./methodology.controller";
 import { AdaptationController } from "./adaptation.controller";
 import { ClimateFinanceController } from "./climate.finance.controller";
 import { EmissionTradingController } from "./emission.trading.controller";
+import { NdcTargetController } from "./ndc.target.controller";
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { EmissionTradingController } from "./emission.trading.controller";
     AdaptationController,
     ClimateFinanceController,
     EmissionTradingController,
+    NdcTargetController,
   ],
   providers: [NationalAPIService, Logger],
 })

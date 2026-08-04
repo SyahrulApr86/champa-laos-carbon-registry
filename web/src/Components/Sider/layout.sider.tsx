@@ -117,6 +117,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "emissionTrading/submit",
           <Icon.ArrowLeftRight />
         ),
+        getItem(
+          t("nav:recordNdcTarget"),
+          "ndcTarget/submit",
+          <Icon.BarChartLine />
+        ),
       ])
     );
   }

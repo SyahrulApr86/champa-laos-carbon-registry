@@ -201,4 +201,8 @@ export const API_PATHS = {
     `national/emissionTrading/public/summary${year ? `?year=${year}` : ""}`,
   EMISSION_CEILING_CREATE: "national/emissionTrading/ceiling",
   EMISSION_TRADING_CREATE: "national/emissionTrading/trading",
+  //NDC TARGET
+  NDC_TARGET_PUBLIC_LIST: "national/ndcTarget/public/list",
+  NDC_TARGET_PUBLIC_SUMMARY: "national/ndcTarget/public/summary",
+  NDC_TARGET_CREATE: "national/ndcTarget",
 };

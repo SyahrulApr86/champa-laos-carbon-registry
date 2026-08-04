@@ -154,6 +154,13 @@ const Homepage = () => {
                       {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}
                     </div>
                   </div>
+                  <nav className="homepage-nav-links">
+                    <a onClick={() => navigate("/")}>Home</a>
+                    <a onClick={() => navigate("/about")}>About</a>
+                    <a onClick={() => navigate("/instruments")}>
+                      Instruments
+                    </a>
+                  </nav>
                 </div>
               </Col>
               <Col md={6} lg={3} xs={7} flex="auto">

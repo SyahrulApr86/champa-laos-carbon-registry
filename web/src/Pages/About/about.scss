@@ -1,0 +1,88 @@
+@use '../../Assets/Fonts/fonts.scss';
+@use '../../Styles/variables.scss';
+
+.about-page-container {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: variables.$background-color;
+
+  .about-header-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    height: 90px;
+    padding-top: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0rem 0rem 0 0vw;
+    cursor: pointer;
+
+    .title {
+      font-family: 'MuseoSans';
+      font-size: 1.2rem;
+      color: variables.$logo-text-color;
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+
+    .title-sub {
+      font-weight: 100 !important;
+      font-family: 'MuseoSans';
+      font-size: 1.2rem;
+      color: variables.$logo-text-color;
+    }
+
+    .logo {
+      height: 53px;
+      padding-left: 2vw;
+
+      img {
+        object-fit: cover;
+        height: auto;
+        height: 70%;
+        margin-top: 6px;
+      }
+    }
+
+    .country-name {
+      font-size: 0.65rem;
+      color: variables.$logo-text-color;
+      margin-top: -5px;
+      font-family: 'MuseoSans';
+    }
+  }
+}
+
+.about-body-container {
+  background-color: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem 2rem;
+}
+
+.about-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: variables.$primary-color;
+  margin-bottom: 2rem;
+}
+
+.about-section {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: variables.$primary-color;
+    margin-bottom: 0.75rem;
+  }
+
+  p, li {
+    color: #4A5568;
+    line-height: 1.7;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+  }
+}

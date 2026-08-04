@@ -42,6 +42,23 @@ $title-color: #3a8ab5;
       color: variables.$logo-text-color;
     }
 
+    .homepage-nav-links {
+      display: flex;
+      gap: 1.25rem;
+      margin-left: 2.5rem;
+
+      a {
+        color: variables.$logo-text-color;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
     .logo {
       height: 40px;
       padding-left: 2vw;

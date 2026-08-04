@@ -116,8 +116,8 @@ const MethodologyDirectory = () => {
             </div>
             <div>
               <div style={{ display: "flex" }}>
-                <div className="title">{"CARBON"}</div>
-                <div className="title-sub">{"REGISTRY"}</div>
+                <div className="title">{"CHAMPA"}</div>
+                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
               </div>
               <div className="country-name">
                 {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}

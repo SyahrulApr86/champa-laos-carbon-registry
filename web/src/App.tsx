@@ -53,6 +53,8 @@ import AdaptationManagement from "./Pages/Adaptation/adaptationManagement";
 import ClimateFinanceSubmit from "./Pages/ClimateFinance/climateFinanceSubmit";
 import EmissionTradingSubmit from "./Pages/EmissionTrading/emissionTradingSubmit";
 import NdcTargetSubmit from "./Pages/NdcTarget/ndcTargetSubmit";
+import About from "./Pages/About/about";
+import Instruments from "./Pages/Instruments/instruments";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -112,6 +114,8 @@ const App = () => {
                 <Route path="cookie" element={<CookiePolicy />} />
                 <Route path="terms" element={<TermsOfUse />} />
                 <Route path="methodology" element={<MethodologyDirectory />} />
+                <Route path="about" element={<About />} />
+                <Route path="instruments" element={<Instruments />} />
                 <Route
                   path="projects/search"
                   element={<PublicProjectSearch />}

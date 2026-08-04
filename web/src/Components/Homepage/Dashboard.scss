@@ -59,6 +59,37 @@
   }
 }
 
+/* NDC Achievement sector sub-tabs (All/Energy/IPPU/Agriculture/Forestry/Waste) */
+.ndc-sector-tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 2px solid #E2E8F0;
+  margin-bottom: 1.5rem;
+}
+
+.ndc-sector-tab-button {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.6rem 1rem;
+  font-family: Inter;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4A5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #0D2E63;
+  }
+
+  &.active {
+    color: #0D2E63;
+    border-bottom-color: #0D2E63;
+  }
+}
+
 /* Header Styles */
 .dashboard-header {
   margin-bottom: 2rem;

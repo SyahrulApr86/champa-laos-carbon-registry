@@ -1,11 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
+import { NdcSector } from "../enum/ndc.sector.enum";
 
 export class NdcTargetCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
   year: number;
+
+  @ApiProperty({ enum: NdcSector })
+  @IsNotEmpty()
+  @IsEnum(NdcSector)
+  sector: NdcSector;
 
   @ApiProperty()
   @IsNotEmpty()

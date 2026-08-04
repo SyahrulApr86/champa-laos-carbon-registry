@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { Button, Card, Form, Input, InputNumber, message } from "antd";
+import { Button, Card, Form, Input, InputNumber, Select, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { useUserContext } from "../../Context/UserInformationContext/userInformationContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { CompanyRole } from "../../Definitions/Enums/company.role.enum";
+import { NdcSector } from "../../Definitions/Enums/ndcSector.enum";
 
 const { TextArea } = Input;
 
 interface NdcTargetFormValues {
   year: number;
+  sector: NdcSector;
   baselineEmissions: number;
   targetEmissions2030: number;
   achievedEmissions: number;
@@ -41,6 +43,7 @@ const NdcTargetSubmit = () => {
     try {
       const payload = {
         year: values.year,
+        sector: values.sector,
         baselineEmissions: values.baselineEmissions,
         targetEmissions2030: values.targetEmissions2030,
         achievedEmissions: values.achievedEmissions,
@@ -77,6 +80,19 @@ const NdcTargetSubmit = () => {
             rules={[{ required: true, message: "Year is required" }]}
           >
             <InputNumber style={{ width: "100%" }} min={2015} max={2035} />
+          </Form.Item>
+          <Form.Item
+            name="sector"
+            label="Sector"
+            rules={[{ required: true, message: "Sector is required" }]}
+          >
+            <Select
+              placeholder="Select sector"
+              options={Object.values(NdcSector).map((sector) => ({
+                label: sector,
+                value: sector,
+              }))}
+            />
           </Form.Item>
           <Form.Item
             name="baselineEmissions"

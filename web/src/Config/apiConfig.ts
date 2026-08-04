@@ -204,7 +204,10 @@ export const API_PATHS = {
   EMISSION_TRADING_CREATE: "national/emissionTrading/trading",
   //NDC TARGET
   NDC_TARGET_PUBLIC_LIST: "national/ndcTarget/public/list",
-  NDC_TARGET_PUBLIC_SUMMARY: "national/ndcTarget/public/summary",
+  NDC_TARGET_PUBLIC_SUMMARY: (sector?: string) =>
+    `national/ndcTarget/public/summary${sector ? `?sector=${encodeURIComponent(sector)}` : ""}`,
+  NDC_TARGET_PUBLIC_SERIES: (sector?: string) =>
+    `national/ndcTarget/public/series${sector ? `?sector=${encodeURIComponent(sector)}` : ""}`,
   NDC_TARGET_CREATE: "national/ndcTarget",
   //TECHNOLOGY DEVELOPMENT & TRANSFER
   TECHNOLOGY_TRANSFER_PUBLIC_LIST: "national/technologyTransfer/public/list",

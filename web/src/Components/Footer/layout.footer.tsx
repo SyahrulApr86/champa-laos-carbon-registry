@@ -32,11 +32,35 @@ const LayoutFooter = () => {
           <div className="footertext">{t("homepage:footertext1")}</div>
         </Col>
       </Row>
+      <Divider className="divider" style={{ backgroundColor: "#FFFF" }} />
+      <Row className="footer-org-row">
+        <Col md={12} lg={12}>
+          <h4 className="footer-dept-heading">
+            Department of Environment (Climate Change &amp; GHG Inventory)
+          </h4>
+          <div className="footer-contact-line">
+            <a href="mailto:admin@champa.la">admin@champa.la</a>
+          </div>
+          <div className="footer-contact-line">
+            <a href="tel:+8562112345678">+856 21 123 456</a>
+          </div>
+        </Col>
+        <Col md={12} lg={12}>
+          <h4 className="footer-dept-heading">Department of Forestry</h4>
+          <div className="footer-address-line">
+            Ministry of Agriculture and Environment
+          </div>
+          <div className="footer-address-line">Vientiane Capital</div>
+          <div className="footer-address-line">Lao People's Democratic Republic</div>
+        </Col>
+      </Row>
+      <Divider className="divider" style={{ backgroundColor: "#FFFF" }} />
       <Row>
         <Col md={10} lg={10}>
           <div className="footertext-bottom">
             {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}
             <CcCircle className="cc" color="#FFFF" size="10px" />
+            {" "}© Ministry of Agriculture and Environment {new Date().getFullYear()}
           </div>
         </Col>
         <Col md={14} lg={14}>

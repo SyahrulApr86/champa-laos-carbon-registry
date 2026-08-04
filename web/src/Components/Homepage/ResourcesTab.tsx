@@ -12,11 +12,6 @@ interface ClimateFinanceSummary {
   byChannel: Record<string, { amount: number; percentage: number }>;
 }
 
-interface EmissionTradingSummary {
-  year: number | null;
-  ceiling: { totalUnits: number; companies: number };
-  trading: { totalUnits: number; totalValueLAK: number; companies: number };
-}
 
 interface ClimateFinanceRow {
   title: string;
@@ -72,11 +67,6 @@ const emptyFinanceSummary: ClimateFinanceSummary = {
   byChannel: {},
 };
 
-const emptyTradingSummary: EmissionTradingSummary = {
-  year: null,
-  ceiling: { totalUnits: 0, companies: 0 },
-  trading: { totalUnits: 0, totalValueLAK: 0, companies: 0 },
-};
 
 const statusColor: Record<string, string> = {
   "Fully Disbursed": "green",
@@ -96,9 +86,6 @@ const ResourcesTab = () => {
   const { get } = useConnection();
   const [financeSummary, setFinanceSummary] = useState<ClimateFinanceSummary>(
     emptyFinanceSummary
-  );
-  const [tradingSummary, setTradingSummary] = useState<EmissionTradingSummary>(
-    emptyTradingSummary
   );
 
   const [query, setQuery] = useState("");
@@ -139,25 +126,6 @@ const ResourcesTab = () => {
         console.log("Error fetching climate finance public summary", error);
       }
 
-      try {
-        const tradingResponse = await get<EmissionTradingSummary>(
-          API_PATHS.EMISSION_TRADING_PUBLIC_SUMMARY()
-        );
-        setTradingSummary({
-          year: tradingResponse?.data?.year ?? null,
-          ceiling: {
-            totalUnits: tradingResponse?.data?.ceiling?.totalUnits ?? 0,
-            companies: tradingResponse?.data?.ceiling?.companies ?? 0,
-          },
-          trading: {
-            totalUnits: tradingResponse?.data?.trading?.totalUnits ?? 0,
-            totalValueLAK: tradingResponse?.data?.trading?.totalValueLAK ?? 0,
-            companies: tradingResponse?.data?.trading?.companies ?? 0,
-          },
-        });
-      } catch (error) {
-        console.log("Error fetching emission trading public summary", error);
-      }
     };
 
     fetchSummaries();
@@ -360,42 +328,6 @@ const ResourcesTab = () => {
 
   return (
     <div className="dashboard-container">
-      <section className="section">
-        <h3 className="section-title">Emission Ceiling &amp; Trading</h3>
-        <p className="registry-table-subtitle">
-          Prototype module — emission ceiling and trading data, not tied to a
-          specific real-world regulation.
-        </p>
-        <div className="donut-grid">
-          <div className="donut-card">
-            <div className="main-statistic">
-              <div className="statistic-value">
-                {tradingSummary.ceiling.totalUnits.toLocaleString()}
-              </div>
-              <div className="statistic-title">Total Ceiling Units</div>
-            </div>
-          </div>
-          <div className="donut-card">
-            <div className="main-statistic">
-              <div className="statistic-value">
-                {tradingSummary.ceiling.companies}
-              </div>
-              <div className="statistic-title">
-                Companies with Allocated Ceiling
-              </div>
-            </div>
-          </div>
-          <div className="donut-card">
-            <div className="main-statistic">
-              <div className="statistic-value">
-                {tradingSummary.trading.totalUnits.toLocaleString()}
-              </div>
-              <div className="statistic-title">Total Units Traded</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="section">
         <h3 className="section-title">Climate Finance</h3>
         <div className="donut-grid">

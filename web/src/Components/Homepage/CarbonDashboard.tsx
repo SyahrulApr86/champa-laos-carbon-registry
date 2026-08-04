@@ -118,10 +118,25 @@ const emptySummary: PublicAnalyticsSummary = {
   proponentsByRole: {},
 };
 
+interface EmissionTradingSummary {
+  year: number | null;
+  ceiling: { totalUnits: number; companies: number };
+  trading: { totalUnits: number; totalValueLAK: number; companies: number };
+}
+
+const emptyTradingSummary: EmissionTradingSummary = {
+  year: null,
+  ceiling: { totalUnits: 0, companies: 0 },
+  trading: { totalUnits: 0, totalValueLAK: 0, companies: 0 },
+};
+
 const CarbonDashboard = () => {
   const { i18n, t } = useTranslation(["common", "homepage", "companyRoles"]);
   const { get } = useConnection();
   const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
+  const [tradingSummary, setTradingSummary] = useState<EmissionTradingSummary>(
+    emptyTradingSummary
+  );
   const [projectCount, setProjectCount] = useState(0);
   const [creditCount, setCreditCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -158,6 +173,23 @@ const CarbonDashboard = () => {
     };
 
     fetchPublicSummary();
+  }, [get]);
+
+  useEffect(() => {
+    const fetchTradingSummary = async () => {
+      try {
+        const tradingResponse = await get<EmissionTradingSummary>(
+          API_PATHS.EMISSION_TRADING_PUBLIC_SUMMARY()
+        );
+        if (tradingResponse?.data) {
+          setTradingSummary(tradingResponse.data);
+        }
+      } catch (error) {
+        console.log("Error fetching emission trading summary", error);
+      }
+    };
+
+    fetchTradingSummary();
   }, [get]);
 
   const animateCounters = useCallback(() => {
@@ -345,6 +377,43 @@ const CarbonDashboard = () => {
             />
           </div>
         </motion.div>
+
+        {/* Emission Ceiling & Trading (SRN's PTBAE-PU equivalent) */}
+        <section className="section">
+          <h3 className="section-title">Emission Ceiling &amp; Trading</h3>
+          <p className="registry-table-subtitle">
+            Prototype module — emission ceiling and trading data, not tied to
+            a specific real-world regulation.
+          </p>
+          <div className="donut-grid">
+            <div className="donut-card">
+              <div className="main-statistic">
+                <div className="statistic-value">
+                  {tradingSummary.ceiling.totalUnits.toLocaleString()}
+                </div>
+                <div className="statistic-title">Total Ceiling Units</div>
+              </div>
+            </div>
+            <div className="donut-card">
+              <div className="main-statistic">
+                <div className="statistic-value">
+                  {tradingSummary.ceiling.companies}
+                </div>
+                <div className="statistic-title">
+                  Companies with Allocated Ceiling
+                </div>
+              </div>
+            </div>
+            <div className="donut-card">
+              <div className="main-statistic">
+                <div className="statistic-value">
+                  {tradingSummary.trading.totalUnits.toLocaleString()}
+                </div>
+                <div className="statistic-title">Total Units Traded</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Footer Text */}
         <div className="footer-section">

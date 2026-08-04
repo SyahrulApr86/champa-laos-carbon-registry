@@ -99,6 +99,39 @@
     min-width: calc(100% - 120px);
   }
 
+  .footer-org-row {
+    padding: 20px 60px;
+
+    @media (max-width: 837px) {
+      padding: 10px 60px;
+    }
+
+    @media (max-width: 645px) {
+      padding: 10px 10px;
+    }
+  }
+
+  .footer-dept-heading {
+    color: variables.$dark-text-color;
+    font-family: 'MuseoSans';
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-contact-line,
+  .footer-address-line {
+    color: variables.$dark-text-color;
+    font-size: 0.8rem;
+    font-family: 'MuseoSans';
+    margin-bottom: 0.25rem;
+
+    a {
+      color: variables.$dark-text-color;
+      text-decoration: underline;
+    }
+  }
+
   .logocontainer {
     display: flex;
     margin-top: 10px;

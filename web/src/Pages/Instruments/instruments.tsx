@@ -3,6 +3,7 @@ import { Row, Col } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import LayoutFooter from "../../Components/Footer/layout.footer";
 import sliderLogo from "../../Assets/Images/logo-slider.png";
+import VerificationAgencyList from "./VerificationAgencyList";
 import "./instruments.scss";
 
 // Static, informational "Instruments" page mirroring SRN Indonesia's
@@ -59,9 +60,10 @@ const Instruments = () => {
           <h2>Validation and Verification Bodies</h2>
           <p>
             Independent certifiers registered on Champa validate and verify
-            project claims before MAE authorisation. A public directory of
-            registered certifiers is not yet published on this site.
+            project claims before MAE authorisation. The registry below
+            lists active, independently-certified verification agencies.
           </p>
+          <VerificationAgencyList />
         </section>
 
         <section className="instruments-section">

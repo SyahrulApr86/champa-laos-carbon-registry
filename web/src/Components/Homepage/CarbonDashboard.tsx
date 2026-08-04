@@ -27,6 +27,7 @@ const DonutBreakdown = ({
   return (
     <div className="donut-breakdown">
       <Chart
+        key={`${totalLabel}-${total}`}
         type="donut"
         width="220"
         options={{

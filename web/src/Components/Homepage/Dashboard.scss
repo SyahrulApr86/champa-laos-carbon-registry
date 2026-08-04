@@ -531,55 +531,21 @@
   }
 }
 
-.image-containers {
-  position: relative;
-  border-radius: 32px;
-  overflow: hidden;
-  box-shadow: 4px 4px 8px rgba(223, 223, 223, 0.15);
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  height: 550px;
-
-  // Gradient overlay
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(to bottom, rgba(46, 46, 46, 0.444), rgba(22, 19, 19, 0.247));
-  }
-
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    height: 720px;
-    object-position: center bottom;
-    /* This crops from the top */
-  }
-}
-
-.main-image {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-  z-index: 0; // Behind the gradient
-  position: relative;
-}
-
-.image-caption {
-  position: absolute;
+.digital-public-good-card {
+  background: #F1FBFF;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  padding: 2rem;
   font-family: Inter;
   font-size: 16px;
-  bottom: 16px;
-  left: 40px;
-  right: 40px;
-  padding: 16px;
-  text-align: left;
-  color: white;
-  z-index: 2; // Above the gradient
+  line-height: 1.6;
+  color: #2D3748;
+
+  a {
+    color: #0D2E63;
+    font-weight: 600;
+    text-decoration: underline;
+  }
 }
 
 
@@ -605,10 +571,6 @@
     font-size: 1.5rem;
     text-align: center;
   }
-
-  .image-caption {
-    font-size: 14px;
-  }
 }
 
 @media (max-width: 576px) {
@@ -616,19 +578,6 @@
     padding: 0 2rem;
     margin: 0;
     width: 100%;
-
-    .image-containers {
-      .main-image {
-        object-position: -230px bottom;
-      }
-    }
-  }
-
-  .image-caption {
-    left: 1rem;
-    right: 1rem;
-    font-size: 14px;
-    text-shadow: 0 0 4px black;
   }
 }
 
@@ -639,11 +588,6 @@
 
   .header-title {
     font-size: 1.25rem;
-  }
-
-  .image-caption {
-    padding: 2px;
-    font-size: 12px;
   }
 }
 

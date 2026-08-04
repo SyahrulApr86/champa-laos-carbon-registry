@@ -239,6 +239,128 @@
   margin: 0 0 1.5rem 0;
 }
 
+/* Registry Overview: stage sidebar + certificate panel (Mitigation tab) */
+.registry-overview-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.registry-overview-sidebar {
+  background: linear-gradient(180deg, #0D2E63 0%, #0A2350 100%);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  color: #ffffff;
+}
+
+.registry-overview-sidebar-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 1.25rem 0;
+  opacity: 0.85;
+}
+
+.registry-overview-sidebar-total {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.registry-overview-sidebar-total-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.registry-overview-sidebar-total-label {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-top: 0.35rem;
+}
+
+.registry-overview-sidebar-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.registry-overview-sidebar-stage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+
+  &-label {
+    opacity: 0.85;
+  }
+
+  &-value {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+}
+
+.registry-overview-certificate {
+  background: #F1FBFF;
+  border-radius: 16px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.registry-overview-certificate-title {
+  color: #00252B;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+}
+
+.registry-overview-certificate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.registry-overview-certificate-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #E2E8F0;
+
+  &.highlight {
+    border-color: #2E8B67;
+    background: rgba(46, 139, 103, 0.06);
+  }
+}
+
+.registry-overview-certificate-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #00252B;
+  line-height: 1;
+}
+
+.registry-overview-certificate-card.highlight .registry-overview-certificate-value {
+  color: #2E8B67;
+}
+
+.registry-overview-certificate-label {
+  font-size: 0.85rem;
+  color: #4A5568;
+  margin-top: 0.5rem;
+}
+
 /* Card Grid Styles */
 .cards-grid {
   display: grid;

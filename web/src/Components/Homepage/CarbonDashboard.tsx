@@ -95,6 +95,7 @@ export const DonutBreakdown = ({
 
 interface PublicAnalyticsSummary {
   totalProjects: number;
+  stageCounts: Record<string, number>;
   projectsByStatus: {
     authorised: number;
     pending: number;
@@ -115,6 +116,7 @@ interface PublicAnalyticsSummary {
 
 const emptySummary: PublicAnalyticsSummary = {
   totalProjects: 0,
+  stageCounts: {},
   projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
   credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
   projectsBySector: {},
@@ -156,6 +158,7 @@ const CarbonDashboard = () => {
           const data = response.data;
           setSummary({
             totalProjects: data.totalProjects ?? 0,
+            stageCounts: data.stageCounts ?? {},
             projectsByStatus: {
               authorised: data.projectsByStatus?.authorised ?? 0,
               pending: data.projectsByStatus?.pending ?? 0,
@@ -302,6 +305,17 @@ const CarbonDashboard = () => {
       title: t(`companyRoles:${role}`, { defaultValue: role }),
     }));
 
+  // Real ProgrammeStage values, in workflow order - not a fabricated
+  // sub-stage breakdown, just Champa's actual tracked states presented
+  // with the same visual density as SRN's Mitigation NEK stage sidebar.
+  const stageLabels: { key: string; label: string }[] = [
+    { key: "New", label: "New Submissions" },
+    { key: "AwaitingAuthorization", label: "Awaiting Authorisation" },
+    { key: "Authorised", label: "Authorised" },
+    { key: "Approved", label: "Approved" },
+    { key: "Rejected", label: "Rejected" },
+  ];
+
   return (
     <div className="carbon-dashboard">
       <div className="dashboard-container">
@@ -342,6 +356,67 @@ const CarbonDashboard = () => {
                     {t("homepage:totcredits")}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Registry Overview: stage sidebar + Emission Reduction Certificate panel */}
+        <div className="registry-overview-grid">
+          <div className="registry-overview-sidebar">
+            <h3 className="registry-overview-sidebar-title">Mitigation Registry</h3>
+            <div className="registry-overview-sidebar-total">
+              <div className="registry-overview-sidebar-total-value">
+                {summary.totalProjects.toLocaleString()}
+              </div>
+              <div className="registry-overview-sidebar-total-label">
+                Total Projects
+              </div>
+            </div>
+            <div className="registry-overview-sidebar-stages">
+              {stageLabels.map((stage) => (
+                <div key={stage.key} className="registry-overview-sidebar-stage">
+                  <span className="registry-overview-sidebar-stage-label">
+                    {stage.label}
+                  </span>
+                  <span className="registry-overview-sidebar-stage-value">
+                    {(summary.stageCounts[stage.key] ?? 0).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="registry-overview-certificate">
+            <h3 className="registry-overview-certificate-title">
+              Emission Reduction Certificate
+            </h3>
+            <div className="registry-overview-certificate-grid">
+              <div className="registry-overview-certificate-card highlight">
+                <div className="registry-overview-certificate-value">
+                  {summary.credits.issued.toLocaleString()}
+                </div>
+                <div className="registry-overview-certificate-label">Issued</div>
+              </div>
+              <div className="registry-overview-certificate-card">
+                <div className="registry-overview-certificate-value">
+                  {summary.credits.available.toLocaleString()}
+                </div>
+                <div className="registry-overview-certificate-label">Available</div>
+              </div>
+              <div className="registry-overview-certificate-card">
+                <div className="registry-overview-certificate-value">
+                  {summary.credits.transferred.toLocaleString()}
+                </div>
+                <div className="registry-overview-certificate-label">
+                  Transferred
+                </div>
+              </div>
+              <div className="registry-overview-certificate-card">
+                <div className="registry-overview-certificate-value">
+                  {summary.credits.retired.toLocaleString()}
+                </div>
+                <div className="registry-overview-certificate-label">Retired</div>
               </div>
             </div>
           </div>
@@ -426,8 +501,8 @@ const CarbonDashboard = () => {
         <section className="section">
           <h3 className="section-title">Emission Ceiling &amp; Trading</h3>
           <p className="registry-table-subtitle">
-            Prototype module — emission ceiling and trading data, not tied to
-            a specific real-world regulation.
+            Technical approval for upper emission limits, and carbon
+            exchange trading, for business actors registered with Champa.
           </p>
           <div className="donut-grid">
             <div className="donut-card">

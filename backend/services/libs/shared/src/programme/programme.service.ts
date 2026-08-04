@@ -7758,7 +7758,19 @@ export class ProgrammeService {
       companies.map((company) => [company.companyId, company.companyRole])
     );
 
+    const stageCounts: Record<string, number> = {
+      [ProgrammeStage.NEW]: 0,
+      [ProgrammeStage.AWAITING_AUTHORIZATION]: 0,
+      [ProgrammeStage.AUTHORISED]: 0,
+      [ProgrammeStage.APPROVED]: 0,
+      [ProgrammeStage.REJECTED]: 0,
+    };
+
     for (const programme of programmes) {
+      if (stageCounts[programme.currentStage] !== undefined) {
+        stageCounts[programme.currentStage]++;
+      }
+
       if (programme.currentStage === ProgrammeStage.AUTHORISED) {
         authorisedCount++;
       } else if (programme.currentStage === ProgrammeStage.REJECTED) {
@@ -7797,6 +7809,7 @@ export class ProgrammeService {
 
     return {
       totalProjects: programmes.length,
+      stageCounts,
       projectsByStatus: {
         authorised: authorisedCount,
         pending: pendingCount,

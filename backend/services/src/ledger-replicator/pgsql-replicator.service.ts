@@ -94,7 +94,8 @@ export class PgSqlReplicatorService implements LedgerReplicatorInterface {
           return;
         } else {
           retryCountTable += 1; //ref
-          replicateActions;
+          replicateActions; // no-op; retry already happens via the
+          // unconditional setTimeout(replicateActions, 1000) below
         }
       }
 
@@ -140,7 +141,8 @@ export class PgSqlReplicatorService implements LedgerReplicatorInterface {
           return;
         } else {
           retryCountCTable += 1; //ref
-          replicateActions;
+          replicateActions; // no-op; retry already happens via the
+          // unconditional setTimeout(replicateActions, 1000) below
         }
       }
 
@@ -191,7 +193,8 @@ export class PgSqlReplicatorService implements LedgerReplicatorInterface {
           return;
         } else {
           retryCountTable += 1; //ref
-          replicateActions;
+          replicateActions; // no-op; retry already happens via the
+          // unconditional setTimeout(replicateActions, 1000) below
         }
       }
 
@@ -242,7 +245,8 @@ export class PgSqlReplicatorService implements LedgerReplicatorInterface {
           return;
         } else {
           retryCountTable += 1; //ref
-          replicateActions;
+          replicateActions; // no-op; retry already happens via the
+          // unconditional setTimeout(replicateActions, 1000) below
         }
       }
 

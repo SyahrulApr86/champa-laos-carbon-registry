@@ -41,6 +41,18 @@ export class AdaptationController {
     return await this.adaptationService.publicSummary();
   }
 
+  // Public, unauthenticated single-project detail lookup - see
+  // AdaptationService.publicDetail for the field allowlist. Never throws
+  // on a missing/unknown id: returns { found: false }.
+  @Get("public/detail/:id")
+  async publicDetail(@Param("id") id: string) {
+    try {
+      return await this.adaptationService.publicDetail(id);
+    } catch (error) {
+      return { found: false };
+    }
+  }
+
   // Role check (PROJECT_DEVELOPER only) is enforced in AdaptationService,
   // so JwtAuthGuard alone is sufficient here.
   @ApiBearerAuth()

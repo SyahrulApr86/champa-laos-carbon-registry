@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Tag } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
@@ -41,6 +42,7 @@ const statusColor: Record<string, string> = {
 // projects. Discovery of the authenticated submission form is via the
 // sidebar "Climate Programs" submenu only - no CTA here.
 const CommunityProgramTab = () => {
+  const navigate = useNavigate();
   const { get } = useConnection();
 
   const [summary, setSummary] = useState<CommunityProgramSummary>(emptySummary);
@@ -103,6 +105,11 @@ const CommunityProgramTab = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (name: string, record: CommunityProgramRow) => (
+        <a onClick={() => navigate(`/public/community/${record.programId}`)}>
+          {name}
+        </a>
+      ),
     },
     {
       title: "Region",
@@ -131,6 +138,15 @@ const CommunityProgramTab = () => {
       title: "Start Year",
       dataIndex: "startYear",
       key: "startYear",
+    },
+    {
+      title: "",
+      key: "action",
+      render: (_: unknown, record: CommunityProgramRow) => (
+        <a onClick={() => navigate(`/public/community/${record.programId}`)}>
+          See detail
+        </a>
+      ),
     },
   ];
 

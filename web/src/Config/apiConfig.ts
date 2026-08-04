@@ -191,6 +191,8 @@ export const API_PATHS = {
       q
     )}&page=${page}&size=${size}`,
   ADAPTATION_PUBLIC_SUMMARY: "national/adaptation/public/summary",
+  ADAPTATION_PUBLIC_DETAIL: (id: string) =>
+    `national/adaptation/public/detail/${encodeURIComponent(id)}`,
   ADAPTATION_CREATE: "national/adaptation",
   ADAPTATION_QUERY: "national/adaptation/query",
   ADAPTATION_UPDATE_STAGE: (id: number) => `national/adaptation/${id}/stage`,
@@ -222,6 +224,8 @@ export const API_PATHS = {
   //COMMUNITY CLIMATE PROGRAMS
   COMMUNITY_PROGRAM_PUBLIC_LIST: "national/communityProgram/public/list",
   COMMUNITY_PROGRAM_PUBLIC_SUMMARY: "national/communityProgram/public/summary",
+  COMMUNITY_PROGRAM_PUBLIC_DETAIL: (id: string) =>
+    `national/communityProgram/public/detail/${encodeURIComponent(id)}`,
   COMMUNITY_PROGRAM_CREATE: "national/communityProgram",
   //REDD+ FOREST CARBON
   REDD_PLUS_PUBLIC_BY_PROVINCE: "national/reddPlus/public/byProvince",

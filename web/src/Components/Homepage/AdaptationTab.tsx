@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Input, Table, Tag } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
@@ -35,8 +36,8 @@ const statusColor: Record<string, string> = {
 const PAGE_SIZE = 10;
 
 const AdaptationTab = () => {
+  const navigate = useNavigate();
   const { get } = useConnection();
-
   const [summary, setSummary] = useState<AdaptationSummary>(emptySummary);
   const [query, setQuery] = useState("");
   const [rows, setRows] = useState<AdaptationRow[]>([]);
@@ -108,6 +109,11 @@ const AdaptationTab = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+      render: (title: string, record: AdaptationRow) => (
+        <a onClick={() => navigate(`/public/adaptation/${record.adaptationId}`)}>
+          {title}
+        </a>
+      ),
     },
     {
       title: "Sector",
@@ -125,6 +131,15 @@ const AdaptationTab = () => {
       key: "status",
       render: (status: string) => (
         <Tag color={statusColor[status] || "default"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "",
+      key: "action",
+      render: (_: unknown, record: AdaptationRow) => (
+        <a onClick={() => navigate(`/public/adaptation/${record.adaptationId}`)}>
+          See detail
+        </a>
       ),
     },
   ];

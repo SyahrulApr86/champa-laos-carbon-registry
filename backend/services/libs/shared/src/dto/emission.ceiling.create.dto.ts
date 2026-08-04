@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class EmissionCeilingCreateDto {
   @ApiProperty()
@@ -16,4 +16,14 @@ export class EmissionCeilingCreateDto {
   @IsNotEmpty()
   @IsNumber()
   units: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  seriesName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  sector?: string;
 }

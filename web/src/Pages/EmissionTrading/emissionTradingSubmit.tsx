@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, DatePicker, Form, InputNumber, message } from "antd";
+import { Button, Card, DatePicker, Form, Input, InputNumber, message } from "antd";
 import { Link } from "react-router-dom";
 import { Moment } from "moment";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
@@ -12,6 +12,15 @@ interface EmissionCeilingFormValues {
   companyId: number;
   year: number;
   units: number;
+  seriesName?: string;
+  sector?: string;
+}
+
+interface EmissionParticipantFormValues {
+  companyId: number;
+  facilityName: string;
+  capacityDescription: string;
+  year: number;
 }
 
 interface TradingTransactionFormValues {
@@ -27,8 +36,10 @@ const EmissionTradingSubmit = () => {
   const { post } = useConnection();
   const [ceilingForm] = Form.useForm<EmissionCeilingFormValues>();
   const [tradingForm] = Form.useForm<TradingTransactionFormValues>();
+  const [participantForm] = Form.useForm<EmissionParticipantFormValues>();
   const [ceilingSubmitting, setCeilingSubmitting] = useState(false);
   const [tradingSubmitting, setTradingSubmitting] = useState(false);
+  const [participantSubmitting, setParticipantSubmitting] = useState(false);
 
   const isAuthorized =
     userInfoState?.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY ||
@@ -50,6 +61,8 @@ const EmissionTradingSubmit = () => {
         companyId: values.companyId,
         year: values.year,
         units: values.units,
+        seriesName: values.seriesName,
+        sector: values.sector,
       });
       message.success("Emission ceiling recorded.");
       ceilingForm.resetFields();
@@ -95,6 +108,33 @@ const EmissionTradingSubmit = () => {
     }
   };
 
+  const handleParticipantSubmit = async (
+    values: EmissionParticipantFormValues
+  ) => {
+    setParticipantSubmitting(true);
+    try {
+      await post(API_PATHS.EMISSION_PARTICIPANT_CREATE, {
+        companyId: values.companyId,
+        facilityName: values.facilityName,
+        capacityDescription: values.capacityDescription,
+        year: values.year,
+      });
+      message.success("Participant recorded.");
+      participantForm.resetFields();
+    } catch (error) {
+      let errorText = "Failed to record participant.";
+      if (error && typeof error === "object" && "message" in error) {
+        const { message: errMessage } = error;
+        if (typeof errMessage === "string" && errMessage.length > 0) {
+          errorText = errMessage;
+        }
+      }
+      message.error(errorText);
+    } finally {
+      setParticipantSubmitting(false);
+    }
+  };
+
   return (
     <div style={{ maxWidth: 700, margin: "2rem auto" }}>
       <Card title="Record Emission Ceiling" style={{ marginBottom: "1.5rem" }}>
@@ -116,6 +156,12 @@ const EmissionTradingSubmit = () => {
             rules={[{ required: true, message: "Year is required" }]}
           >
             <InputNumber style={{ width: "100%" }} min={2020} max={2100} />
+          </Form.Item>
+          <Form.Item name="seriesName" label="Series Name">
+            <Input placeholder="e.g. Power Generation 2024" />
+          </Form.Item>
+          <Form.Item name="sector" label="Sector">
+            <Input placeholder="e.g. Power Generation" />
           </Form.Item>
           <Form.Item
             name="units"
@@ -176,6 +222,52 @@ const EmissionTradingSubmit = () => {
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={tradingSubmitting}>
               Submit Trading Transaction
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+
+      <Card title="Record Participant" style={{ marginTop: "1.5rem" }}>
+        <Form<EmissionParticipantFormValues>
+          form={participantForm}
+          layout="vertical"
+          onFinish={handleParticipantSubmit}
+        >
+          <Form.Item
+            name="companyId"
+            label="Company"
+            rules={[{ required: true, message: "Company is required" }]}
+          >
+            <CompanySelect />
+          </Form.Item>
+          <Form.Item
+            name="facilityName"
+            label="Power Unit / Facility Name"
+            rules={[{ required: true, message: "Facility name is required" }]}
+          >
+            <Input placeholder="e.g. Nam Ngum 1 Unit 2" />
+          </Form.Item>
+          <Form.Item
+            name="capacityDescription"
+            label="Power Capacity"
+            rules={[{ required: true, message: "Capacity is required" }]}
+          >
+            <Input placeholder="e.g. 50 MW" />
+          </Form.Item>
+          <Form.Item
+            name="year"
+            label="Year"
+            rules={[{ required: true, message: "Year is required" }]}
+          >
+            <InputNumber style={{ width: "100%" }} min={2020} max={2100} />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={participantSubmitting}
+            >
+              Submit Participant
             </Button>
           </Form.Item>
         </Form>

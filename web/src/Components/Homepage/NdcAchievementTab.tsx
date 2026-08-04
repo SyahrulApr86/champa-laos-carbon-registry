@@ -120,11 +120,11 @@ const NdcAchievementTab = () => {
       <section className="section">
         <h3 className="section-title">NDC Achievement</h3>
 
-        <div className="ndc-sector-tabs-nav">
+        <div className="ndc-pill-tabs-nav">
           {SECTOR_TABS.map((tab) => (
             <button
               key={tab.key}
-              className={`ndc-sector-tab-button ${
+              className={`ndc-pill-tab-button ${
                 activeSector === tab.key ? "active" : ""
               }`}
               onClick={() => setActiveSector(tab.key)}
@@ -140,53 +140,70 @@ const NdcAchievementTab = () => {
           </p>
         ) : (
           <>
-            <div className="donut-grid">
-              <div className="donut-card">
-                <div className="main-statistic">
-                  <div className="statistic-value">
-                    {summary.baselineEmissions.toLocaleString()}
-                  </div>
-                  <div className="statistic-title">
-                    Baseline Emissions (MtCO2e)
-                  </div>
+            <div className="ndc-kpi-row">
+              <div className="ndc-kpi-card">
+                <h4 className="ndc-kpi-card-title">Mitigation Actions</h4>
+                <p className="ndc-kpi-card-subtitle">
+                  Verified Emission Reduction Achievement ({summary.latestYear})
+                </p>
+                <div className="ndc-kpi-card-value">
+                  {emissionReduction.toLocaleString()}{" "}
+                  <span className="ndc-kpi-card-unit">Million Tons CO2e</span>
+                </div>
+                <p className="ndc-kpi-card-caption">
+                  Based on verification data {summary.latestYear}
+                </p>
+              </div>
+
+              <div className="ndc-kpi-card">
+                <h4 className="ndc-kpi-card-title">Inventory</h4>
+                <div className="ndc-kpi-card-stat-row">
+                  <span className="ndc-kpi-card-stat-label">Baseline</span>
+                  <span className="ndc-kpi-card-stat-value">
+                    {summary.baselineEmissions.toLocaleString()}{" "}
+                    <span className="ndc-kpi-card-unit">Million Tons CO2e</span>
+                  </span>
+                </div>
+                <div className="ndc-kpi-card-stat-row">
+                  <span className="ndc-kpi-card-stat-label">Emission Level</span>
+                  <span className="ndc-kpi-card-stat-value">
+                    {emissionLevel.toLocaleString()}{" "}
+                    <span className="ndc-kpi-card-unit">Million Tons CO2e</span>
+                  </span>
+                </div>
+                <div className="ndc-kpi-card-stat-row">
+                  <span className="ndc-kpi-card-stat-label">
+                    Emission Reduction
+                  </span>
+                  <span className="ndc-kpi-card-stat-value">
+                    {emissionReduction.toLocaleString()}{" "}
+                    <span className="ndc-kpi-card-unit">Million Tons CO2e</span>
+                  </span>
                 </div>
               </div>
-              <div className="donut-card">
-                <div className="main-statistic">
-                  <div className="statistic-value">
-                    {emissionLevel.toLocaleString()}
-                  </div>
-                  <div className="statistic-title">
-                    Emission Level — {summary.latestYear} (MtCO2e)
-                  </div>
-                </div>
-              </div>
-              <div className="donut-card">
-                <div className="main-statistic">
-                  <div className="statistic-value">
-                    {emissionReduction.toLocaleString()}
-                  </div>
-                  <div className="statistic-title">
-                    Emission Reduction (MtCO2e)
-                  </div>
-                </div>
-              </div>
-              <div className="donut-card">
-                <div className="main-statistic">
-                  <div className="statistic-value">
-                    {summary.contributionPercent.toFixed(1)}%
-                  </div>
-                  <div className="statistic-title">
+
+              <div className="ndc-kpi-card contribution">
+                <div className="ndc-kpi-card-contribution-top">
+                  <h4 className="ndc-kpi-card-title">
                     NDC Target Achievement Contribution
+                  </h4>
+                  <p className="ndc-kpi-card-subtitle">
+                    Emission Reduction Achievements from BAU in available year
+                    ({summary.latestYear})
+                  </p>
+                  <div className="ndc-kpi-card-value">
+                    {summary.contributionPercent.toFixed(2)}%
                   </div>
+                  <p className="ndc-kpi-card-caption">
+                    Contribution from BAU in available year ({summary.latestYear})
+                  </p>
                 </div>
-              </div>
-              <div className="donut-card">
-                <div className="main-statistic">
-                  <div className="statistic-value">
-                    {summary.targetEmissions2030.toLocaleString()}
+                <div className="ndc-kpi-card-contribution-bottom">
+                  <span className="ndc-kpi-card-stat-label">2030 Target</span>
+                  <div className="ndc-kpi-card-value">
+                    {(summary.targetEmissions2030 * 1_000_000).toLocaleString()}{" "}
+                    <span className="ndc-kpi-card-unit">Tons CO2e</span>
                   </div>
-                  <div className="statistic-title">2030 Target (MtCO2e)</div>
                 </div>
               </div>
             </div>

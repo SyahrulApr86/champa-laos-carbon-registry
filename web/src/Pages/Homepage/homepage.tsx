@@ -225,6 +225,21 @@ const Homepage = () => {
                     >
                       <a onClick={(e) => e.preventDefault()}>Instruments</a>
                     </Dropdown>
+                    <a
+                      onClick={() => {
+                        navigate("/");
+                        window.location.hash = "ndc";
+                        setTimeout(
+                          () =>
+                            document
+                              .querySelector(".registry-tabs-container")
+                              ?.scrollIntoView({ block: "start" }),
+                          50
+                        );
+                      }}
+                    >
+                      NDC Achievement
+                    </a>
                   </nav>
                 </div>
               </Col>

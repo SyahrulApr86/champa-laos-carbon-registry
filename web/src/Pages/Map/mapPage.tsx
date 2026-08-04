@@ -39,6 +39,13 @@ const MapPage = () => {
               <a onClick={() => navigate("/map")}>Map</a>
               <a onClick={() => navigate("/about")}>About</a>
               <a onClick={() => navigate("/instruments")}>Instruments</a>
+              <a
+                onClick={() => {
+                  navigate("/#ndc");
+                }}
+              >
+                NDC Achievement
+              </a>
             </nav>
           </div>
         </Col>

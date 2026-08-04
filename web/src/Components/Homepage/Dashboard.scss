@@ -90,6 +90,151 @@
   }
 }
 
+/* NDC sector pill tabs (All/Energy/IPPU/Agriculture/Forestry/Waste) */
+.ndc-pill-tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.ndc-pill-tab-button {
+  background: #ffffff;
+  border: 1.5px solid #CBD5E0;
+  border-radius: 999px;
+  padding: 0.55rem 1.4rem;
+  font-family: Inter;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4A5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #0D2E63;
+    color: #0D2E63;
+  }
+
+  &.active {
+    background: #0D2E63;
+    border-color: #0D2E63;
+    color: #ffffff;
+  }
+}
+
+/* NDC Achievement 3-card KPI row (Mitigation Actions / Inventory / Contribution) */
+.ndc-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.ndc-kpi-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.06);
+
+  &.contribution {
+    padding: 0;
+    overflow: hidden;
+    border: none;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.ndc-kpi-card-contribution-top {
+  background: #0D2E63;
+  color: #ffffff;
+  padding: 1.75rem;
+
+  .ndc-kpi-card-title,
+  .ndc-kpi-card-subtitle,
+  .ndc-kpi-card-caption {
+    color: #ffffff;
+  }
+
+  .ndc-kpi-card-subtitle,
+  .ndc-kpi-card-caption {
+    opacity: 0.8;
+  }
+}
+
+.ndc-kpi-card-contribution-bottom {
+  background: #0A2350;
+  color: #ffffff;
+  padding: 1.1rem 1.75rem;
+
+  .ndc-kpi-card-stat-label {
+    opacity: 0.8;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .ndc-kpi-card-value {
+    font-size: 1.4rem;
+    margin: 0;
+  }
+}
+
+.ndc-kpi-card-title {
+  color: #00252B;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.ndc-kpi-card-subtitle {
+  color: #4A5568;
+  font-size: 0.85rem;
+  margin: 0 0 1rem 0;
+}
+
+.ndc-kpi-card-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #0D2E63;
+  line-height: 1.2;
+}
+
+.ndc-kpi-card-unit {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #4A5568;
+}
+
+.ndc-kpi-card-caption {
+  font-size: 0.8rem;
+  color: #718096;
+  margin-top: 0.5rem;
+}
+
+.ndc-kpi-card-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #EDF2F7;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.ndc-kpi-card-stat-label {
+  color: #4A5568;
+  font-size: 0.9rem;
+}
+
+.ndc-kpi-card-stat-value {
+  font-weight: 700;
+  color: #00252B;
+  font-size: 1.1rem;
+}
+
 /* Header Styles */
 .dashboard-header {
   margin-bottom: 2rem;

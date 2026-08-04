@@ -38,7 +38,11 @@ const TABS: { key: TabKey; label: string }[] = [
 // live data fetch.
 
 const RegistryTabs = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>("mitigation");
+  const initialTab = (): TabKey => {
+    const hash = window.location.hash.replace("#", "") as TabKey;
+    return TABS.some((tab) => tab.key === hash) ? hash : "mitigation";
+  };
+  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
 
   return (
     <div className="registry-tabs-container">

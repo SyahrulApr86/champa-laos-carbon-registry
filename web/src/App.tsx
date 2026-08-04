@@ -49,6 +49,8 @@ import Reports from "./Pages/Reports/Reports";
 import MethodologyDirectory from "./Pages/Methodology/methodology";
 import PublicProjectSearch from "./Pages/PublicProjectSearch/publicProjectSearch";
 import PublicProjectDetail from "./Pages/PublicProjectDetail/publicProjectDetail";
+import PublicCommunityDetail from "./Pages/PublicCommunityDetail/publicCommunityDetail";
+import PublicAdaptationDetail from "./Pages/PublicAdaptationDetail/publicAdaptationDetail";
 import AdaptationSubmit from "./Pages/Adaptation/adaptationSubmit";
 import AdaptationManagement from "./Pages/Adaptation/adaptationManagement";
 import ClimateFinanceSubmit from "./Pages/ClimateFinance/climateFinanceSubmit";
@@ -128,6 +130,14 @@ const App = () => {
                 <Route
                   path="public/project/:programmeId"
                   element={<PublicProjectDetail />}
+                />
+                <Route
+                  path="public/community/:programId"
+                  element={<PublicCommunityDetail />}
+                />
+                <Route
+                  path="public/adaptation/:adaptationId"
+                  element={<PublicAdaptationDetail />}
                 />
                 <Route path="/" element={<Homepage />} />
                 <Route path="/" element={<PrivateRoute />}>

@@ -8,6 +8,7 @@ import { AdaptationSector } from "../enum/adaptation.sector.enum";
 import { AdaptationStage } from "../enum/adaptation.stage.enum";
 import { CompanyRole } from "../enum/company.role.enum";
 import { User } from "../entities/user.entity";
+import { Company } from "../entities/company.entity";
 
 @Injectable()
 export class AdaptationService {
@@ -15,7 +16,9 @@ export class AdaptationService {
 
   constructor(
     @InjectRepository(AdaptationProjectEntity)
-    private adaptationRepo: Repository<AdaptationProjectEntity>
+    private adaptationRepo: Repository<AdaptationProjectEntity>,
+    @InjectRepository(Company)
+    private companyRepo: Repository<Company>
   ) {}
 
   // Only project developers submit adaptation projects.
@@ -145,6 +148,45 @@ export class AdaptationService {
       totalProjects: projects.length,
       bySector,
       byStage,
+    };
+  }
+
+  // Public, unauthenticated single-project detail lookup - keyed by the
+  // human-readable adaptationId (e.g. ADP-0001), never the internal
+  // numeric id. Never throws on a missing id: returns { found: false }.
+  // Responsible org name/address are resolved from the linked Company
+  // (a real FK on the entity), matching SRN's "Responsible organization"
+  // panel - this project registry, unlike CommunityProgramEntity, does
+  // track a submitting organisation.
+  async publicDetail(id: string): Promise<any> {
+    const key = (id || "").trim();
+    if (!key) {
+      return { found: false };
+    }
+
+    const project = await this.adaptationRepo.findOneBy({
+      adaptationId: key,
+    });
+    if (!project) {
+      return { found: false };
+    }
+
+    const company = await this.companyRepo.findOneBy({
+      companyId: project.companyId,
+    });
+
+    return {
+      found: true,
+      adaptationId: project.adaptationId,
+      title: project.title,
+      description: project.description,
+      sector: project.sector,
+      region: project.region,
+      currentStage: project.currentStage,
+      responsibleOrgName: company?.name,
+      responsibleOrgAddress: company?.address,
+      responsibleOrgType: company?.companyRole,
+      createdAt: project.createdAt,
     };
   }
 }

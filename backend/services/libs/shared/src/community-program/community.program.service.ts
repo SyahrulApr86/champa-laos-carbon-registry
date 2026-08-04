@@ -57,4 +57,38 @@ export class CommunityProgramService {
       totalParticipants,
     };
   }
+
+  // Public, unauthenticated single-program detail lookup - keyed by the
+  // human-readable programId (e.g. CCP-0001), never the internal numeric
+  // id. Never throws on a missing id: returns { found: false }.
+  // CommunityProgramEntity, unlike AdaptationProjectEntity, has no
+  // submitting-company FK - so unlike the Adaptation detail response,
+  // no "Responsible organization" field is returned here; the frontend
+  // must not fabricate one.
+  async publicDetail(id: string): Promise<any> {
+    const key = (id || "").trim();
+    if (!key) {
+      return { found: false };
+    }
+
+    const record = await this.communityProgramRepo.findOneBy({
+      programId: key,
+    });
+    if (!record) {
+      return { found: false };
+    }
+
+    return {
+      found: true,
+      programId: record.programId,
+      name: record.name,
+      region: record.region,
+      category: record.category,
+      description: record.description,
+      participantCount: record.participantCount,
+      startYear: record.startYear,
+      status: record.status,
+      createdAt: record.createdAt,
+    };
+  }
 }

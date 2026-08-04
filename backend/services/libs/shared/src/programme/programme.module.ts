@@ -28,6 +28,9 @@ import { EventLog } from "../entities/event.log.entity";
 import { Region } from "../entities/region.entity";
 import { CreditAuditLog } from "../entities/credit.audit.log.entity";
 import { DocumentEntity } from "../entities/document.entity";
+import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
+import { CommunityProgramEntity } from "../entities/community.program.entity";
+import { ReddPlusEntity } from "../entities/redd.plus.entity";
 
 @Module({
   imports: [
@@ -52,6 +55,9 @@ import { DocumentEntity } from "../entities/document.entity";
       Region,
       CreditAuditLog,
       DocumentEntity,
+      AdaptationProjectEntity,
+      CommunityProgramEntity,
+      ReddPlusEntity,
     ]),
     UtilModule,
     CompanyModule,

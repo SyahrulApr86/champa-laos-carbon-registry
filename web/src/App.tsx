@@ -55,6 +55,8 @@ import EmissionTradingSubmit from "./Pages/EmissionTrading/emissionTradingSubmit
 import NdcTargetSubmit from "./Pages/NdcTarget/ndcTargetSubmit";
 import About from "./Pages/About/about";
 import Instruments from "./Pages/Instruments/instruments";
+import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTransferSubmit";
+import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -249,6 +251,25 @@ const App = () => {
                     element={<CustomLayout selectedKey="ndcTarget/submit" />}
                   >
                     <Route path="submit" element={<NdcTargetSubmit />} />
+                  </Route>
+                  <Route
+                    path="/technologyTransfer"
+                    element={
+                      <CustomLayout selectedKey="technologyTransfer/submit" />
+                    }
+                  >
+                    <Route
+                      path="submit"
+                      element={<TechnologyTransferSubmit />}
+                    />
+                  </Route>
+                  <Route
+                    path="/capacityBuilding"
+                    element={
+                      <CustomLayout selectedKey="capacityBuilding/submit" />
+                    }
+                  >
+                    <Route path="submit" element={<CapacityBuildingSubmit />} />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

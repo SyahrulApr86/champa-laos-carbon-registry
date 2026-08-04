@@ -38,7 +38,8 @@ import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
 import { ClimateFinanceEntity } from "../entities/climate.finance.entity";
 import { NdcTargetEntity } from "../entities/ndc.target.entity";
 import { EmissionCeilingEntity } from "../entities/emission.ceiling.entity";
-
+import { TechnologyTransferEntity } from "../entities/technology.transfer.entity";
+import { CapacityBuildingEntity } from "../entities/capacity.building.entity";
 type Subjects = InferSubjects<typeof EntitySubject> | "all";
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;
@@ -72,6 +73,8 @@ export class CaslAbilityFactory {
     can([Action.Manage], ClimateFinanceEntity);
     can([Action.Manage], NdcTargetEntity);
     can([Action.Manage], EmissionCeilingEntity);
+    can([Action.Manage], TechnologyTransferEntity);
+    can([Action.Manage], CapacityBuildingEntity);
         can([Action.Manage], Company);
         cannot([Action.Update, Action.Delete], User, {
           companyId: { $ne: user.companyId },

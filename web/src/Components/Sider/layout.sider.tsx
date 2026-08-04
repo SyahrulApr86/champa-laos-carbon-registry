@@ -122,6 +122,16 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "ndcTarget/submit",
           <Icon.BarChartLine />
         ),
+        getItem(
+          t("nav:recordTechTransfer"),
+          "technologyTransfer/submit",
+          <Icon.Cpu />
+        ),
+        getItem(
+          t("nav:recordCapacityBuilding"),
+          "capacityBuilding/submit",
+          <Icon.MortarboardFill />
+        ),
       ])
     );
   }

@@ -69,4 +69,6 @@ export const ROUTES = {
   CLIMATE_FINANCE_SUBMIT: '/climateFinance/submit',
   EMISSION_TRADING_SUBMIT: '/emissionTrading/submit',
   NDC_TARGET_SUBMIT: '/ndcTarget/submit',
+  TECHNOLOGY_TRANSFER_SUBMIT: '/technologyTransfer/submit',
+  CAPACITY_BUILDING_SUBMIT: '/capacityBuilding/submit',
 };

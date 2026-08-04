@@ -24,6 +24,7 @@ import { TechnologyTransferController } from "./technology.transfer.controller";
 import { CapacityBuildingController } from "./capacity.building.controller";
 import { CommunityProgramController } from "./community.program.controller";
 import { ReddPlusController } from "./redd.plus.controller";
+import { RecognizedMitigationController } from "./recognized.mitigation.controller";
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ReddPlusController } from "./redd.plus.controller";
     CapacityBuildingController,
     CommunityProgramController,
     ReddPlusController,
+    RecognizedMitigationController,
   ],
   providers: [NationalAPIService, Logger],
 })

@@ -60,6 +60,7 @@ import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTrans
 import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
 import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSubmit";
 import ReddPlusSubmit from "./Pages/ReddPlus/reddPlusSubmit";
+import RecognizedMitigationSubmit from "./Pages/RecognizedMitigation/recognizedMitigationSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -291,6 +292,17 @@ const App = () => {
                     element={<CustomLayout selectedKey="reddPlus/submit" />}
                   >
                     <Route path="submit" element={<ReddPlusSubmit />} />
+                  </Route>
+                  <Route
+                    path="/recognizedMitigation"
+                    element={
+                      <CustomLayout selectedKey="recognizedMitigation/submit" />
+                    }
+                  >
+                    <Route
+                      path="submit"
+                      element={<RecognizedMitigationSubmit />}
+                    />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

@@ -226,6 +226,14 @@ export const API_PATHS = {
   //REDD+ FOREST CARBON
   REDD_PLUS_PUBLIC_BY_PROVINCE: "national/reddPlus/public/byProvince",
   REDD_PLUS_CREATE: "national/reddPlus",
+  //RECOGNIZED MITIGATION ACTIONS (SMALLER-SCALE, NON-PROGRAMME-TRACK)
+  RECOGNIZED_MITIGATION_PUBLIC_SEARCH: (q: string, page = 1, size = 10) =>
+    `national/recognizedMitigation/public/search?q=${encodeURIComponent(
+      q
+    )}&page=${page}&size=${size}`,
+  RECOGNIZED_MITIGATION_PUBLIC_SUMMARY:
+    "national/recognizedMitigation/public/summary",
+  RECOGNIZED_MITIGATION_CREATE: "national/recognizedMitigation",
   //VALIDATION/VERIFICATION AGENCIES (INDEPENDENT CERTIFIERS)
   CERTIFIERS_PUBLIC_LIST: "national/organisation/public/certifiers",
 };

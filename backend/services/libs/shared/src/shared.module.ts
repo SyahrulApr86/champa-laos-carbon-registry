@@ -34,6 +34,7 @@ import { TechnologyTransferModule } from "./technology-transfer/technology.trans
 import { CapacityBuildingModule } from "./capacity-building/capacity.building.module";
 import { CommunityProgramModule } from "./community-program/community.program.module";
 import { ReddPlusModule } from "./redd-plus/redd.plus.module";
+import { RecognizedMitigationModule } from "./recognized-mitigation/recognized.mitigation.module";
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { ReddPlusModule } from "./redd-plus/redd.plus.module";
     CapacityBuildingModule,
     CommunityProgramModule,
     ReddPlusModule,
+    RecognizedMitigationModule,
   ],
   providers: [SharedService],
   exports: [
@@ -109,6 +111,7 @@ import { ReddPlusModule } from "./redd-plus/redd.plus.module";
     CapacityBuildingModule,
     CommunityProgramModule,
     ReddPlusModule,
+    RecognizedMitigationModule,
   ],
 })
 export class SharedModule {}

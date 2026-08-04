@@ -7634,6 +7634,20 @@ export class ProgrammeService {
     return stage === ProgrammeStage.AUTHORISED ? "Registered" : "Under Review";
   }
 
+  // Detail-page variant: unlike the list-search bucket above, a single
+  // project's public detail page is expected to honestly say "Rejected"
+  // (SRN Indonesia's own detail pages do) — it just never exposes who
+  // rejected it or why, which stays internal-only.
+  private toPublicProgrammeDetailStatus(stage: ProgrammeStage): string {
+    if (stage === ProgrammeStage.AUTHORISED) {
+      return "Registered";
+    }
+    if (stage === ProgrammeStage.REJECTED) {
+      return "Rejected";
+    }
+    return "Under Review";
+  }
+
   // Public, unauthenticated project search reading directly from the
   // Programme table (the model that create/authorize actually writes to),
   // instead of the read-only ProjectEntity table which the replicator never
@@ -7809,5 +7823,45 @@ export class ProgrammeService {
       });
     }
     return result;
+  }
+
+  // Public, unauthenticated single-project detail lookup — same public-safe
+  // field allowlist philosophy as publicSearch above (registration/title/
+  // sector/coarse status/proponent), extended with the handful of extra
+  // fields SRN Indonesia's public detail page shows (activity period,
+  // location, estimated credits, submission date). Reads the query view so
+  // proponent company names come pre-joined, same as publicSearch.
+  async getPublicProgrammeDetail(programmeId: string): Promise<any> {
+    const id = (programmeId || "").trim();
+    if (!id) {
+      return { found: false };
+    }
+
+    const programme = await this.programmeViewRepo
+      .createQueryBuilder("programme")
+      .where(`"programme"."programmeId" = :id`, { id })
+      .getOne();
+
+    if (!programme) {
+      return { found: false };
+    }
+
+    return {
+      found: true,
+      programmeId: programme.programmeId,
+      title: programme.title,
+      sector: programme.sector,
+      sectoralScope: programme.sectoralScope,
+      currentStage: this.toPublicProgrammeDetailStatus(programme.currentStage),
+      startTime: programme.startTime,
+      endTime: programme.endTime,
+      geographicalLocation:
+        programme.programmeProperties?.geographicalLocation ?? [],
+      creditEst: programme.creditEst,
+      proponent: (programme.company ?? [])
+        .map((c) => c?.name)
+        .filter((name): name is string => !!name),
+      createdTime: programme.createdTime,
+    };
   }
 }

@@ -17,6 +17,7 @@ import {
   HttpException,
   HttpStatus,
   Get,
+  Param,
   Query,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -91,5 +92,13 @@ export class ProjectManagementController {
   @Get("public/mapSummary")
   async publicMapSummary() {
     return this.programmeService.getPublicMapSummary();
+  }
+
+  // Public, unauthenticated single-project detail lookup — see
+  // ProgrammeService.getPublicProgrammeDetail for the field allowlist.
+  // Never throws on a missing programmeId: returns { found: false }.
+  @Get("public/detail/:programmeId")
+  async publicDetail(@Param("programmeId") programmeId: string) {
+    return this.programmeService.getPublicProgrammeDetail(programmeId);
   }
 }

@@ -23,6 +23,10 @@ export const API_PATHS = {
       q
     )}&page=${page}&size=${size}`,
   PROJECT_MAP_SUMMARY: "national/projectManagement/public/mapSummary",
+  PUBLIC_PROJECT_DETAIL: (programmeId: string) =>
+    `national/projectManagement/public/detail/${encodeURIComponent(
+      programmeId
+    )}`,
   PROJECT_BY_ID: "national/programmeSl/getProjectById",
   ALL_PROJECTS: "national/programme/query",
   ADD_PROJECT_DOC: "national/programme/addDocument",

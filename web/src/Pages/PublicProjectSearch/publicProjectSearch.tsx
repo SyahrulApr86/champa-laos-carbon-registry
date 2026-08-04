@@ -65,6 +65,11 @@ const PublicProjectSearch = () => {
       title: "Project Title",
       dataIndex: "title",
       key: "title",
+      render: (title: string, record: PublicProjectSearchResult) => (
+        <a onClick={() => navigate(`/public/project/${record.registrationNumber}`)}>
+          {title}
+        </a>
+      ),
     },
     {
       title: "Sector",
@@ -82,6 +87,19 @@ const PublicProjectSearch = () => {
       key: "status",
       render: (status: string) => (
         <Tag color={statusColor[status] || "default"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "",
+      key: "action",
+      render: (_: unknown, record: PublicProjectSearchResult) => (
+        <a
+          onClick={() =>
+            navigate(`/public/project/${record.registrationNumber}`)
+          }
+        >
+          See detail
+        </a>
       ),
     },
   ];

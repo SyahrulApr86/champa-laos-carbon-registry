@@ -226,4 +226,17 @@ export class CompanyController {
   async getOrganisationPublicDetails(@Body() query: QueryDto) {
     return this.companyService.queryOrganisationPublicDetails(query);
   }
+
+  // Public, unauthenticated list of active Validation/Verification agencies
+  // (independent certifiers) for the Instruments page. Intentionally has no
+  // @UseGuards/@CheckPolicies. Only public-safe fields are returned - see
+  // CompanyService.getPublicVerificationAgencies for the field allowlist.
+  @Get("public/certifiers")
+  async getPublicCertifiers() {
+    try {
+      return await this.companyService.getPublicVerificationAgencies();
+    } catch (err) {
+      return [];
+    }
+  }
 }

@@ -1398,4 +1398,35 @@ export class CompanyService {
 
     return companies && companies.length > 0 ? companies[0] : undefined;
   }
+
+  // Public, unauthenticated list of active Validation/Verification agencies
+  // (independent certifiers) for the Instruments page. Only public-safe
+  // fields are selected - no email, phoneNo, taxId, or creditBalance.
+  async getPublicVerificationAgencies(): Promise<
+    {
+      companyId: number;
+      name: string;
+      country: string;
+      website: string;
+      address: string;
+      logo: string;
+    }[]
+  > {
+    const certifiers = await this.companyRepo.find({
+      where: {
+        companyRole: CompanyRole.INDEPENDENT_CERTIFIER,
+        state: CompanyState.ACTIVE,
+      },
+      order: { name: "ASC" },
+    });
+
+    return certifiers.map((c) => ({
+      companyId: c.companyId,
+      name: c.name,
+      country: c.country,
+      website: c.website,
+      address: c.address,
+      logo: c.logo,
+    }));
+  }
 }

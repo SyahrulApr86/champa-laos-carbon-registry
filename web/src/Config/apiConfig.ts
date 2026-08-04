@@ -216,4 +216,6 @@ export const API_PATHS = {
   COMMUNITY_PROGRAM_PUBLIC_LIST: "national/communityProgram/public/list",
   COMMUNITY_PROGRAM_PUBLIC_SUMMARY: "national/communityProgram/public/summary",
   COMMUNITY_PROGRAM_CREATE: "national/communityProgram",
+  //VALIDATION/VERIFICATION AGENCIES (INDEPENDENT CERTIFIERS)
+  CERTIFIERS_PUBLIC_LIST: "national/organisation/public/certifiers",
 };

@@ -38,6 +38,7 @@ import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
 import { ClimateFinanceEntity } from "../entities/climate.finance.entity";
 import { NdcTargetEntity } from "../entities/ndc.target.entity";
 import { EmissionCeilingEntity } from "../entities/emission.ceiling.entity";
+import { CommunityProgramEntity } from "../entities/community.program.entity";
 
 type Subjects = InferSubjects<typeof EntitySubject> | "all";
 
@@ -72,6 +73,7 @@ export class CaslAbilityFactory {
     can([Action.Manage], ClimateFinanceEntity);
     can([Action.Manage], NdcTargetEntity);
     can([Action.Manage], EmissionCeilingEntity);
+    can([Action.Manage], CommunityProgramEntity);
         can([Action.Manage], Company);
         cannot([Action.Update, Action.Delete], User, {
           companyId: { $ne: user.companyId },

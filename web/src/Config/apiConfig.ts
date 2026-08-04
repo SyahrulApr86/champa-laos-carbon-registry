@@ -206,4 +206,8 @@ export const API_PATHS = {
   NDC_TARGET_PUBLIC_LIST: "national/ndcTarget/public/list",
   NDC_TARGET_PUBLIC_SUMMARY: "national/ndcTarget/public/summary",
   NDC_TARGET_CREATE: "national/ndcTarget",
+  //COMMUNITY CLIMATE PROGRAMS
+  COMMUNITY_PROGRAM_PUBLIC_LIST: "national/communityProgram/public/list",
+  COMMUNITY_PROGRAM_PUBLIC_SUMMARY: "national/communityProgram/public/summary",
+  COMMUNITY_PROGRAM_CREATE: "national/communityProgram",
 };

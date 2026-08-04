@@ -122,6 +122,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "ndcTarget/submit",
           <Icon.BarChartLine />
         ),
+        getItem(
+          t("nav:recordCommunityProgram"),
+          "communityProgram/submit",
+          <Icon.People />
+        ),
       ])
     );
   }

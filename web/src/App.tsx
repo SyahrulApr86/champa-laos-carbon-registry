@@ -53,6 +53,7 @@ import AdaptationManagement from "./Pages/Adaptation/adaptationManagement";
 import ClimateFinanceSubmit from "./Pages/ClimateFinance/climateFinanceSubmit";
 import EmissionTradingSubmit from "./Pages/EmissionTrading/emissionTradingSubmit";
 import NdcTargetSubmit from "./Pages/NdcTarget/ndcTargetSubmit";
+import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -245,6 +246,17 @@ const App = () => {
                     element={<CustomLayout selectedKey="ndcTarget/submit" />}
                   >
                     <Route path="submit" element={<NdcTargetSubmit />} />
+                  </Route>
+                  <Route
+                    path="/communityProgram"
+                    element={
+                      <CustomLayout selectedKey="communityProgram/submit" />
+                    }
+                  >
+                    <Route
+                      path="submit"
+                      element={<CommunityProgramSubmit />}
+                    />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

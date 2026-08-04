@@ -30,6 +30,7 @@ import { AdaptationModule } from "./adaptation/adaptation.module";
 import { ClimateFinanceModule } from "./climate-finance/climate.finance.module";
 import { EmissionTradingModule } from "./emission-trading/emission.trading.module";
 import { NdcTargetModule } from "./ndc-target/ndc.target.module";
+import { CommunityProgramModule } from "./community-program/community.program.module";
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { NdcTargetModule } from "./ndc-target/ndc.target.module";
     ClimateFinanceModule,
     EmissionTradingModule,
     NdcTargetModule,
+    CommunityProgramModule,
   ],
   providers: [SharedService],
   exports: [
@@ -97,6 +99,7 @@ import { NdcTargetModule } from "./ndc-target/ndc.target.module";
     ClimateFinanceModule,
     EmissionTradingModule,
     NdcTargetModule,
+    CommunityProgramModule,
   ],
 })
 export class SharedModule {}

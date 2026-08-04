@@ -20,6 +20,7 @@ import { AdaptationController } from "./adaptation.controller";
 import { ClimateFinanceController } from "./climate.finance.controller";
 import { EmissionTradingController } from "./emission.trading.controller";
 import { NdcTargetController } from "./ndc.target.controller";
+import { CommunityProgramController } from "./community.program.controller";
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { NdcTargetController } from "./ndc.target.controller";
     ClimateFinanceController,
     EmissionTradingController,
     NdcTargetController,
+    CommunityProgramController,
   ],
   providers: [NationalAPIService, Logger],
 })

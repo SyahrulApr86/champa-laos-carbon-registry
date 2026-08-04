@@ -5,9 +5,16 @@ import AdaptationTab from "./AdaptationTab";
 import ResourcesTab from "./ResourcesTab";
 import NdcAchievementTab from "./NdcAchievementTab";
 import MapTab from "./MapTab";
+import CommunityProgramTab from "./CommunityProgramTab";
 import "./Dashboard.scss";
 
-type TabKey = "mitigation" | "adaptation" | "resources" | "map" | "ndc";
+type TabKey =
+  | "mitigation"
+  | "adaptation"
+  | "resources"
+  | "map"
+  | "ndc"
+  | "community";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "mitigation", label: "Mitigation" },
@@ -15,13 +22,14 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "resources", label: "Resources" },
   { key: "map", label: "Map" },
   { key: "ndc", label: "NDC Achievement" },
+  { key: "community", label: "Community Programs" },
 ];
 
 // Category tab switcher mirroring the structure of national registry portals
-// like Indonesia's SRN (Mitigation / Adaptation / Resources), minus a
-// Proklim-equivalent tab since Lao PDR has no matching community climate
-// village program. Each tab's content is a self-contained component with its
-// own live data fetch.
+// like Indonesia's SRN (Mitigation / Adaptation / Resources / community
+// programs). Each tab's content is a self-contained component with its own
+// live data fetch.
+
 const RegistryTabs = () => {
   const [activeTab, setActiveTab] = useState<TabKey>("mitigation");
 
@@ -51,6 +59,7 @@ const RegistryTabs = () => {
       {activeTab === "resources" && <ResourcesTab />}
       {activeTab === "map" && <MapTab />}
       {activeTab === "ndc" && <NdcAchievementTab />}
+      {activeTab === "community" && <CommunityProgramTab />}
     </div>
   );
 };

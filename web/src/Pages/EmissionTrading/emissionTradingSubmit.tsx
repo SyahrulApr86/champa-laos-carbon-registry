@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Card,
-  DatePicker,
-  Form,
-  InputNumber,
-  Typography,
-  message,
-} from "antd";
+import { Button, Card, DatePicker, Form, InputNumber, message } from "antd";
 import { Link } from "react-router-dom";
 import { Moment } from "moment";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { useUserContext } from "../../Context/UserInformationContext/userInformationContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { CompanyRole } from "../../Definitions/Enums/company.role.enum";
+import CompanySelect from "../../Components/Common/CompanySelect";
 
 interface EmissionCeilingFormValues {
   companyId: number;
@@ -112,17 +105,11 @@ const EmissionTradingSubmit = () => {
         >
           <Form.Item
             name="companyId"
-            label="Company ID (numeric)"
-            rules={[{ required: true, message: "Company ID is required" }]}
+            label="Company"
+            rules={[{ required: true, message: "Company is required" }]}
           >
-            <InputNumber style={{ width: "100%" }} min={1} />
+            <CompanySelect />
           </Form.Item>
-          <Typography.Text
-            type="secondary"
-            style={{ display: "block", marginTop: "-0.75rem", marginBottom: "1rem" }}
-          >
-            Enter the numeric company ID as shown in Company Management.
-          </Typography.Text>
           <Form.Item
             name="year"
             label="Year"
@@ -153,21 +140,21 @@ const EmissionTradingSubmit = () => {
         >
           <Form.Item
             name="sellerCompanyId"
-            label="Seller Company ID"
+            label="Seller Company"
             rules={[
-              { required: true, message: "Seller company ID is required" },
+              { required: true, message: "Seller company is required" },
             ]}
           >
-            <InputNumber style={{ width: "100%" }} min={1} />
+            <CompanySelect />
           </Form.Item>
           <Form.Item
             name="buyerCompanyId"
-            label="Buyer Company ID"
+            label="Buyer Company"
             rules={[
-              { required: true, message: "Buyer company ID is required" },
+              { required: true, message: "Buyer company is required" },
             ]}
           >
-            <InputNumber style={{ width: "100%" }} min={1} />
+            <CompanySelect />
           </Form.Item>
           <Form.Item
             name="units"

@@ -26,5 +26,10 @@
   "credits": "Credits",
   "hbarCreditsBalance": "HBAR Balance",
   "organization": "Organisation",
-  "user": "User"
+  "user": "User",
+  "submitAdaptation": "Submit Adaptation",
+  "climatePrograms": "Climate Programs",
+  "reviewAdaptation": "Review Adaptation",
+  "recordFinance": "Record Finance",
+  "recordTrading": "Record Trading"
 }

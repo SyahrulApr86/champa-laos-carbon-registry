@@ -24,6 +24,12 @@ export const DonutBreakdown = ({
   totalLabel: string;
 }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const formatCompact = (n: number) =>
+    new Intl.NumberFormat("en-US", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(n);
+
   return (
     <div className="donut-breakdown">
       <Chart
@@ -36,16 +42,28 @@ export const DonutBreakdown = ({
           legend: { show: false },
           dataLabels: { enabled: false },
           stroke: { width: 2 },
+          tooltip: {
+            y: {
+              formatter: (value: number) => value.toLocaleString(),
+            },
+          },
           plotOptions: {
             pie: {
               donut: {
-                size: "70%",
+                size: "72%",
                 labels: {
                   show: true,
+                  value: {
+                    fontSize: "20px",
+                    fontWeight: 700,
+                    offsetY: -4,
+                    formatter: (val: string) => formatCompact(Number(val)),
+                  },
                   total: {
                     show: true,
                     label: totalLabel,
-                    formatter: () => total.toLocaleString(),
+                    fontSize: "13px",
+                    formatter: () => formatCompact(total),
                   },
                 },
               },

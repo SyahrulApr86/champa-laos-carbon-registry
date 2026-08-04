@@ -86,6 +86,41 @@ const LayoutSider = (props: LayoutSiderProps) => {
     );
   }
 
+  if (userInfoState?.companyRole === CompanyRole.PROJECT_DEVELOPER) {
+    items.push(
+      getItem(
+        t("nav:submitAdaptation"),
+        "adaptation/submit",
+        <Icon.CloudSun />
+      )
+    );
+  }
+
+  if (
+    userInfoState?.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY ||
+    userInfoState?.companyRole === CompanyRole.MINISTRY
+  ) {
+    items.push(
+      getItem(t("nav:climatePrograms"), "climatePrograms", <Icon.CloudSun />, [
+        getItem(
+          t("nav:reviewAdaptation"),
+          "adaptation/manage",
+          <Icon.ClipboardCheck />
+        ),
+        getItem(
+          t("nav:recordFinance"),
+          "climateFinance/submit",
+          <Icon.CashCoin />
+        ),
+        getItem(
+          t("nav:recordTrading"),
+          "emissionTrading/submit",
+          <Icon.ArrowLeftRight />
+        ),
+      ])
+    );
+  }
+
 
   if (
     userInfoState?.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY &&

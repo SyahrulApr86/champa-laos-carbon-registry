@@ -43,18 +43,10 @@ const LayoutFooter = () => {
           <div className="footertext-link-container">
             <div>
               <a
-                href="https://nationalcarbonregistrydemo.tawk.help/"
-                target="_blank"
+                href="/help"
                 className="footertext-links"
               >
                 {t("homepage:Help")}
-              </a>
-              <a
-                href="https://status.carbreg.org/"
-                target="_blank"
-                className="footertext-links"
-              >
-                {t("homepage:Status")}
               </a>
               <a href="/cookie" target="_blank" className="footertext-links">
                 {t("homepage:Cookie")}

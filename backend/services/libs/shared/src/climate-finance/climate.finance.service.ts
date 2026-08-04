@@ -53,13 +53,20 @@ export class ClimateFinanceService {
     totalAmountLAK: number;
     totalAmountUSD: number;
     bySector: Record<string, number>;
+    bySectorLAK: Record<string, number>;
+    bySectorUSD: Record<string, number>;
     byChannel: Record<string, { amount: number; percentage: number }>;
   }> {
     const records = await this.climateFinanceRepo.find();
 
     let totalAmountLAK = 0;
     let totalAmountUSD = 0;
+    // Legacy combined field (LAK-only despite the generic name; kept for
+    // backward compatibility with any existing consumers).
     const bySector: Record<string, number> = {};
+    // Currency-specific splits, additive: sum only the actual amountLAK /
+    // amountUSD values entered per record, never derived/converted.
+    const bySectorUSD: Record<string, number> = {};
     const byChannelAmount: Record<string, number> = {};
 
     for (const record of records) {
@@ -69,6 +76,7 @@ export class ClimateFinanceService {
       totalAmountUSD += usd;
 
       bySector[record.sector] = (bySector[record.sector] || 0) + lak;
+      bySectorUSD[record.sector] = (bySectorUSD[record.sector] || 0) + usd;
       byChannelAmount[record.channel] =
         (byChannelAmount[record.channel] || 0) + lak;
     }
@@ -87,6 +95,8 @@ export class ClimateFinanceService {
       totalAmountLAK,
       totalAmountUSD,
       bySector,
+      bySectorLAK: bySector,
+      bySectorUSD,
       byChannel,
     };
   }

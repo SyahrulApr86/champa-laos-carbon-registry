@@ -78,12 +78,14 @@ export class ProjectManagementController {
   async publicSearch(
     @Query("q") q: string,
     @Query("page") page?: string,
-    @Query("size") size?: string
+    @Query("size") size?: string,
+    @Query("stage") stage?: string
   ) {
     return this.programmeService.publicSearch(
       q,
       page ? parseInt(page, 10) : 1,
-      size ? parseInt(size, 10) : 10
+      size ? parseInt(size, 10) : 10,
+      stage
     );
   }
 

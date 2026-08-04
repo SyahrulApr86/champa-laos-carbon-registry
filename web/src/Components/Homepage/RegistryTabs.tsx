@@ -3,14 +3,16 @@ import CarbonDashboard from "./CarbonDashboard";
 import RegistryTable from "./RegistryTable";
 import AdaptationTab from "./AdaptationTab";
 import ResourcesTab from "./ResourcesTab";
+import MapTab from "./MapTab";
 import "./Dashboard.scss";
 
-type TabKey = "mitigation" | "adaptation" | "resources";
+type TabKey = "mitigation" | "adaptation" | "resources" | "map";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "mitigation", label: "Mitigation" },
   { key: "adaptation", label: "Adaptation" },
   { key: "resources", label: "Resources" },
+  { key: "map", label: "Map" },
 ];
 
 // Category tab switcher mirroring the structure of national registry portals
@@ -45,6 +47,7 @@ const RegistryTabs = () => {
       )}
       {activeTab === "adaptation" && <AdaptationTab />}
       {activeTab === "resources" && <ResourcesTab />}
+      {activeTab === "map" && <MapTab />}
     </div>
   );
 };

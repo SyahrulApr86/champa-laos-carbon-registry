@@ -85,4 +85,11 @@ export class ProjectManagementController {
       size ? parseInt(size, 10) : 10
     );
   }
+
+  // Public, unauthenticated province-level project map summary — see
+  // ProgrammeService.getPublicMapSummary for the aggregation logic.
+  @Get("public/mapSummary")
+  async publicMapSummary() {
+    return this.programmeService.getPublicMapSummary();
+  }
 }

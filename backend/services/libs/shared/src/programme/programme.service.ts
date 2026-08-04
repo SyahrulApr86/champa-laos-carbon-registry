@@ -7752,4 +7752,62 @@ export class ProgrammeService {
       },
     };
   }
+
+  // Public, unauthenticated province-level project map summary. Tallies
+  // programmes by their geographicalLocation province name(s) (a programme
+  // can list multiple provinces) and joins against the seeded Region table
+  // for map coordinates. Provinces with zero programmes are omitted (the
+  // frontend map only plots markers where there's real data).
+  async getPublicMapSummary(): Promise<
+    { province: string; projectCount: number; lat: number; lng: number }[]
+  > {
+    const programmes = await this.programmeRepo.find();
+    const countByProvince: Record<string, number> = {};
+
+    for (const programme of programmes) {
+      const locations = programme.programmeProperties?.geographicalLocation;
+      if (!Array.isArray(locations)) {
+        continue;
+      }
+      for (const province of locations) {
+        countByProvince[province] = (countByProvince[province] || 0) + 1;
+      }
+    }
+
+    const provinceNames = Object.keys(countByProvince);
+    if (provinceNames.length === 0) {
+      return [];
+    }
+
+    const regions = await this.regionRepo.find({
+      where: provinceNames.map((name) => ({ regionName: name })),
+    });
+
+    const result: {
+      province: string;
+      projectCount: number;
+      lat: number;
+      lng: number;
+    }[] = [];
+    for (const region of regions) {
+      // geoCoordinates is stored as a raw [longitude, latitude] jsonb array
+      // by FileLocationService (see location/file.location.service.ts),
+      // matching the Longitude/Latitude columns of regions.csv.
+      const coords = region.geoCoordinates as unknown;
+      if (!Array.isArray(coords) || coords.length < 2) {
+        continue;
+      }
+      const [lng, lat] = coords;
+      if (typeof lat !== "number" || typeof lng !== "number") {
+        continue;
+      }
+      result.push({
+        province: region.regionName,
+        projectCount: countByProvince[region.regionName] ?? 0,
+        lat,
+        lng,
+      });
+    }
+    return result;
+  }
 }

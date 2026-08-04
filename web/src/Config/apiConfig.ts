@@ -22,6 +22,7 @@ export const API_PATHS = {
     `national/projectManagement/public/search?q=${encodeURIComponent(
       q
     )}&page=${page}&size=${size}`,
+  PROJECT_MAP_SUMMARY: "national/projectManagement/public/mapSummary",
   PROJECT_BY_ID: "national/programmeSl/getProjectById",
   ALL_PROJECTS: "national/programme/query",
   ADD_PROJECT_DOC: "national/programme/addDocument",

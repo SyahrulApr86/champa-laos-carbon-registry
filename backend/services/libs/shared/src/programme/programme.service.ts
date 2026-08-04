@@ -7668,6 +7668,21 @@ export class ProgrammeService {
   // Reads Programme directly for the same reason as publicSearch above.
   async getPublicSummary(): Promise<any> {
     const programmes = await this.programmeRepo.find();
+    const companies = await this.companyRepo.find({
+      where: { state: CompanyState.ACTIVE },
+    });
+
+    const proponentsByRole: Record<string, number> = {
+      [CompanyRole.PROJECT_DEVELOPER]: 0,
+      [CompanyRole.INDEPENDENT_CERTIFIER]: 0,
+      [CompanyRole.MINISTRY]: 0,
+      [CompanyRole.DESIGNATED_NATIONAL_AUTHORITY]: 0,
+    };
+    for (const company of companies) {
+      if (proponentsByRole[company.companyRole] !== undefined) {
+        proponentsByRole[company.companyRole]++;
+      }
+    }
 
     let authorisedCount = 0;
     let pendingCount = 0;
@@ -7716,6 +7731,7 @@ export class ProgrammeService {
         rejected: rejectedCount,
       },
       projectsBySector,
+      proponentsByRole,
       credits: {
         authorised: issued,
         issued,

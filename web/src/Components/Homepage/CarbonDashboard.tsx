@@ -19,16 +19,20 @@ interface PublicAnalyticsSummary {
     retired: number;
     available: number;
   };
+  projectsBySector: Record<string, number>;
+  proponentsByRole: Record<string, number>;
 }
 
 const emptySummary: PublicAnalyticsSummary = {
   totalProjects: 0,
   projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
   credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
+  projectsBySector: {},
+  proponentsByRole: {},
 };
 
 const CarbonDashboard = () => {
-  const { i18n, t } = useTranslation(["common", "homepage"]);
+  const { i18n, t } = useTranslation(["common", "homepage", "companyRoles"]);
   const { get } = useConnection();
   const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
   const [projectCount, setProjectCount] = useState(0);
@@ -57,6 +61,8 @@ const CarbonDashboard = () => {
               retired: data.credits?.retired ?? 0,
               available: data.credits?.available ?? 0,
             },
+            projectsBySector: data.projectsBySector ?? {},
+            proponentsByRole: data.proponentsByRole ?? {},
           });
         }
       } catch (error) {
@@ -145,6 +151,17 @@ const CarbonDashboard = () => {
     { value: summary.credits.transferred, title: t("homepage:transferred") },
     { value: summary.credits.retired, title: t("homepage:retired") },
   ];
+
+  const sectorData = Object.entries(summary.projectsBySector)
+    .filter(([, value]) => value > 0)
+    .map(([sector, value]) => ({ value, title: sector }));
+
+  const proponentData = Object.entries(summary.proponentsByRole).map(
+    ([role, value]) => ({
+      value,
+      title: t(`companyRoles:${role}`, { defaultValue: role }),
+    })
+  );
 
   return (
     <div className="carbon-dashboard">
@@ -240,6 +257,54 @@ const CarbonDashboard = () => {
                 </div>
                 <div className="credit-card-example example">
                   {t("homepage:example")}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Sector Distribution Section */}
+        {sectorData.length > 0 && (
+          <div className="section">
+            <h3 className="section-title">
+              {t("homepage:sectordistribution")}
+            </h3>
+            <motion.div
+              className="cards-grid cards-grid-3"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 0.8, y: 0 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              {sectorData.map((item, index) => (
+                <div key={index} className="project-card">
+                  <div className="project-statistic">
+                    <div className="project-value">{item.value}</div>
+                    <div className="project-title">{item.title}</div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        )}
+
+        {/* Proponent Distribution Section */}
+        <div className="section">
+          <h3 className="section-title">
+            {t("homepage:proponentdistribution")}
+          </h3>
+          <motion.div
+            className="cards-grid cards-grid-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 0.8, y: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            {proponentData.map((item, index) => (
+              <div key={index} className="credit-card">
+                <div className="credit-statistic">
+                  <div className="credit-value">{item.value}</div>
+                  <div className="credit-title">{item.title}</div>
                 </div>
               </div>
             ))}

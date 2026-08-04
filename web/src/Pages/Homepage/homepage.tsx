@@ -33,7 +33,6 @@ import "./homepage.scss";
 import ProcessFlow from "../../Components/Homepage/Howdoesitwork";
 import PartnershipBanner from "../../Components/Homepage/Partners";
 import FAQ from "../../Components/Homepage/Faq";
-import MapAnimation from "../../Components/Homepage/MapAnimation";
 import {
   GlobeAmericas,
   ShieldCheck,
@@ -45,7 +44,6 @@ import CollapsePanel from "antd/lib/collapse/CollapsePanel";
 import { ROUTES } from "../../Config/uiRoutingConfig";
 import CarbonDashboard from "../../Components/Homepage/CarbonDashboard";
 import DigitalPublicGood from "../../Components/Homepage/DigitalPublic";
-import DemoSite from "../../Components/Homepage/DemoSite";
 import FeatureCards from "../../Components/Homepage/Keyfeatures";
 
 const Homepage = () => {
@@ -238,11 +236,8 @@ const Homepage = () => {
                   <div className="vision-icon">
                     <Government className="vislogo" />
                   </div>
-                  <p className="vision-role">Governments</p>
-                  <p className="vision-text">
-                    oversight and governance of national carbon markets
-                    according to national policy
-                  </p>
+                  <p className="vision-role">{t("homepage:governmentsTitle")}</p>
+                  <p className="vision-text">{t("homepage:governmentsBody")}</p>
                 </motion.div>
 
                 <motion.div
@@ -254,10 +249,11 @@ const Homepage = () => {
                   <div className="vision-icon">
                     <Projdev className="vislogo" />
                   </div>
-                  <p className="vision-role">Project Developers</p>
+                  <p className="vision-role">
+                    {t("homepage:projectDevelopersTitle")}
+                  </p>
                   <p className="vision-text">
-                    register and track projects that generate emission
-                    reductions
+                    {t("homepage:projectDevelopersBody")}
                   </p>
                 </motion.div>
 
@@ -270,10 +266,8 @@ const Homepage = () => {
                   <div className="vision-icon">
                     <Certifier className="vislogo" />
                   </div>
-                  <p className="vision-role">Certifiers</p>
-                  <p className="vision-text">
-                    carry out verification and certification processes
-                  </p>
+                  <p className="vision-role">{t("homepage:certifiersTitle")}</p>
+                  <p className="vision-text">{t("homepage:certifiersBody")}</p>
                 </motion.div>
 
                 <motion.div
@@ -285,11 +279,8 @@ const Homepage = () => {
                   <div className="vision-icon">
                     <Buyer className="vislogo" />
                   </div>
-                  <p className="vision-role">Buyers</p>
-                  <p className="vision-text">
-                    access transparent information on carbon credits and
-                    transactions
-                  </p>
+                  <p className="vision-role">{t("homepage:buyersTitle")}</p>
+                  <p className="vision-text">{t("homepage:buyersBody")}</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -661,8 +652,6 @@ const Homepage = () => {
       </Row> */}
       <CarbonDashboard />
       <DigitalPublicGood />
-      <MapAnimation />
-      <DemoSite />
       <ProcessFlow />
       <FeatureCards />
       <PartnershipBanner />
@@ -671,29 +660,16 @@ const Homepage = () => {
       <Row className="developer-resources-row">
         <Col xs={24} sm={12} md={8} lg={4} xl={4} className="Devresources">
           <div className="resource-item">
-            <b>Developer Resources:</b>
+            <b>Source Code:</b>
           </div>
         </Col>
         <Col xs={24} sm={12} md={8} lg={5} xl={5} className="Devresources">
           <u>
             <a href="https://github.com/undp/carbon-registry" target="_blank">
               {" "}
-              <div className="resource-item connects">GitHub site</div>
+              <div className="resource-item connects">GitHub (upstream)</div>
             </a>
           </u>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={5} xl={5} className="Devresources">
-          <div className="resource-item connects">
-            Guidance to serial number
-          </div>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={5} xl={5} className="Devresources">
-          <div className="resource-item connects">
-            Guidance for AEF reporting
-          </div>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={5} xl={5} className="Devresources">
-          <div className="resource-item connects">Cad Trust data model</div>
         </Col>
       </Row>
       <LayoutFooter />

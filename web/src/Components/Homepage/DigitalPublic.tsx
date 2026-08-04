@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import "./Dashboard.scss";
-import publicGoodImage from "../../Assets/Images/public-good.jpg";
 import { Trans, useTranslation } from "react-i18next";
 
 const DigitalPublicGood = () => {
@@ -11,12 +10,6 @@ const DigitalPublicGood = () => {
       <h2 className="header-title">{t("homepage:digitalPublicTitle")}</h2>
 
       <div className="image-containers">
-        <img
-          src={publicGoodImage}
-          alt="A Digital Public Good"
-          className="main-image"
-        />
-
         <motion.div
           className="image-caption"
           initial={{ opacity: 0, y: 20 }}

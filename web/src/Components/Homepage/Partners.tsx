@@ -16,14 +16,14 @@ const PartnershipBanner = () => {
   return (
     <div className="partnership-banner">
       <div className="banner-content">
-        <h2 className="header-title">Developed in Partnership with Digital for Climate (D4C)</h2>
+        <h2 className="header-title">Built on Software from the Digital for Climate (D4C) Initiative</h2>
         <p className="banner-description">
-          This software has been developed in partnership with{' '}
+          Champa is built on an open-source platform originally developed under{' '}
           <strong>
             <a href="https://www.theclimatewarehouse.org/work/digital-4-climate" target="_blank" rel="noopener noreferrer">
               Digital For Climate (D4C)
             </a>
-          </strong>. D4C is a collaboration between the{' '}
+          </strong>, a collaboration between the{' '}
           <strong>
             <a href="https://www.ebrd.com/" target="_blank" rel="noopener noreferrer">
               European Bank for Reconstruction and Development (EBRD)

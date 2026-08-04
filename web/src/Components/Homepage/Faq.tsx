@@ -197,7 +197,13 @@ const FAQ = () => {
                   b: <strong />,
                   ul: <ul className="faq-list" />,
                   li: <li />,
-                  a1: <a href="mailto:digital4planet@undp.org" />,
+                  a1: (
+                    <a
+                      href="https://github.com/undp/carbon-registry"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  ),
                 }}
               />
             </div>

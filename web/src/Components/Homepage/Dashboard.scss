@@ -231,6 +231,25 @@
   }
 }
 
+.map-tab-leaflet-container {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.map-tab-marker {
+  border-radius: 50%;
+  background: #0d2e63;
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
 .registry-table-subtitle {
   color: #4A5568;
   margin-bottom: 1.25rem;

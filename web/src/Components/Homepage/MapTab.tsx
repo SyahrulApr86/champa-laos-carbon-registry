@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Table } from "antd";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import { MapboxComponent } from "../Maps/mapboxComponent";
-import { MapTypes } from "../../Definitions/Definitions/mapComponent.definitions";
 import "./Dashboard.scss";
 
 interface ProvinceMapSummary {
@@ -18,35 +18,17 @@ interface ProvinceMapSummary {
 const markerDiameter = (projectCount: number) =>
   Math.max(24, Math.min(56, 20 + projectCount * 6));
 
-// mapComponent.definitions.tsx types MarkerData.element as a raw HTMLElement
-// (mapboxComponent.tsx passes it straight into `new mapboxgl.Marker({ element })`),
-// so the count badge is built imperatively instead of as a React node.
-const buildMarkerElement = (projectCount: number): HTMLElement => {
-  const diameter = markerDiameter(projectCount);
-  const el = document.createElement("div");
-  el.className = "map-tab-marker";
-  el.textContent = String(projectCount);
-  el.style.width = `${diameter}px`;
-  el.style.height = `${diameter}px`;
-  el.style.borderRadius = "50%";
-  el.style.background = "#0D2E63";
-  el.style.color = "#ffffff";
-  el.style.fontWeight = "bold";
-  el.style.display = "flex";
-  el.style.alignItems = "center";
-  el.style.justifyContent = "center";
-  el.style.border = "2px solid #ffffff";
-  el.style.boxShadow = "0 1px 4px rgba(0, 0, 0, 0.4)";
-  el.style.cursor = "pointer";
-  return el;
-};
+const LAO_PDR_CENTER: [number, number] = [18.2, 102.6]; // Leaflet uses [lat, lng]
 
-const LAO_PDR_CENTER: [number, number] = [102.6, 18.2];
-const accessToken = import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN || "";
-
+// Public, unauthenticated province-level project map. Uses Leaflet +
+// OpenStreetMap - the same free, no-API-key stack Indonesia's SRN registry
+// itself uses for its map page - instead of Mapbox, which requires a paid
+// access token this deployment never had configured.
 const MapTab = () => {
   const { get } = useConnection();
   const [mapSummary, setMapSummary] = useState<ProvinceMapSummary[]>([]);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
     const fetchMapSummary = async () => {
@@ -61,6 +43,39 @@ const MapTab = () => {
 
     fetchMapSummary();
   }, [get]);
+
+  useEffect(() => {
+    if (!mapContainerRef.current || mapSummary.length === 0) {
+      return;
+    }
+
+    const map = L.map(mapContainerRef.current).setView(LAO_PDR_CENTER, 6);
+    mapInstanceRef.current = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+
+    mapSummary.forEach((entry) => {
+      const diameter = markerDiameter(entry.projectCount);
+      const icon = L.divIcon({
+        className: "map-tab-marker-wrapper",
+        html: `<div class="map-tab-marker" style="width:${diameter}px;height:${diameter}px;">${entry.projectCount}</div>`,
+        iconSize: [diameter, diameter],
+        iconAnchor: [diameter / 2, diameter / 2],
+      });
+
+      L.marker([entry.lat, entry.lng], { icon })
+        .addTo(map)
+        .bindPopup(`<strong>${entry.province}</strong><br/>${entry.projectCount} project(s)`);
+    });
+
+    return () => {
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, [mapSummary]);
 
   const sortedByCount = [...mapSummary].sort(
     (a, b) => b.projectCount - a.projectCount
@@ -88,26 +103,11 @@ const MapTab = () => {
           <p>No geolocated projects registered yet.</p>
         ) : (
           <>
-            {accessToken ? (
-              <MapboxComponent
-                mapType={MapTypes.Mapbox}
-                accessToken={accessToken}
-                center={LAO_PDR_CENTER}
-                zoom={6}
-                height={500}
-                style="mapbox://styles/mapbox/light-v11"
-                markers={mapSummary.map((entry) => ({
-                  location: [entry.lng, entry.lat],
-                  color: "#0D2E63",
-                  element: buildMarkerElement(entry.projectCount),
-                }))}
-              />
-            ) : (
-              <p className="map-tab-no-token-note">
-                Map view is unavailable (no Mapbox access token
-                configured). Showing the province breakdown table below.
-              </p>
-            )}
+            <div
+              ref={mapContainerRef}
+              className="map-tab-leaflet-container"
+              style={{ height: 500, borderRadius: 12, overflow: "hidden" }}
+            />
 
             <Table
               rowKey="province"

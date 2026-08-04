@@ -7680,11 +7680,21 @@ export class ProgrammeService {
   async publicSearch(
     q: string,
     page = 1,
-    size = 10
+    size = 10,
+    stage?: string
   ): Promise<{ data: any[]; total: number }> {
     const keyword = (q || "").trim();
     const safePage = Math.max(1, page);
     const safeSize = Math.min(50, Math.max(1, size));
+    // `stage` filters on the real, tracked ProgrammeStage enum value
+    // (New/AwaitingAuthorization/Authorised/Approved/Rejected) rather than
+    // the coarse public-facing `status` text below, since those two values
+    // alone can't distinguish all five workflow stages. Unknown/omitted
+    // values are ignored so the endpoint stays backward compatible.
+    const safeStage =
+      stage && (Object.values(ProgrammeStage) as string[]).includes(stage)
+        ? (stage as ProgrammeStage)
+        : undefined;
 
     const qb = this.programmeViewRepo
       .createQueryBuilder("programme")
@@ -7693,10 +7703,16 @@ export class ProgrammeService {
       .take(safeSize);
 
     if (keyword) {
-      qb.where(
+      qb.andWhere(
         `"programme"."programmeId" ILIKE :keyword OR "programme"."title" ILIKE :keyword`,
         { keyword: `%${keyword}%` }
       );
+    }
+
+    if (safeStage) {
+      qb.andWhere(`"programme"."currentStage" = :stage`, {
+        stage: safeStage,
+      });
     }
 
     const [results, total] = await qb.getManyAndCount();

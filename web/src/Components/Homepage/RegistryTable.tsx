@@ -20,21 +20,41 @@ const statusColor: Record<string, string> = {
 
 const PAGE_SIZE = 10;
 
+// Champa's real, tracked ProgrammeStage workflow values (see
+// backend/services/libs/shared/src/enum/programme-status.enum.ts). Unlike
+// SRN Indonesia's General/Technical/Validation/Verification/SPE Data tabs
+// (which reflect document-review substeps Champa's data model does not
+// track), these tabs filter by the actual programme lifecycle stage.
+const STAGE_TABS: { key: string; label: string }[] = [
+  { key: "All", label: "All" },
+  { key: "New", label: "New" },
+  { key: "AwaitingAuthorization", label: "Awaiting Authorisation" },
+  { key: "Authorised", label: "Authorised" },
+  { key: "Approved", label: "Approved" },
+  { key: "Rejected", label: "Rejected" },
+];
+
 const RegistryTable = () => {
   const { t } = useTranslation(["homepage"]);
   const { get } = useConnection();
   const [query, setQuery] = useState("");
+  const [activeStage, setActiveStage] = useState("All");
   const [rows, setRows] = useState<RegistryRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const fetchRows = useCallback(
-    async (q: string, pageNum: number) => {
+    async (q: string, pageNum: number, stage: string) => {
       setLoading(true);
       try {
         const response: any = await get(
-          API_PATHS.PUBLIC_PROJECT_SEARCH(q, pageNum, PAGE_SIZE)
+          API_PATHS.PUBLIC_PROJECT_SEARCH(
+            q,
+            pageNum,
+            PAGE_SIZE,
+            stage === "All" ? undefined : stage
+          )
         );
         setRows(response?.data ?? []);
         setTotal(response?.response?.data?.total ?? 0);
@@ -49,8 +69,8 @@ const RegistryTable = () => {
   );
 
   useEffect(() => {
-    fetchRows(query, page);
-  }, [fetchRows, query, page]);
+    fetchRows(query, page, activeStage);
+  }, [fetchRows, query, page, activeStage]);
 
   const columns = [
     {
@@ -99,6 +119,22 @@ const RegistryTable = () => {
         }}
         className="registry-table-search"
       />
+      <div className="ndc-pill-tabs-nav">
+        {STAGE_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            className={`ndc-pill-tab-button ${
+              activeStage === tab.key ? "active" : ""
+            }`}
+            onClick={() => {
+              setPage(1);
+              setActiveStage(tab.key);
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
       <Table
         className="registry-table"
         rowKey="registrationNumber"

@@ -19,10 +19,12 @@ export const API_PATHS = {
   //PROJECT
   PROJECT_CREATE: "national/projectManagement/create",
   GET_PROJECT: "national/projectManagement/query",
-  PUBLIC_PROJECT_SEARCH: (q: string, page = 1, size = 10) =>
+  PUBLIC_PROJECT_SEARCH: (q: string, page = 1, size = 10, stage?: string) =>
     `national/projectManagement/public/search?q=${encodeURIComponent(
       q
-    )}&page=${page}&size=${size}`,
+    )}&page=${page}&size=${size}${
+      stage ? `&stage=${encodeURIComponent(stage)}` : ""
+    }`,
   PROJECT_MAP_SUMMARY: (activityType: string) =>
     `national/projectManagement/public/mapSummary?activityType=${encodeURIComponent(
       activityType

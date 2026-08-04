@@ -12,10 +12,10 @@ SRN: `Home | Map | About (dropdown) | Instruments (dropdown) | NDC Achievement` 
 | Item | Champa status |
 |---|---|
 | Home | ✅ Built |
-| Map | ⚠️ Partial → **fixing this turn**: switching from Mapbox (needs a paid token never configured) to Leaflet + OpenStreetMap — the exact same free stack SRN itself uses (confirmed via page attribution). No token required, will actually render. |
+| Map | ✅ Built — switched from Mapbox (needed a paid token never configured) to Leaflet + OpenStreetMap, the exact same free stack SRN itself uses. Renders real interactive tiles + province markers, verified live. |
 | About (dropdown: About SRN, FAQ) | ⚠️ Partial — one flat static page, not a dropdown with sub-pages. |
-| Instruments (dropdown: Methodology, Roster of Expert, Validation/Verification Agency, Module, Registrasi ProKlim) | ⚠️ Partial — one flat static page. Methodology links to the real Methodology Directory. Roster of Expert / Validation-Verification Agency currently say "not yet published" even though Champa has real registered-certifier data that could back a real listing — **real gap, planned next**. |
-| NDC Achievement | ⚠️ Partial — single aggregate view only. SRN has **per-sector tabs (All/Energy/IPPU/Agriculture/Forestry/Waste)** with different numbers per sector plus 2 trend charts. Champa's `NdcTargetEntity` has no `sector` field yet — **real gap, planned next**. |
+| Instruments (dropdown: Methodology, Roster of Expert, Validation/Verification Agency, Module, Registrasi ProKlim) | ⚠️ Partial — Methodology links to the real Methodology Directory. **Validation/Verification Agency now built** — real public endpoint listing active `INDEPENDENT_CERTIFIER` companies (public-safe fields only), wired into the Instruments page. Roster of Expert still says "not yet established" — no backing data model exists for individual experts. |
+| NDC Achievement | ✅ Built — 6 sector tabs (All/Energy/IPPU/Agriculture/Forestry/Waste), `NdcTargetEntity` now has a required `sector` field, "All" is a real computed aggregate across the 5 sectors, 2 trend charts (baseline vs achieved; reduction achievement) driven by real per-sector yearly data. |
 
 ## 2. Homepage tabs (Mitigation / Proklim / Adaptation / Resources)
 
@@ -24,8 +24,8 @@ SRN: `Home | Map | About (dropdown) | Instruments (dropdown) | NDC Achievement` 
 | Mitigation NEK (total projects, General/Technical/Validation/Verification/SPE counts, PTBAE-PU trading, Emission Reduction Certificate states, proponent/SPE breakdowns by registry scheme + category, sector breakdowns, paginated 5-tab-filterable project table) | ⚠️ Partial — Champa's Mitigation tab has total projects/credits, status donut, sector donut, proponent-by-role donut, live paginated project search. **Missing**: General/Technical/Validation/Verification/SPE stage-count granularity (Champa's `Programme` model doesn't track that), registry-scheme breakdown (SPEI/JCM/GS/VERRA — not applicable, Champa is a single-country registry with no external registry-scheme concept). PTBAE-PU-style ceiling/trading data **is built** but currently sits under Champa's "Resources" tab instead of "Mitigation" — placement mismatch to fix. |
 | Sub-tab: Mitigation Appreciation (41 projects, different breakdown) | ❌ Gap — Indonesia-internal incentive scheme, no clear Lao equivalent, not attempted. |
 | Sub-tab: REDD++ (34-province grid, forest-carbon specific) | ❌ Gap — deliberately not built this round; most defensible one to build later given Laos's real forestry sector. |
-| Proklim (village climate program, 10,926 entries in SRN, its own Adaptation-style sub-tab with Year/Activity/Category/Detail table and an "Adaptation Action Percentage" donut by category: Health, Ecosystem Resilience, Multi-sector, Infrastructure, Coastal and Small Islands, Energy Self-reliance, Food Security, Urban and Rural Settlements, Water Security) | ⚠️ Deliberately generalized — built as **"Community Climate Programs"**, explicitly NOT named "Proklim" (real Indonesian government program name, would misrepresent Laos). Category taxonomy simplified to Adaptation/Mitigation/Both rather than SRN's 9 detailed categories — **could be enriched to match SRN's category granularity, noted below**. |
-| Adaptation | ✅ Built — submit/approve workflow, sector+stage donuts, public table. Category taxonomy (Agriculture/Water Resources/Forestry/Public Health/Infrastructure/Other) is narrower than SRN's — could adopt SRN's 9-category taxonomy for closer parity. |
+| Proklim (village climate program, 10,926 entries in SRN, its own Adaptation-style sub-tab with Year/Activity/Category/Detail table and an "Adaptation Action Percentage" donut by category: Health, Ecosystem Resilience, Multi-sector, Infrastructure, Coastal and Small Islands, Energy Self-reliance, Food Security, Urban and Rural Settlements, Water Security) | ⚠️ Deliberately generalized — built as **"Community Climate Programs"**, explicitly NOT named "Proklim" (real Indonesian government program name, would misrepresent Laos). Its own category field (Adaptation/Mitigation/Both) is a different concept (program impact type, not sector) and intentionally left as-is. |
+| Adaptation | ✅ Built — submit/approve workflow, sector+stage donuts, public table. **Category taxonomy now matches SRN's 9-category set** (Health, Ecosystem Resilience, Multi-sector, Infrastructure, Coastal and Small Islands, Energy Self-reliance, Food Security, Urban and Rural Settlements, Water Security), replacing the old narrower 6-value set. |
 | Resources: Financial Support Received | ✅ Built (`ClimateFinanceEntity`) |
 | Resources: Technology Development & Transfer Support Received | ✅ Built (`TechnologyTransferEntity`) |
 | Resources: Capacity Building Support Received | ✅ Built (`CapacityBuildingEntity`) |
@@ -40,24 +40,25 @@ SRN's "See detail" page has a 5-stage progress timeline (General/Technical/Valid
 
 Built with Leaflet + OpenStreetMap (not Mapbox). Search box, Activity Type filter, Province filter (34 provinces), interactive markers with counts, legend totals per category.
 
-**Champa status**: backend endpoint (`GET /national/projectManagement/public/mapSummary`) already correctly aggregates real project counts per Lao province with real seeded coordinates — this part works. The **rendering layer** was built on `mapbox-gl`, which needs a paid token that was never configured, so it silently fell back to a plain table. **Fixing now**: switching the rendering layer to Leaflet + OpenStreetMap.
+**Champa status**: ✅ Built. Backend endpoint (`GET /national/projectManagement/public/mapSummary`) aggregates real project counts per Lao province with real seeded coordinates. Rendering layer switched from `mapbox-gl` (needed a paid token never configured) to Leaflet + OpenStreetMap — verified live: real interactive tiles + province markers render correctly.
 
 ## 5. NDC Achievement — sector tabs and charts
 
 Sector tabs (All/Energy/IPPU/Agriculture/Forestry/Waste), each with different Baseline/Emission Level/Reduction/2030 Target/Contribution % numbers, plus 2 trend charts (emission trend vs baseline; reduction achievement claimed vs verified).
 
-**❌ Gap.** Champa's `NdcTargetEntity` has no `sector` dimension — one row per year, nationally aggregated only. Needs a schema change (add `sector` field) plus sector tabs and 2 trend charts on the frontend. Scoped, buildable, planned next.
+**✅ Built.** `NdcTargetEntity` now has a required `sector` field (5-value enum matching SRN's real sectors). Public summary endpoint accepts `?sector=` and computes a real "All" aggregate (sum of each sector's latest-year figures, contribution % recomputed from the summed baseline/target/achieved) when omitted. A new public series endpoint returns yearly baseline/achieved time series per sector. Frontend has all 6 tabs wired to real API data, plus 2 `react-apexcharts` trend charts. Verified live with seeded demo data across all 5 sectors and 2 years each.
 
 ---
 
 ## Ranked remaining gaps (value/effort)
 
-1. **Map rendering** — Leaflet swap, fixing this turn.
-2. **NDC Achievement sector breakdown** — schema change + sector tabs + trend charts.
-3. **Adaptation / Community Program category taxonomy** — adopt SRN's 9-category set (Health, Ecosystem Resilience, Multi-sector, Infrastructure, Coastal and Small Islands, Energy Self-reliance, Food Security, Urban and Rural Settlements, Water Security) instead of the current narrower set.
-4. **Validation/Verification Agency real listing** — Champa already has real IC-role company data; needs a public endpoint + wiring into Instruments.
-5. **PTBAE-PU tab placement** — move Emission Ceiling & Trading's *display* from "Resources" to "Mitigation", matching SRN's structure (frontend-only move).
+1. ~~Map rendering~~ — done (Leaflet + OpenStreetMap).
+2. ~~NDC Achievement sector breakdown~~ — done (schema change + sector tabs + trend charts).
+3. ~~Adaptation / Community Program category taxonomy~~ — done (`AdaptationSector` now matches SRN's 9-category set).
+4. ~~Validation/Verification Agency real listing~~ — done (public endpoint + Instruments page wiring).
+5. ~~PTBAE-PU tab placement~~ — done (Emission Ceiling & Trading display moved to the Mitigation tab).
 6. **Project detail stage timeline** — legitimate subset (timeline + documents, not vulnerability data), needs careful scoping to avoid touching core approval logic.
 7. **About/Instruments as real dropdowns** with sub-pages instead of flat pages.
 8. **REDD++** — plausible real Lao equivalent (forestry carbon), future scope.
 9. **Mitigation Appreciation, Roster of Expert, Registrasi ProKlim link** — no clear Lao equivalent or backing data source; would require fabrication.
+

@@ -253,4 +253,11 @@ export const API_PATHS = {
       search
     )}&page=${page}&pageSize=${pageSize}`,
   EXPERT_CREATE: "national/expert",
+  CERTIFIER_PUBLIC_DETAIL: (companyId: string) =>
+    `national/organisation/public/certifiers/${encodeURIComponent(
+      companyId
+    )}`,
+  //MODULE / GUIDANCE DOCUMENTS
+  GUIDANCE_DOCUMENT_PUBLIC_LIST: "national/guidanceDocument/public/list",
+  GUIDANCE_DOCUMENT_CREATE: "national/guidanceDocument",
 };

@@ -147,6 +147,11 @@ const LayoutSider = (props: LayoutSiderProps) => {
           "expert/submit",
           <Icon.PersonBadgeFill />
         ),
+        getItem(
+          t("nav:recordGuidanceDocument"),
+          "guidanceDocument/submit",
+          <Icon.FileEarmarkPdf />
+        ),
       ])
     );
   }

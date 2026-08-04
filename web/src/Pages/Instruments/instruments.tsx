@@ -5,6 +5,7 @@ import LayoutFooter from "../../Components/Footer/layout.footer";
 import sliderLogo from "../../Assets/Images/logo-slider.png";
 import VerificationAgencyList from "./VerificationAgencyList";
 import RosterOfExpertList from "./RosterOfExpertList";
+import GuidanceDocumentList from "./GuidanceDocumentList";
 import "./instruments.scss";
 
 // Static, informational "Instruments" page mirroring SRN Indonesia's
@@ -94,6 +95,16 @@ const Instruments = () => {
             framework for authorising, registering, and overseeing carbon
             market activities in Lao PDR.
           </p>
+        </section>
+
+        <section className="instruments-section" id="module">
+          <h2>Module</h2>
+          <p>
+            Downloadable guidance documents supporting proponents,
+            verification agencies, and DNA/Ministry staff working with
+            Champa.
+          </p>
+          <GuidanceDocumentList />
         </section>
 
         <section className="instruments-section">

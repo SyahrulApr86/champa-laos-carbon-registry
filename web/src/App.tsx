@@ -58,11 +58,13 @@ import EmissionTradingSubmit from "./Pages/EmissionTrading/emissionTradingSubmit
 import NdcTargetSubmit from "./Pages/NdcTarget/ndcTargetSubmit";
 import About from "./Pages/About/about";
 import Instruments from "./Pages/Instruments/instruments";
+import VerificationAgencyDetail from "./Pages/VerificationAgencyDetail/verificationAgencyDetail";
 import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTransferSubmit";
 import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
 import CommunityProgramSubmit from "./Pages/CommunityProgram/communityProgramSubmit";
 import ReddPlusSubmit from "./Pages/ReddPlus/reddPlusSubmit";
 import ExpertSubmit from "./Pages/Expert/expertSubmit";
+import GuidanceDocumentSubmit from "./Pages/GuidanceDocument/guidanceDocumentSubmit";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -124,6 +126,10 @@ const App = () => {
                 <Route path="methodology" element={<MethodologyDirectory />} />
                 <Route path="about" element={<About />} />
                 <Route path="instruments" element={<Instruments />} />
+                <Route
+                  path="instruments/agency/:companyId"
+                  element={<VerificationAgencyDetail />}
+                />
                 <Route
                   path="projects/search"
                   element={<PublicProjectSearch />}
@@ -308,6 +314,14 @@ const App = () => {
                     element={<CustomLayout selectedKey="expert/submit" />}
                   >
                     <Route path="submit" element={<ExpertSubmit />} />
+                  </Route>
+                  <Route
+                    path="/guidanceDocument"
+                    element={
+                      <CustomLayout selectedKey="guidanceDocument/submit" />
+                    }
+                  >
+                    <Route path="submit" element={<GuidanceDocumentSubmit />} />
                   </Route>
                 </Route>
                 {enableRegistration === "true" && (

@@ -35,6 +35,7 @@ import { CapacityBuildingModule } from "./capacity-building/capacity.building.mo
 import { CommunityProgramModule } from "./community-program/community.program.module";
 import { ReddPlusModule } from "./redd-plus/redd.plus.module";
 import { ExpertModule } from "./expert/expert.module";
+import { GuidanceDocumentModule } from "./guidance-document/guidance.document.module";
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { ExpertModule } from "./expert/expert.module";
     CommunityProgramModule,
     ReddPlusModule,
     ExpertModule,
+    GuidanceDocumentModule,
   ],
   providers: [SharedService],
   exports: [
@@ -112,6 +114,7 @@ import { ExpertModule } from "./expert/expert.module";
     CommunityProgramModule,
     ReddPlusModule,
     ExpertModule,
+    GuidanceDocumentModule,
   ],
 })
 export class SharedModule {}

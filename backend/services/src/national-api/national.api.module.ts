@@ -25,6 +25,7 @@ import { CapacityBuildingController } from "./capacity.building.controller";
 import { CommunityProgramController } from "./community.program.controller";
 import { ReddPlusController } from "./redd.plus.controller";
 import { ExpertController } from "./expert.controller";
+import { GuidanceDocumentController } from "./guidance.document.controller";
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { ExpertController } from "./expert.controller";
     CommunityProgramController,
     ReddPlusController,
     ExpertController,
+    GuidanceDocumentController,
   ],
   providers: [NationalAPIService, Logger],
 })

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "antd";
+import { Link } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 
@@ -17,6 +18,9 @@ const columns = [
     title: "Name",
     dataIndex: "name",
     key: "name",
+    render: (name: string, row: CertifierRow) => (
+      <Link to={`/instruments/agency/${row.companyId}`}>{name}</Link>
+    ),
   },
   {
     title: "Country",
@@ -41,6 +45,13 @@ const columns = [
     dataIndex: "address",
     key: "address",
     render: (address: string) => address || "-",
+  },
+  {
+    title: "",
+    key: "detail",
+    render: (_: unknown, row: CertifierRow) => (
+      <Link to={`/instruments/agency/${row.companyId}`}>See Detail →</Link>
+    ),
   },
 ];
 

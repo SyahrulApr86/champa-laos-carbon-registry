@@ -138,6 +138,11 @@ const Homepage = () => {
       label: "Validation/Verification Agencies",
       onClick: () => navigate("/instruments#vva"),
     },
+    {
+      key: "module",
+      label: "Module",
+      onClick: () => navigate("/instruments#module"),
+    },
   ];
 
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });

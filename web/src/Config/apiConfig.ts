@@ -5,6 +5,7 @@ export const API_PATHS = {
   RESET_PW: (requestId: string) =>
     `national/auth/resetPassword?requestId=${requestId}`,
   REFRESH_ACCESS_TOKEN: "national/auth/login/refresh",
+  CAPTCHA: "national/auth/captcha",
   //USER
   USER_PROFILE: "national/user/profile",
   USER_DETAILS: "national/user/query",

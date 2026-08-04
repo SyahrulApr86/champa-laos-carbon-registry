@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Request,
   Body,
   Put,
@@ -10,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "@app/shared/auth/auth.service";
+import { CaptchaService } from "@app/shared/auth/captcha.service";
 import { ForgotPasswordDto } from "@app/shared/dto/forgotPassword.dto";
 import { LoginDto } from "@app/shared/dto/login.dto";
 import { PasswordResetDto } from "@app/shared/dto/passwordReset.dto";
@@ -23,8 +25,14 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly passwordResetService: PasswordResetService,
+    private readonly captchaService: CaptchaService,
     private helperService: HelperService
   ) {}
+
+  @Get("captcha")
+  async getCaptcha() {
+    return this.captchaService.generate();
+  }
 
   @Post("login")
   async login(@Body() login: LoginDto, @Request() req) {

@@ -11,4 +11,14 @@ export class LoginDto {
     @IsString()
     @ApiProperty()
     password: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty()
+    captchaChallengeId: string;
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty()
+    captchaText: string;
 }

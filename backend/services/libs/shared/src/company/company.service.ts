@@ -62,6 +62,7 @@ import { GetOrganizationsRequest } from "../dto/organizations-request.dto";
 import { IDNameResponse } from "../dto/id-name.response.dto";
 import { Role } from "../casl/role.enum";
 import { CreditBlocksEntity } from "../entities/credit.blocks.entity";
+import { CertifierProfileEntity } from "../entities/certifier.profile.entity";
 
 @Injectable()
 export class CompanyService {
@@ -90,7 +91,9 @@ export class CompanyService {
     private httpUtilService: HttpUtilService,
     @Inject("CACHE_MANAGER") private cacheManager: Cache,
     @InjectRepository(CreditBlocksEntity)
-    private creditBlocksEntityRepository: Repository<CreditBlocksEntity>
+    private creditBlocksEntityRepository: Repository<CreditBlocksEntity>,
+    @InjectRepository(CertifierProfileEntity)
+    private certifierProfileRepo: Repository<CertifierProfileEntity>
   ) {}
 
   async suspend(
@@ -1428,5 +1431,59 @@ export class CompanyService {
       address: c.address,
       logo: c.logo,
     }));
+  }
+
+  // Public, unauthenticated single-agency detail for the VVA detail page.
+  // Only public-safe Company fields plus the optional CertifierProfileEntity
+  // fields are returned - no email, phoneNo, taxId, or creditBalance.
+  // Returns null when the company does not exist or is not an active
+  // Validation/Verification agency; the profile fields are honestly empty
+  // (null/undefined) when no CertifierProfileEntity row has been recorded
+  // yet for this company.
+  async getPublicCertifierDetail(companyId: number): Promise<{
+    companyId: number;
+    name: string;
+    country: string;
+    website: string;
+    address: string;
+    logo: string;
+    certificateNumber: string | null;
+    certificateIssuedDate: number | null;
+    certificateValidUntil: number | null;
+    scopeSectors: string[] | null;
+    appliesToDram: boolean | null;
+    appliesToLcam: boolean | null;
+    eligibleForSpei: boolean | null;
+    eligibleForPtbaePu: boolean | null;
+  } | null> {
+    const company = await this.companyRepo.findOne({
+      where: {
+        companyId,
+        companyRole: CompanyRole.INDEPENDENT_CERTIFIER,
+        state: CompanyState.ACTIVE,
+      },
+    });
+    if (!company) {
+      return null;
+    }
+
+    const profile = await this.certifierProfileRepo.findOneBy({ companyId });
+
+    return {
+      companyId: company.companyId,
+      name: company.name,
+      country: company.country,
+      website: company.website,
+      address: company.address,
+      logo: company.logo,
+      certificateNumber: profile?.certificateNumber ?? null,
+      certificateIssuedDate: profile?.certificateIssuedDate ?? null,
+      certificateValidUntil: profile?.certificateValidUntil ?? null,
+      scopeSectors: profile?.scopeSectors ?? null,
+      appliesToDram: profile?.appliesToDram ?? null,
+      appliesToLcam: profile?.appliesToLcam ?? null,
+      eligibleForSpei: profile?.eligibleForSpei ?? null,
+      eligibleForPtbaePu: profile?.eligibleForPtbaePu ?? null,
+    };
   }
 }

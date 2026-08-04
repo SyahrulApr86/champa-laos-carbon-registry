@@ -19,6 +19,7 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { CompanyViewEntity } from "../view-entities/company.view.entity";
 import { User } from "../entities/user.entity";
 import { CreditBlocksEntity } from "../entities/credit.blocks.entity";
+import { CertifierProfileEntity } from "../entities/certifier.profile.entity";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CreditBlocksEntity } from "../entities/credit.blocks.entity";
       Investment,
       CompanyViewEntity,
       CreditBlocksEntity,
+      CertifierProfileEntity,
     ]),
     CaslModule,
     UtilModule,

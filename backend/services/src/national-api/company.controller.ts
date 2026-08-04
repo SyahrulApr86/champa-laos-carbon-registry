@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Query,
   UseGuards,
   Request,
@@ -237,6 +238,21 @@ export class CompanyController {
       return await this.companyService.getPublicVerificationAgencies();
     } catch (err) {
       return [];
+    }
+  }
+
+  // Public, unauthenticated single-agency detail for the VVA detail page.
+  // Intentionally has no @UseGuards/@CheckPolicies. Returns null when the
+  // agency does not exist - see CompanyService.getPublicCertifierDetail
+  // for the field allowlist.
+  @Get("public/certifiers/:companyId")
+  async getPublicCertifierDetail(@Param("companyId") companyId: string) {
+    try {
+      return await this.companyService.getPublicCertifierDetail(
+        Number(companyId)
+      );
+    } catch (err) {
+      return null;
     }
   }
 }

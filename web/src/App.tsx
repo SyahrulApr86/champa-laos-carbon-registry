@@ -58,6 +58,7 @@ import EmissionTradingSubmit from "./Pages/EmissionTrading/emissionTradingSubmit
 import NdcTargetSubmit from "./Pages/NdcTarget/ndcTargetSubmit";
 import About from "./Pages/About/about";
 import Instruments from "./Pages/Instruments/instruments";
+import MapPage from "./Pages/Map/mapPage";
 import VerificationAgencyDetail from "./Pages/VerificationAgencyDetail/verificationAgencyDetail";
 import TechnologyTransferSubmit from "./Pages/TechnologyTransfer/technologyTransferSubmit";
 import CapacityBuildingSubmit from "./Pages/CapacityBuilding/capacityBuildingSubmit";
@@ -127,6 +128,7 @@ const App = () => {
                 <Route path="methodology" element={<MethodologyDirectory />} />
                 <Route path="about" element={<About />} />
                 <Route path="instruments" element={<Instruments />} />
+                <Route path="map" element={<MapPage />} />
                 <Route
                   path="instruments/agency/:companyId"
                   element={<VerificationAgencyDetail />}

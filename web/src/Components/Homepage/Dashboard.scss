@@ -281,6 +281,44 @@
   font-size: 0.85rem;
 }
 
+.map-tab-legend {
+  background: #F1FBFF;
+  border-radius: 16px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.map-tab-legend-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #00252B;
+}
+
+.map-tab-legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.map-tab-legend-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.map-tab-legend-label {
+  color: #4A5568;
+  font-size: 0.9rem;
+}
+
+.map-tab-legend-value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #0D2E63;
+}
+
 .registry-table-subtitle {
   color: #4A5568;
   margin-bottom: 1.25rem;

@@ -210,6 +210,7 @@ const Homepage = () => {
                   </div>
                   <nav className="homepage-nav-links">
                     <a onClick={() => navigate("/")}>Home</a>
+                    <a onClick={() => navigate("/map")}>Map</a>
                     <Dropdown
                       menu={{ items: aboutMenuItems }}
                       trigger={["click"]}

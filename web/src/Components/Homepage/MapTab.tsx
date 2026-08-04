@@ -35,7 +35,7 @@ const LAO_PDR_CENTER: [number, number] = [18.2, 102.6]; // Leaflet uses [lat, ln
 // OpenStreetMap - the same free, no-API-key stack Indonesia's SRN registry
 // itself uses for its map page - instead of Mapbox, which requires a paid
 // access token this deployment never had configured.
-const MapTab = () => {
+const MapTab = ({ showLegend = false }: { showLegend?: boolean }) => {
   const { get } = useConnection();
   const [activityType, setActivityType] = useState("mitigation");
   const [mapSummary, setMapSummary] = useState<ProvinceMapSummary[]>([]);
@@ -56,6 +56,42 @@ const MapTab = () => {
 
     fetchMapSummary();
   }, [get, activityType]);
+
+  // Legend totals - one call per activity type, mirroring SRN's own map
+  // legend (Adaptation/Mitigation/Proklim counts). Only fetched when this
+  // instance renders as the standalone /map page, not the homepage tab.
+  const [legendTotals, setLegendTotals] = useState<Record<string, number>>(
+    {}
+  );
+
+  useEffect(() => {
+    if (!showLegend) {
+      return;
+    }
+
+    const fetchLegendTotals = async () => {
+      const entries = await Promise.all(
+        ACTIVITY_TYPE_OPTIONS.map(async (option) => {
+          try {
+            const response = await get(
+              API_PATHS.PROJECT_MAP_SUMMARY(option.value)
+            );
+            const data = response?.data as ProvinceMapSummary[] | undefined;
+            const total = (data ?? []).reduce(
+              (sum, entry) => sum + entry.projectCount,
+              0
+            );
+            return [option.label, total] as const;
+          } catch (error) {
+            return [option.label, 0] as const;
+          }
+        })
+      );
+      setLegendTotals(Object.fromEntries(entries));
+    };
+
+    fetchLegendTotals();
+  }, [get, showLegend]);
 
   // Champa's map plots province-level aggregates, not individual activity
   // points (unlike SRN Indonesia's per-activity marker + search), so
@@ -145,6 +181,22 @@ const MapTab = () => {
             style={{ maxWidth: 320 }}
           />
         </div>
+
+        {showLegend && (
+          <div className="map-tab-legend">
+            <h4 className="map-tab-legend-title">Legend</h4>
+            <div className="map-tab-legend-items">
+              {ACTIVITY_TYPE_OPTIONS.map((option) => (
+                <div key={option.value} className="map-tab-legend-item">
+                  <span className="map-tab-legend-label">{option.label}</span>
+                  <span className="map-tab-legend-value">
+                    {(legendTotals[option.label] ?? 0).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {mapSummary.length === 0 ? (
           <p>No geolocated projects registered yet.</p>

@@ -126,6 +126,7 @@ import { NdcDetailsAction } from "../entities/ndc.details.action.entity";
 import { NdcDetailsPeriodDto } from "../dto/ndc.details.period.dto";
 import { MitigationProperties } from "../dto/mitigation.properties";
 import { ProgrammeMitigationIssue } from "../dto/programme.mitigation.issue";
+import { ProgrammeCreditAction } from "../dto/programme.credit.action";
 import { mitigationIssueProperties } from "../dto/mitigation.issue.properties";
 import { InvestmentCategoryEnum } from "../enum/investment.category.enum";
 import { NdcDetailsActionDto } from "../dto/ndc.details.action.dto";
@@ -138,6 +139,7 @@ import { EventLogType } from "../enum/event.log.type.enum";
 import { Region } from "../entities/region.entity";
 import { CreditAuditLog } from "../entities/credit.audit.log.entity";
 import { CreditAuditLogType } from "../enum/credit.audit.log.type.enum";
+import { TxType } from "../enum/txtype.enum";
 
 export interface PublicCertificate {
   accountHolder: string | null;
@@ -146,11 +148,12 @@ export interface PublicCertificate {
   registryNo: string;
   startVintage: number | null;
   endVintage: number | null;
-  status: "Active" | "Retired";
+  status: "Active" | "Retired" | "Cancelled" | "Assigned to Exchange";
   issuedUnits: number;
   availableUnits: number;
   retiredUnits: number;
   cancelledUnits: number;
+  assignedToExchangeUnits: number;
   issuedDate: string | null;
 }
 
@@ -5113,6 +5116,8 @@ export class ProgrammeService {
       dto.creditRetired = programme.creditRetired;
       dto.creditFrozen = programme.creditFrozen;
       dto.creditTransferred = programme.creditTransferred;
+      dto.creditCancelled = programme.creditCancelled;
+      dto.creditAssignedToExchange = programme.creditAssignedToExchange;
       dto.constantVersion = programme.constantVersion;
       dto.proponentTaxVatId = programme.proponentTaxVatId;
       dto.companyId = programme.companyId;
@@ -5809,6 +5814,216 @@ export class ProgrammeService {
       return new DataResponseDto(HttpStatus.OK, updateProgramme);
     }
     return new DataListResponseDto(allTransferList, allTransferList.length);
+  }
+
+  private async prepareProgrammeCreditAction(
+    req: ProgrammeCreditAction,
+    requester: User
+  ): Promise<{
+    programme: Programme;
+    allocations: { companyId: number; amount: number }[];
+    totalAmount: number;
+  }> {
+    if (requester.role === Role.ViewOnly) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString("programme.unAuth", []),
+        HttpStatus.FORBIDDEN
+      );
+    }
+
+    const programme = await this.programmeLedger.getProgrammeById(
+      req.programmeId
+    );
+    if (!programme) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.programmeNotExist",
+          []
+        ),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    if (programme.currentStage !== ProgrammeStage.AUTHORISED) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.programmeNotInCreditIssuedState",
+          []
+        ),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    if (requester.companyRole === CompanyRole.MINISTRY) {
+      const permission = await this.findPermissionForMinistryUser(
+        requester,
+        programme.sectoralScope
+      );
+      if (!permission) {
+        throw new HttpException(
+          this.helperService.formatReqMessagesString("user.userUnAUth", []),
+          HttpStatus.FORBIDDEN
+        );
+      }
+    }
+
+    const canActForAllOwners = [
+      CompanyRole.DESIGNATED_NATIONAL_AUTHORITY,
+      CompanyRole.MINISTRY,
+    ].includes(requester.companyRole);
+    const ownerIds = req.fromCompanyIds?.length
+      ? req.fromCompanyIds.map((companyId) => Number(companyId))
+      : canActForAllOwners
+      ? programme.companyId.map((companyId) => Number(companyId))
+      : [Number(requester.companyId)];
+
+    if (!ownerIds.length || new Set(ownerIds).size !== ownerIds.length) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.invalidCompCreditForGivenComp",
+          []
+        ),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    if (
+      !canActForAllOwners &&
+      ownerIds.some((companyId) => companyId !== Number(requester.companyId))
+    ) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.cantInitiateTransferForOtherComp",
+          []
+        ),
+        HttpStatus.FORBIDDEN
+      );
+    }
+
+    if (req.companyCredit && req.companyCredit.length !== ownerIds.length) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.invalidCompCreditForGivenComp",
+          []
+        ),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    if (
+      !programme.creditOwnerPercentage?.length && programme.companyId.length > 1
+    ) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.noOwnershipPercForCompany",
+          []
+        ),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const ownerPercentages = programme.creditOwnerPercentage?.length
+      ? programme.creditOwnerPercentage.map((value) => Number(value) || 0)
+      : [100];
+    const availableBalance = Number(programme.creditBalance) || 0;
+    const frozenCredits = programme.creditFrozen || [];
+    const allocations = ownerIds.map((companyId, index) => {
+      const ownerIndex = programme.companyId
+        .map((id) => Number(id))
+        .indexOf(companyId);
+      if (ownerIndex < 0) {
+        throw new HttpException(
+          this.helperService.formatReqMessagesString(
+            "programme.companyIsNotTheOwnerOfProg",
+            [companyId]
+          ),
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      const ownerBalance = this.helperService.halfUpToPrecision(
+        (availableBalance * (ownerPercentages[ownerIndex] || 0)) / 100
+      );
+      const ownerAvailable = this.helperService.halfUpToPrecision(
+        ownerBalance - (Number(frozenCredits[ownerIndex]) || 0)
+      );
+      const requestedAmount = req.companyCredit?.[index] ?? ownerAvailable;
+      if (!Number.isFinite(Number(requestedAmount))) {
+        throw new HttpException(
+          this.helperService.formatReqMessagesString(
+            "programme.companyHaveNoEnoughCredits",
+            [companyId]
+          ),
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const amount = this.helperService.halfUpToPrecision(requestedAmount);
+      if (amount <= 0 || amount > ownerAvailable) {
+        throw new HttpException(
+          this.helperService.formatReqMessagesString(
+            "programme.companyHaveNoEnoughCredits",
+            [companyId]
+          ),
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      return { companyId, amount };
+    });
+
+    const totalAmount = this.helperService.halfUpToPrecision(
+      allocations.reduce((sum, allocation) => sum + allocation.amount, 0)
+    );
+    if (totalAmount <= 0 || totalAmount > availableBalance) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString(
+          "programme.companyHaveNoEnoughCredits",
+          []
+        ),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    return { programme, allocations, totalAmount };
+  }
+
+  async cancelProgrammeCredits(
+    req: ProgrammeCreditAction,
+    requester: User
+  ): Promise<DataResponseDto> {
+    const { programme, allocations, totalAmount } =
+      await this.prepareProgrammeCreditAction(req, requester);
+    const updated = await this.programmeLedger.applyProgrammeCreditStatus(
+      programme.programmeId,
+      allocations,
+      TxType.CANCEL,
+      this.getUserRefWithRemarks(requester, req.comment)
+    );
+    await this.createCreditAuditLogRecord(
+      CreditAuditLogType.CREDIT_CANCELLED,
+      programme.programmeId,
+      totalAmount,
+      requester.id
+    );
+    return new DataResponseDto(HttpStatus.OK, updated);
+  }
+
+  async assignProgrammeCreditsToExchange(
+    req: ProgrammeCreditAction,
+    requester: User
+  ): Promise<DataResponseDto> {
+    const { programme, allocations, totalAmount } =
+      await this.prepareProgrammeCreditAction(req, requester);
+    const updated = await this.programmeLedger.applyProgrammeCreditStatus(
+      programme.programmeId,
+      allocations,
+      TxType.ASSIGN_TO_EXCHANGE,
+      this.getUserRefWithRemarks(requester, req.comment)
+    );
+    await this.createCreditAuditLogRecord(
+      CreditAuditLogType.CREDIT_ASSIGNED_TO_EXCHANGE,
+      programme.programmeId,
+      totalAmount,
+      requester.id
+    );
+    return new DataResponseDto(HttpStatus.OK, updated);
   }
 
   async issueProgrammeCredit(req: ProgrammeMitigationIssue, user: User) {
@@ -7777,9 +7992,9 @@ export class ProgrammeService {
     let issued = 0;
     let retired = 0;
     let transferred = 0;
-    let balance = 0;
     let cancelled = 0;
     let assignedToExchange = 0;
+    let balance = 0;
 
     const projectsBySector: Record<string, number> = {};
     const creditsBySector: Record<string, number> = {};
@@ -7849,10 +8064,11 @@ export class ProgrammeService {
         (sum, v) => sum + (Number(v) || 0),
         0
       );
-      assignedToExchange += (programme.creditAssigned || []).reduce(
-        (sum, v) => sum + (Number(v) || 0),
-        0
-      );
+      assignedToExchange += (
+        (programme.creditAssignedToExchange || []).concat(
+          programme.creditAssigned || []
+        )
+      ).reduce((sum, v) => sum + (Number(v) || 0), 0);
     }
 
     return {
@@ -8047,7 +8263,9 @@ export class ProgrammeService {
   // Public, unauthenticated per-certificate listing for the Mitigation tab's
   // "Emission Reduction Certificates" table (mirrors SRN Indonesia's SPE
   // registry). Projects real Programme credit-issuance fields into the
-  // SRN-equivalent shape instead of a separate manually-entered table.
+  // SRN-equivalent shape instead of a separate manually-entered table -
+  // cancelledUnits and assignedToExchangeUnits are derived from the same
+  // ledger-backed programme records as issued/retired units.
   async getPublicCertificates(
     q: string,
     page = 1,
@@ -8074,8 +8292,21 @@ export class ProgrammeService {
         (sum, v) => sum + (Number(v) || 0),
         0
       );
-      const status: "Active" | "Retired" =
-        availableUnits <= 0 && retiredUnits > 0 ? "Retired" : "Active";
+      const assignedToExchangeUnits = (
+        (programme.creditAssignedToExchange || []).concat(
+          programme.creditAssigned || []
+        )
+      ).reduce((sum, v) => sum + (Number(v) || 0), 0);
+      const status: PublicCertificate["status"] =
+        availableUnits > 0
+          ? "Active"
+          : retiredUnits > 0
+          ? "Retired"
+          : assignedToExchangeUnits > 0
+          ? "Assigned to Exchange"
+          : cancelledUnits > 0
+          ? "Cancelled"
+          : "Retired";
 
       return {
         accountHolder: programme.company?.[0]?.name ?? null,
@@ -8093,6 +8324,7 @@ export class ProgrammeService {
         availableUnits,
         retiredUnits,
         cancelledUnits,
+        assignedToExchangeUnits,
         issuedDate: programme.creditUpdateTime
           ? this.helperService.formatTimestamp(programme.creditUpdateTime) ??
             null

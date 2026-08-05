@@ -106,6 +106,8 @@ interface PublicAnalyticsSummary {
     issued: number;
     transferred: number;
     retired: number;
+    cancelled: number;
+    assignedToExchange: number;
     available: number;
     cancelled: number;
     assignedToExchange: number;
@@ -152,7 +154,7 @@ const emptyTradingSummary: EmissionTradingSummary = {
 };
 
 const CarbonDashboard = () => {
-  const { i18n, t } = useTranslation(["common", "homepage", "companyRoles"]);
+  const { t } = useTranslation(["common", "homepage", "companyRoles"]);
   const { get } = useConnection();
   const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
   const [tradingSummary, setTradingSummary] = useState<EmissionTradingSummary>(
@@ -167,7 +169,9 @@ const CarbonDashboard = () => {
   useEffect(() => {
     const fetchPublicSummary = async () => {
       try {
-        const response: any = await get(API_PATHS.PUBLIC_ANALYTICS_SUMMARY);
+        const response = await get<PublicAnalyticsSummary>(
+          API_PATHS.PUBLIC_ANALYTICS_SUMMARY
+        );
         if (response?.data) {
           const data = response.data;
           setSummary({
@@ -183,6 +187,8 @@ const CarbonDashboard = () => {
               issued: data.credits?.issued ?? 0,
               transferred: data.credits?.transferred ?? 0,
               retired: data.credits?.retired ?? 0,
+              cancelled: data.credits?.cancelled ?? 0,
+              assignedToExchange: data.credits?.assignedToExchange ?? 0,
               available: data.credits?.available ?? 0,
               cancelled: data.credits?.cancelled ?? 0,
               assignedToExchange: data.credits?.assignedToExchange ?? 0,
@@ -312,6 +318,16 @@ const CarbonDashboard = () => {
     { value: summary.credits.issued, title: t("homepage:issued") },
     { value: summary.credits.transferred, title: t("homepage:transferred") },
     { value: summary.credits.retired, title: t("homepage:retired") },
+    {
+      value: summary.credits.cancelled,
+      title: t("homepage:cancelled", { defaultValue: "Cancelled" }),
+    },
+    {
+      value: summary.credits.assignedToExchange,
+      title: t("homepage:assignedToExchange", {
+        defaultValue: "Assigned to Exchange",
+      }),
+    },
   ];
 
   const sectorData = Object.entries(summary.projectsBySector)

@@ -24,6 +24,8 @@ export class DataExportProgrammeDto extends DataExportDto{
     creditRetired;
     creditFrozen;
     creditTransferred;
+    creditCancelled;
+    creditAssignedToExchange;
     constantVersion;
     proponentTaxVatId;
     companyId;

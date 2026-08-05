@@ -1,223 +1,282 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Input, Select, Table } from "antd";
+import { Alert, Empty, Input, Select, Spin, Table } from "antd";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
-import "./Dashboard.scss";
+import "./MapTab.scss";
 
-interface ProvinceMapSummary {
-  province: string;
-  projectCount: number;
-  lat: number;
-  lng: number;
+type ActivityType = "mitigation" | "adaptation" | "community" | "redd";
+
+interface MapFeature {
+  recordId: string;
+  activityType: ActivityType;
+  title: string;
+  province: string | null;
+  sector: string | null;
+  coordinateStatus: "plotted";
+  coordinates: [number, number];
+  aggregation: "individual_activity_feature";
 }
 
-// Mirrors SRN Indonesia's own map "Activity Type" dropdown (Mitigasi /
-// Adaptasi / Proklim), plus REDD+ - the fourth domain Champa tracks with
-// its own province-scoped registry. Values match the backend's
-// ProgrammeService.getPublicMapSummary activityType switch.
-const ACTIVITY_TYPE_OPTIONS: { value: string; label: string }[] = [
+interface MapMeta {
+  received_count: number;
+  plotted_count: number;
+  excluded_count: number;
+  exclusions: {
+    missing_coordinates: number;
+    withheld: number;
+    invalid: number;
+  };
+  availability: "available" | "not_available";
+  disclosure: string;
+  filters: Record<string, string | null>;
+}
+
+interface MapPayload {
+  features: MapFeature[];
+  legend: Array<{
+    activityType: ActivityType;
+    receivedCount: number;
+    plottedCount: number;
+    excludedCount: number;
+  }>;
+}
+
+const ACTIVITY_TYPE_OPTIONS: { value: ActivityType; label: string }[] = [
   { value: "mitigation", label: "Mitigation" },
   { value: "adaptation", label: "Adaptation" },
-  { value: "community", label: "Community Programs" },
-  { value: "redd", label: "REDD+" },
+  { value: "community", label: "Community Climate Actions" },
+  { value: "redd", label: "REDD+ Forest Carbon" },
 ];
 
-// Diameter (px) of a province marker badge, proportional to project count
-// and clamped so it stays legible at both ends of the range.
-const markerDiameter = (projectCount: number) =>
-  Math.max(24, Math.min(56, 20 + projectCount * 6));
+const LAO_PROVINCES = [
+  "Attapeu",
+  "Bokeo",
+  "Bolikhamxay",
+  "Champasak",
+  "Houaphanh",
+  "Khammouane",
+  "Luang Namtha",
+  "Luang Prabang",
+  "Oudomxay",
+  "Phongsaly",
+  "Salavan",
+  "Savannakhet",
+  "Sekong",
+  "Vientiane Capital",
+  "Vientiane Province",
+  "Xaisomboun",
+  "Xayabouly",
+  "Xieng Khouang",
+];
 
-const LAO_PDR_CENTER: [number, number] = [18.2, 102.6]; // Leaflet uses [lat, lng]
+const LAO_PDR_CENTER: [number, number] = [18.2, 102.6];
 
-// Public, unauthenticated province-level activity map. Uses Leaflet +
-// OpenStreetMap - the same free, no-API-key stack Indonesia's SRN registry
-// itself uses for its map page - instead of Mapbox, which requires a paid
-// access token this deployment never had configured.
+const markerDiameter = (featureCount: number) =>
+  Math.max(24, Math.min(56, 20 + featureCount * 6));
+
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>'"]/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "'": "&#39;",
+      '"': "&quot;",
+    };
+    return entities[character];
+  });
+
 const MapTab = ({ showLegend = false }: { showLegend?: boolean }) => {
   const { get } = useConnection();
-  const [activityType, setActivityType] = useState("mitigation");
-  const [mapSummary, setMapSummary] = useState<ProvinceMapSummary[]>([]);
-  const [provinceSearch, setProvinceSearch] = useState("");
+  const [activityType, setActivityType] = useState<ActivityType>("mitigation");
+  const [province, setProvince] = useState<string | undefined>();
+  const [search, setSearch] = useState("");
+  const [payload, setPayload] = useState<MapPayload>({ features: [], legend: [] });
+  const [meta, setMeta] = useState<MapMeta | null>(null);
+  const [legend, setLegend] = useState<MapMeta[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    const fetchMapSummary = async () => {
+    let cancelled = false;
+    const fetchMap = async () => {
+      setLoading(true);
+      setError(false);
       try {
-        const response = await get(API_PATHS.PROJECT_MAP_SUMMARY(activityType));
-        const data = response?.data as ProvinceMapSummary[] | undefined;
-        setMapSummary(data ?? []);
-      } catch (error) {
-        setMapSummary([]);
+        const basePath = API_PATHS.PROJECT_MAP_SUMMARY(activityType);
+        const params = new URLSearchParams();
+        if (province) params.set("province", province);
+        if (search.trim()) params.set("search", search.trim());
+        const response = await get(`${basePath}${params.toString() ? `&${params}` : ""}`);
+        if (cancelled) return;
+        const nextPayload = (response?.data as MapPayload) ?? {
+          features: [],
+          legend: [],
+        };
+        setPayload(nextPayload);
+        setMeta((response?.response?.data?.meta as MapMeta) ?? null);
+      } catch {
+        if (!cancelled) {
+          setPayload({ features: [], legend: [] });
+          setMeta(null);
+          setError(true);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
-
-    fetchMapSummary();
-  }, [get, activityType]);
-
-  // Legend totals - one call per activity type, mirroring SRN's own map
-  // legend (Adaptation/Mitigation/Proklim counts). Only fetched when this
-  // instance renders as the standalone /map page, not the homepage tab.
-  const [legendTotals, setLegendTotals] = useState<Record<string, number>>(
-    {}
-  );
+    fetchMap();
+    return () => {
+      cancelled = true;
+    };
+  }, [get, activityType, province, search]);
 
   useEffect(() => {
-    if (!showLegend) {
-      return;
-    }
-
-    const fetchLegendTotals = async () => {
-      const entries = await Promise.all(
+    if (!showLegend) return;
+    let cancelled = false;
+    const fetchLegend = async () => {
+      const results = await Promise.all(
         ACTIVITY_TYPE_OPTIONS.map(async (option) => {
           try {
-            const response = await get(
-              API_PATHS.PROJECT_MAP_SUMMARY(option.value)
-            );
-            const data = response?.data as ProvinceMapSummary[] | undefined;
-            const total = (data ?? []).reduce(
-              (sum, entry) => sum + entry.projectCount,
-              0
-            );
-            return [option.label, total] as const;
-          } catch (error) {
-            return [option.label, 0] as const;
+            const response = await get(API_PATHS.PROJECT_MAP_SUMMARY(option.value));
+            return (response?.response?.data?.meta as MapMeta) ?? null;
+          } catch {
+            return null;
           }
         })
       );
-      setLegendTotals(Object.fromEntries(entries));
+      if (!cancelled) setLegend(results.filter((entry): entry is MapMeta => !!entry));
     };
-
-    fetchLegendTotals();
+    fetchLegend();
+    return () => {
+      cancelled = true;
+    };
   }, [get, showLegend]);
 
-  // Champa's map plots province-level aggregates, not individual activity
-  // points (unlike SRN Indonesia's per-activity marker + search), so
-  // "Search Activities" is an honest client-side filter over the visible
-  // province list/markers rather than a fabricated per-activity search.
-  const filteredSummary = useMemo(() => {
-    const query = provinceSearch.trim().toLowerCase();
-    if (!query) {
-      return mapSummary;
-    }
-    return mapSummary.filter((entry) =>
-      entry.province.toLowerCase().includes(query)
-    );
-  }, [mapSummary, provinceSearch]);
-
   useEffect(() => {
-    if (!mapContainerRef.current || filteredSummary.length === 0) {
-      return;
-    }
+    const container = mapContainerRef.current;
+    if (!container || payload.features.length === 0) return undefined;
 
-    const map = L.map(mapContainerRef.current).setView(LAO_PDR_CENTER, 6);
-    mapInstanceRef.current = map;
-
+    const map = L.map(container).setView(LAO_PDR_CENTER, 6);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 18,
     }).addTo(map);
 
-    filteredSummary.forEach((entry) => {
-      const diameter = markerDiameter(entry.projectCount);
+    const byProvince = payload.features.reduce<Record<string, MapFeature[]>>(
+      (groups, feature) => {
+        const key = feature.province ?? "Not available";
+        groups[key] = [...(groups[key] ?? []), feature];
+        return groups;
+      },
+      {}
+    );
+    Object.entries(byProvince).forEach(([provinceName, features]) => {
+      const [lng, lat] = features[0].coordinates;
+      const diameter = markerDiameter(features.length);
       const icon = L.divIcon({
         className: "map-tab-marker-wrapper",
-        html: `<div class="map-tab-marker" style="width:${diameter}px;height:${diameter}px;">${entry.projectCount}</div>`,
+        html: `<div class="map-tab-marker" style="width:${diameter}px;height:${diameter}px;">${features.length}</div>`,
         iconSize: [diameter, diameter],
         iconAnchor: [diameter / 2, diameter / 2],
       });
-
-      L.marker([entry.lat, entry.lng], { icon })
+      L.marker([lat, lng], { icon })
         .addTo(map)
-        .bindPopup(`<strong>${entry.province}</strong><br/>${entry.projectCount} project(s)`);
+        .bindPopup(
+          `<strong>${escapeHtml(provinceName)}</strong><br/>${features.length} plotted activity feature(s)`
+        );
     });
-
     return () => {
       map.remove();
-      mapInstanceRef.current = null;
     };
-  }, [filteredSummary]);
+  }, [payload.features]);
 
-  const sortedByCount = [...filteredSummary].sort(
-    (a, b) => b.projectCount - a.projectCount
+  const tableData = useMemo(
+    () => payload.features.map((feature) => ({ ...feature, key: feature.recordId })),
+    [payload.features]
   );
-
   const columns = [
-    {
-      title: "Province",
-      dataIndex: "province",
-      key: "province",
-    },
-    {
-      title: "Projects",
-      dataIndex: "projectCount",
-      key: "projectCount",
-    },
+    { title: "Activity", dataIndex: "title", key: "title" },
+    { title: "Province", dataIndex: "province", key: "province", render: (value: string | null) => value ?? "Not available" },
+    { title: "Sector", dataIndex: "sector", key: "sector", render: (value: string | null) => value ?? "Not applicable" },
+    { title: "Coordinates", key: "coordinates", render: (_: unknown, feature: MapFeature) => feature.coordinates.join(", ") },
   ];
 
   return (
-    <div className="dashboard-container">
+    <div className="map-tab-container">
       <div className="registry-table-section">
-        <h3 className="section-title">Projects by Province</h3>
+        <h3 className="section-title">Activity Map</h3>
+        <p className="registry-table-subtitle">
+          Individual activity features plotted against Lao PDR province geography. Province aggregates are not individual points.
+        </p>
+        <p className="map-tab-disclosure">
+          {meta?.disclosure ?? "Synthetic demonstration data — not official Lao PDR statistics or activity records."}
+        </p>
 
-        <div
-          className="map-tab-filters"
-          style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}
-        >
+        <div className="map-tab-filters">
           <Select
             value={activityType}
-            onChange={(value) => setActivityType(value)}
-            style={{ minWidth: 220 }}
+            onChange={setActivityType}
             options={ACTIVITY_TYPE_OPTIONS}
             aria-label="Activity Type"
+          />
+          <Select
+            allowClear
+            value={province}
+            onChange={setProvince}
+            options={LAO_PROVINCES.map((item) => ({ value: item, label: item }))}
+            placeholder="All Lao PDR provinces"
+            aria-label="Province"
           />
           <Input.Search
             allowClear
             placeholder="Search Activities"
-            value={provinceSearch}
-            onChange={(event) => setProvinceSearch(event.target.value)}
-            style={{ maxWidth: 320 }}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            aria-label="Search Activities"
           />
         </div>
 
-        {showLegend && (
-          <div className="map-tab-legend">
-            <h4 className="map-tab-legend-title">Legend</h4>
-            <div className="map-tab-legend-items">
-              {ACTIVITY_TYPE_OPTIONS.map((option) => (
-                <div key={option.value} className="map-tab-legend-item">
-                  <span className="map-tab-legend-label">{option.label}</span>
-                  <span className="map-tab-legend-value">
-                    {(legendTotals[option.label] ?? 0).toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
+        {meta && (
+          <div className="map-tab-count-grid" aria-label="Map feature counts">
+            <div><span>Received</span><strong>{meta.received_count.toLocaleString()}</strong></div>
+            <div><span>Plotted</span><strong>{meta.plotted_count.toLocaleString()}</strong></div>
+            <div><span>Excluded</span><strong>{meta.excluded_count.toLocaleString()}</strong></div>
+            <div><span>Missing coordinates</span><strong>{meta.exclusions.missing_coordinates.toLocaleString()}</strong></div>
+            <div><span>Invalid geography</span><strong>{meta.exclusions.invalid.toLocaleString()}</strong></div>
+            <div><span>Withheld</span><strong>{meta.exclusions.withheld.toLocaleString()}</strong></div>
           </div>
         )}
 
-        {mapSummary.length === 0 ? (
-          <p>No geolocated projects registered yet.</p>
-        ) : filteredSummary.length === 0 ? (
-          <p>No provinces match &quot;{provinceSearch}&quot;.</p>
-        ) : (
-          <>
-            <div
-              ref={mapContainerRef}
-              className="map-tab-leaflet-container"
-              style={{ height: 500, borderRadius: 12, overflow: "hidden" }}
-            />
+        {showLegend && (
+          <div className="map-tab-legend">
+            <h4 className="map-tab-legend-title">Activity legend</h4>
+            {legend.map((entry) => (
+              <div key={entry.filters.activityType} className="map-tab-legend-item">
+                <span>{entry.filters.activityType}</span>
+                <span>{entry.received_count.toLocaleString()} received / {entry.plotted_count.toLocaleString()} plotted</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-            <Table
-              rowKey="province"
-              columns={columns}
-              dataSource={sortedByCount}
-              pagination={false}
-              style={{ marginTop: "1.5rem" }}
-            />
+        {error && <Alert type="error" message="Map data could not be loaded." showIcon />}
+        {loading && <div className="map-tab-state"><Spin /> <span>Loading map features…</span></div>}
+        {!loading && !error && meta?.availability === "not_available" && (
+          <Empty description="No activity features match the selected filters." />
+        )}
+        {!loading && !error && payload.features.length > 0 && (
+          <>
+            <div ref={mapContainerRef} className="map-tab-leaflet-container" />
+            <Table rowKey="key" columns={columns} dataSource={tableData} pagination={{ pageSize: 10 }} />
           </>
+        )}
+        {!loading && !error && payload.features.length === 0 && meta?.excluded_count > 0 && (
+          <Empty description="Records were received, but none can be plotted with the available public coordinates." />
         )}
       </div>
     </div>

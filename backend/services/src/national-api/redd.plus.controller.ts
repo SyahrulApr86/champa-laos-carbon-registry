@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { Action } from "@app/shared/casl/action.enum";
@@ -15,8 +15,8 @@ export class ReddPlusController {
   // Public, unauthenticated - mirrors SRN Indonesia's REDD++ province grid;
   // intentionally fully public like the other registry tabs.
   @Get("public/byProvince")
-  async publicByProvince() {
-    return await this.reddPlusService.getPublicByProvince();
+  async publicByProvince(@Query("province") province?: string) {
+    return await this.reddPlusService.getPublicByProvince(province);
   }
 
   @ApiBearerAuth()

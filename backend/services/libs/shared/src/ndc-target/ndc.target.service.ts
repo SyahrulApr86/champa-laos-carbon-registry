@@ -7,29 +7,72 @@ import { NdcSector } from "../enum/ndc.sector.enum";
 
 interface NdcTargetSummary {
   latestYear: number | null;
-  baselineEmissions: number;
-  targetEmissions2030: number;
-  achievedEmissions: number;
-  contributionPercent: number;
+  baselineEmissions: number | null;
+  targetEmissions2030: number | null;
+  achievedEmissions: number | null;
+  contributionPercent: number | null;
+  verifiedReduction: number | null;
 }
 
 interface NdcTargetSeriesPoint {
   year: number;
-  baselineEmissions: number;
-  achievedEmissions: number;
+  baselineEmissions: number | null;
+  achievedEmissions: number | null;
   // Null when no record for this year (or, for the "All" aggregate, not
   // every sector's record for the year) has a claimed figure entered -
   // the frontend falls back to a single (verified-only) series rather
   // than fabricating a claimed value.
   claimedEmissions: number | null;
+  verifiedReduction: number | null;
+  unit: "tCO2e";
+  scale: "canonical";
+  verificationStatus: "claimed_and_verified" | "verified_only" | "not_available";
 }
+
+interface PublicMeta {
+  dataset_kind: "demo_synthetic" | "mixed_explicit" | "authoritative";
+  scenario: string;
+  as_of: string;
+  period: { start: string; end: string };
+  source: { type: string; label: string };
+  methodology_version: string;
+  unit: "tCO2e";
+  scale: "canonical";
+  filters: Record<string, unknown>;
+  availability: "available" | "not_available";
+  disclosure: string;
+  aggregation?: string;
+}
+
+const DISCLOSURE =
+  "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2010–2030.";
+
+const buildMeta = (
+  filters: Record<string, unknown>,
+  availability: PublicMeta["availability"],
+  aggregation?: string
+): PublicMeta => ({
+  dataset_kind: "demo_synthetic",
+  scenario: "Champa registry demonstration",
+  as_of: "2026-08-05T00:00:00Z",
+  period: { start: "2010-01-01", end: "2030-12-31" },
+  source: { type: "synthetic_demo", label: "Champa W1 NDC fixture" },
+  methodology_version: "champa-parity-demo-v1",
+  unit: "tCO2e",
+  scale: "canonical",
+  filters,
+  availability,
+  disclosure: DISCLOSURE,
+  ...(aggregation ? { aggregation } : {}),
+});
 
 const EMPTY_SUMMARY: NdcTargetSummary = {
   latestYear: null,
-  baselineEmissions: 0,
-  targetEmissions2030: 0,
-  achievedEmissions: 0,
-  contributionPercent: 0,
+  baselineEmissions: null,
+  targetEmissions2030: null,
+  achievedEmissions: null,
+  contributionPercent: null,
+  verifiedReduction: null,
 };
 
 @Injectable()
@@ -53,8 +96,14 @@ export class NdcTargetService {
 
   // Public, unauthenticated list ordered oldest to newest - raw export of
   // every recorded sector/year figure.
-  async publicList(): Promise<NdcTargetEntity[]> {
-    return await this.ndcTargetRepo.find({ order: { year: "ASC" } });
+  async publicList(): Promise<{ data: NdcTargetEntity[]; meta: PublicMeta }> {
+    const data = await this.ndcTargetRepo.find({
+      order: { year: "ASC", sector: "ASC" },
+    });
+    return {
+      data,
+      meta: buildMeta({}, data.length ? "available" : "not_available"),
+    };
   }
 
   // Resolves the requested sector query param against the real enum,
@@ -90,10 +139,17 @@ export class NdcTargetService {
   // (baseline - target2030) [the full planned gap]. Matches SRN's own
   // published contribution-percent semantics.
   private contributionPercent(
-    baselineEmissions: number,
-    targetEmissions2030: number,
-    achievedEmissions: number
-  ): number {
+    baselineEmissions: number | null,
+    targetEmissions2030: number | null,
+    achievedEmissions: number | null
+  ): number | null {
+    if (
+      baselineEmissions === null ||
+      targetEmissions2030 === null ||
+      achievedEmissions === null
+    ) {
+      return null;
+    }
     const gap = baselineEmissions - targetEmissions2030;
     if (gap <= 0) {
       return 0;
@@ -102,7 +158,10 @@ export class NdcTargetService {
     return (reduction / gap) * 100;
   }
 
-  async publicSummary(sector?: string): Promise<NdcTargetSummary> {
+  async publicSummary(sector?: string): Promise<{
+    data: NdcTargetSummary;
+    meta: PublicMeta;
+  }> {
     const selectedSector = this.resolveSector(sector);
 
     if (selectedSector) {
@@ -111,30 +170,44 @@ export class NdcTargetService {
         order: { year: "DESC" },
       });
       if (!latest) {
-        return EMPTY_SUMMARY;
+        return {
+          data: EMPTY_SUMMARY,
+          meta: buildMeta({ sector: selectedSector }, "not_available"),
+        };
       }
 
-      const baselineEmissions = Number(latest.baselineEmissions) || 0;
-      const targetEmissions2030 = Number(latest.targetEmissions2030) || 0;
-      const achievedEmissions = Number(latest.achievedEmissions) || 0;
+      const baselineEmissions = this.toNullableNumber(latest.baselineEmissions);
+      const targetEmissions2030 = this.toNullableNumber(latest.targetEmissions2030);
+      const achievedEmissions = this.toNullableNumber(latest.achievedEmissions);
+      const verifiedReduction =
+        baselineEmissions === null || achievedEmissions === null
+          ? null
+          : baselineEmissions - achievedEmissions;
 
       return {
-        latestYear: latest.year,
-        baselineEmissions,
-        targetEmissions2030,
-        achievedEmissions,
-        contributionPercent: this.contributionPercent(
+        data: {
+          latestYear: latest.year,
           baselineEmissions,
           targetEmissions2030,
-          achievedEmissions
-        ),
+          achievedEmissions,
+          verifiedReduction,
+          contributionPercent: this.contributionPercent(
+            baselineEmissions,
+            targetEmissions2030,
+            achievedEmissions
+          ),
+        },
+        meta: buildMeta({ sector: selectedSector }, "available"),
       };
     }
 
     // 'All' aggregate: sum each sector's own latest-year figures.
     const latestRows = await this.latestPerSector();
     if (latestRows.length === 0) {
-      return EMPTY_SUMMARY;
+      return {
+        data: EMPTY_SUMMARY,
+        meta: buildMeta({ sector: "All" }, "not_available", "sum of latest row per configured sector"),
+      };
     }
 
     let latestYear: number | null = null;
@@ -143,22 +216,33 @@ export class NdcTargetService {
     let achievedEmissions = 0;
 
     for (const record of latestRows) {
-      baselineEmissions += Number(record.baselineEmissions) || 0;
-      targetEmissions2030 += Number(record.targetEmissions2030) || 0;
-      achievedEmissions += Number(record.achievedEmissions) || 0;
+      const baseline = this.toNullableNumber(record.baselineEmissions);
+      const target = this.toNullableNumber(record.targetEmissions2030);
+      const achieved = this.toNullableNumber(record.achievedEmissions);
+      if (baseline !== null) baselineEmissions += baseline;
+      if (target !== null) targetEmissions2030 += target;
+      if (achieved !== null) achievedEmissions += achieved;
       latestYear =
         latestYear === null ? record.year : Math.max(latestYear, record.year);
     }
 
     return {
-      latestYear,
-      baselineEmissions,
-      targetEmissions2030,
-      achievedEmissions,
-      contributionPercent: this.contributionPercent(
+      data: {
+        latestYear,
         baselineEmissions,
         targetEmissions2030,
-        achievedEmissions
+        achievedEmissions,
+        verifiedReduction: baselineEmissions - achievedEmissions,
+        contributionPercent: this.contributionPercent(
+          baselineEmissions,
+          targetEmissions2030,
+          achievedEmissions
+        ),
+      },
+      meta: buildMeta(
+        { sector: "All" },
+        "available",
+        "sum of latest row per configured sector"
       ),
     };
   }
@@ -166,7 +250,10 @@ export class NdcTargetService {
   // Yearly baseline vs. achieved time series feeding the public trend
   // charts. Single sector -> its own rows; 'All' -> summed across every
   // sector for each shared year.
-  async publicSeries(sector?: string): Promise<NdcTargetSeriesPoint[]> {
+  async publicSeries(sector?: string): Promise<{
+    data: NdcTargetSeriesPoint[];
+    meta: PublicMeta;
+  }> {
     const selectedSector = this.resolveSector(sector);
 
     const records = await this.ndcTargetRepo.find({
@@ -175,16 +262,10 @@ export class NdcTargetService {
     });
 
     if (selectedSector) {
-      return records.map((record) => ({
-        year: record.year,
-        baselineEmissions: Number(record.baselineEmissions) || 0,
-        achievedEmissions: Number(record.achievedEmissions) || 0,
-        claimedEmissions:
-          record.claimedEmissions === null ||
-          record.claimedEmissions === undefined
-            ? null
-            : Number(record.claimedEmissions) || 0,
-      }));
+      return {
+        data: records.map((record) => this.toSeriesPoint(record)),
+        meta: buildMeta({ sector: selectedSector }, records.length ? "available" : "not_available"),
+      };
     }
 
     const byYear = new Map<
@@ -216,7 +297,7 @@ export class NdcTargetService {
       byYear.set(record.year, entry);
     }
 
-    return Array.from(byYear.entries())
+    const data = Array.from(byYear.entries())
       .sort(([yearA], [yearB]) => yearA - yearB)
       .map(([year, totals]) => ({
         year,
@@ -225,6 +306,52 @@ export class NdcTargetService {
         claimedEmissions: totals.claimedIncomplete
           ? null
           : totals.claimedEmissions,
+        verifiedReduction: totals.baselineEmissions - totals.achievedEmissions,
+        unit: "tCO2e" as const,
+        scale: "canonical" as const,
+        verificationStatus: totals.claimedIncomplete
+          ? ("verified_only" as const)
+          : ("claimed_and_verified" as const),
       }));
+
+    return {
+      data,
+      meta: buildMeta(
+        { sector: "All" },
+        data.length ? "available" : "not_available",
+        "sum of configured sectors by shared year"
+      ),
+    };
+  }
+
+  private toNullableNumber(value: number | null | undefined): number | null {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return null;
+    }
+    return Number(value);
+  }
+
+  private toSeriesPoint(record: NdcTargetEntity): NdcTargetSeriesPoint {
+    const baselineEmissions = this.toNullableNumber(record.baselineEmissions);
+    const achievedEmissions = this.toNullableNumber(record.achievedEmissions);
+    const claimedEmissions = this.toNullableNumber(record.claimedEmissions);
+    return {
+      year: record.year,
+      baselineEmissions,
+      achievedEmissions,
+      claimedEmissions,
+      verifiedReduction:
+        baselineEmissions === null || achievedEmissions === null
+          ? null
+          : baselineEmissions - achievedEmissions,
+      unit: "tCO2e",
+      scale: "canonical",
+      verificationStatus:
+        claimedEmissions === null
+          ? achievedEmissions === null
+            ? "not_available"
+            : "verified_only"
+          : "claimed_and_verified",
+    };
   }
 }

@@ -157,6 +157,51 @@ export interface PublicCertificate {
   issuedDate: string | null;
 }
 
+export interface PublicMapFeature {
+  recordId: string;
+  activityType: "mitigation" | "adaptation" | "community" | "redd";
+  title: string;
+  province: string | null;
+  sector: string | null;
+  coordinateStatus: "plotted";
+  coordinates: [number, number];
+  aggregation: "individual_activity_feature";
+}
+
+export interface PublicMapResponse {
+  data: {
+    features: PublicMapFeature[];
+    legend: Array<{
+      activityType: PublicMapFeature["activityType"];
+      receivedCount: number;
+      plottedCount: number;
+      excludedCount: number;
+    }>;
+  };
+  meta: {
+    dataset_kind: "demo_synthetic" | "mixed_explicit" | "authoritative";
+    scenario: string;
+    as_of: string;
+    period: { start: string; end: string };
+    source: { type: string; label: string };
+    methodology_version: string;
+    unit: "features";
+    scale: "records";
+    filters: Record<string, string | null>;
+    received_count: number;
+    plotted_count: number;
+    excluded_count: number;
+    exclusions: {
+      missing_coordinates: number;
+      withheld: number;
+      invalid: number;
+    };
+    availability: "available" | "not_available";
+    disclosure: string;
+    aggregation: "individual_activity_feature";
+  };
+}
+
 export declare function PrimaryGeneratedColumn(
   options: PrimaryGeneratedColumnType
 ): Function;
@@ -8170,64 +8215,152 @@ export class ProgrammeService {
     };
   }
 
-  // Public, unauthenticated province-level activity map summary. Tallies
-  // activities by province for the selected domain and joins against the
-  // seeded Region table for map coordinates. Provinces with zero activities
-  // are omitted (the frontend map only plots markers where there's real
-  // data). `activityType` mirrors SRN Indonesia's own Activity Type filter
-  // (Mitigasi/Adaptasi/Proklim) - Champa additionally exposes REDD+, its
-  // own tracked mitigation sub-domain, as a fourth option. Any unrecognised
-  // value falls back to "mitigation" to preserve the original endpoint's
-  // behaviour for existing callers.
-  async getPublicMapSummary(activityType?: string): Promise<
-    { province: string; projectCount: number; lat: number; lng: number }[]
-  > {
-    const countByProvince = await this.getMapActivityCountByProvince(
-      activityType
-    );
-    return this.buildProvinceMapSummary(countByProvince);
+  // Public, unauthenticated map contract. Unlike the original endpoint,
+  // this returns individual activity features and explicitly accounts for
+  // records received but not plotted because their geography is missing or
+  // invalid. Province aggregates are never labelled as individual points.
+  async getPublicMapSummary(
+    activityType?: string,
+    province?: string,
+    search?: string
+  ): Promise<PublicMapResponse> {
+    const selectedType = this.resolveMapActivityType(activityType);
+    const candidates = await this.getMapCandidates(selectedType);
+    const filtered = candidates.filter((candidate) => {
+      const matchesProvince =
+        !province || candidate.province?.toLowerCase() === province.toLowerCase();
+      const haystack = [candidate.title, candidate.province, candidate.recordId]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return matchesProvince && (!search || haystack.includes(search.toLowerCase()));
+    });
+
+    const regions = await this.regionRepo.find({ where: { lang: "en" } });
+    const regionByName = new Map(regions.map((region) => [region.regionName, region]));
+    const exclusions = { missing_coordinates: 0, withheld: 0, invalid: 0 };
+    const features: PublicMapFeature[] = [];
+
+    for (const candidate of filtered) {
+      if (!candidate.province) {
+        exclusions.missing_coordinates += 1;
+        continue;
+      }
+      const region = regionByName.get(candidate.province);
+      const coords = region?.geoCoordinates as unknown;
+      if (!region || !Array.isArray(coords) || coords.length < 2) {
+        exclusions.invalid += 1;
+        continue;
+      }
+      const [lng, lat] = coords;
+      if (typeof lng !== "number" || typeof lat !== "number") {
+        exclusions.invalid += 1;
+        continue;
+      }
+      features.push({
+        recordId: candidate.recordId,
+        activityType: selectedType,
+        title: candidate.title,
+        province: candidate.province,
+        sector: candidate.sector,
+        coordinateStatus: "plotted",
+        coordinates: [lng, lat],
+        aggregation: "individual_activity_feature",
+      });
+    }
+
+    const receivedCount = filtered.length;
+    const plottedCount = features.length;
+    const excludedCount = receivedCount - plottedCount;
+    return {
+      data: {
+        features,
+        legend: [{ activityType: selectedType, receivedCount, plottedCount, excludedCount }],
+      },
+      meta: {
+        dataset_kind: "demo_synthetic",
+        scenario: "Champa registry demonstration",
+        as_of: "2026-08-05T00:00:00Z",
+        period: { start: "2021-01-01", end: "2026-12-31" },
+        source: { type: "synthetic_demo", label: "Champa W1 map fixture" },
+        methodology_version: "champa-parity-demo-v1",
+        unit: "features",
+        scale: "records",
+        filters: {
+          activityType: selectedType,
+          province: province || null,
+          search: search || null,
+        },
+        received_count: receivedCount,
+        plotted_count: plottedCount,
+        excluded_count: excludedCount,
+        exclusions,
+        availability: receivedCount ? "available" : "not_available",
+        disclosure:
+          "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2021–2026.",
+        aggregation: "individual_activity_feature",
+      },
+    };
   }
 
-  // Tallies raw activity records by province for the requested domain.
-  // Mitigation reads Programme.programmeProperties.geographicalLocation
-  // (a programme can list multiple provinces); the other three domains
-  // each store a single flat province/region string column.
-  private async getMapActivityCountByProvince(
+  private resolveMapActivityType(
     activityType?: string
-  ): Promise<Record<string, number>> {
-    switch (activityType) {
-      case "adaptation":
-        return this.countActivitiesByProvinceField(
-          await this.adaptationRepo.find(),
-          "region"
-        );
-      case "community":
-        return this.countActivitiesByProvinceField(
-          await this.communityProgramRepo.find(),
-          "region"
-        );
-      case "redd":
-        return this.countActivitiesByProvinceField(
-          await this.reddPlusRepo.find(),
-          "province"
-        );
-      case "mitigation":
-      default: {
-        const programmes = await this.programmeRepo.find();
-        const countByProvince: Record<string, number> = {};
-        for (const programme of programmes) {
-          const locations =
-            programme.programmeProperties?.geographicalLocation;
-          if (!Array.isArray(locations)) {
-            continue;
-          }
-          for (const province of locations) {
-            countByProvince[province] = (countByProvince[province] || 0) + 1;
-          }
-        }
-        return countByProvince;
-      }
+  ): PublicMapFeature["activityType"] {
+    return ["adaptation", "community", "redd"].includes(activityType || "")
+      ? (activityType as PublicMapFeature["activityType"])
+      : "mitigation";
+  }
+
+  private async getMapCandidates(
+    activityType: PublicMapFeature["activityType"]
+  ): Promise<
+    Array<{
+      recordId: string;
+      title: string;
+      province: string | null;
+      sector: string | null;
+    }>
+  > {
+    if (activityType === "adaptation") {
+      const records = await this.adaptationRepo.find();
+      return records.map((record) => ({
+        recordId: String(record.adaptationId || record.id),
+        title: record.title || "Untitled adaptation action",
+        province: record.region || null,
+        sector: record.sector || null,
+      }));
     }
+    if (activityType === "community") {
+      const records = await this.communityProgramRepo.find();
+      return records.map((record) => ({
+        recordId: String(record.programId || record.id),
+        title: record.name || "Untitled community climate action",
+        province: record.region || null,
+        sector: null,
+      }));
+    }
+    if (activityType === "redd") {
+      const records = await this.reddPlusRepo.find();
+      return records.map((record) => ({
+        recordId: String(record.id),
+        title: record.title || "Untitled REDD+ forest carbon action",
+        province: record.province || null,
+        sector: "Forestry",
+      }));
+    }
+
+    const programmes = await this.programmeRepo.find();
+    return programmes.flatMap((programme) => {
+      const locations = programme.programmeProperties?.geographicalLocation;
+      const provinces =
+        Array.isArray(locations) && locations.length ? locations : [null];
+      return provinces.map((province) => ({
+        recordId: `${programme.programmeId}:${province || "unlocated"}`,
+        title: programme.title || "Untitled mitigation activity",
+        province,
+        sector: programme.sector || null,
+      }));
+    });
   }
 
   // Shared tally for the three single-province-column domains (adaptation,

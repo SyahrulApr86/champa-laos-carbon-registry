@@ -112,6 +112,9 @@ const ResourcesTab = () => {
   const [capacityTotal, setCapacityTotal] = useState(0);
   const [capacityPage, setCapacityPage] = useState(1);
   const [capacityLoading, setCapacityLoading] = useState(false);
+  const [supportQuery, setSupportQuery] = useState("");
+  const [supportSector, setSupportSector] = useState<string>();
+  const [supportStatus, setSupportStatus] = useState<string>();
   const [selectedSupport, setSelectedSupport] = useState<SupportRow | null>(null);
 
   useEffect(() => {
@@ -147,7 +150,11 @@ const ResourcesTab = () => {
     setLoading(true);
     try {
       const path = kind === "technology" ? API_PATHS.TECHNOLOGY_TRANSFER_PUBLIC_LIST : API_PATHS.CAPACITY_BUILDING_PUBLIC_LIST;
-      const response = await get<PublicEnvelope<SupportRow[]>>(`${path}?${pageQuery(page)}`);
+      const params = new URLSearchParams(pageQuery(page));
+      if (supportQuery) params.set("q", supportQuery);
+      if (supportSector) params.set("sector", supportSector);
+      if (supportStatus) params.set("status", supportStatus);
+      const response = await get<PublicEnvelope<SupportRow[]>>(`${path}?${params.toString()}`);
       if (kind === "technology") {
         setTechnologyRows(response.data?.data ?? []);
         setTechnologyTotal(response.data?.meta?.pagination?.total_items ?? 0);
@@ -161,7 +168,7 @@ const ResourcesTab = () => {
     } finally {
       setLoading(false);
     }
-  }, [get]);
+  }, [get, supportQuery, supportSector, supportStatus]);
 
   useEffect(() => { fetchSupport("technology", technologyPage); }, [fetchSupport, technologyPage]);
   useEffect(() => { fetchSupport("capacity", capacityPage); }, [capacityPage, fetchSupport]);
@@ -216,7 +223,7 @@ const ResourcesTab = () => {
 
       <div className="registry-table-section"><h3 className="section-title">Browse Climate Finance Entries</h3><Space wrap style={{ marginBottom: "1rem" }}><Input.Search allowClear placeholder="Search climate finance entries" onSearch={(value) => { setFinancePage(1); setQuery(value.trim()); }} style={{ width: 280 }} /><Select allowClear placeholder="Sector" value={sector} onChange={(value) => { setFinancePage(1); setSector(value); }} options={Object.keys(financeSummary.bySectorLAK).map((value) => ({ label: value, value }))} style={{ width: 180 }} /><Input placeholder="Channel" value={channel} onChange={(event) => setChannel(event.target.value || undefined)} onPressEnter={() => setFinancePage(1)} style={{ width: 180 }} /></Space>{financeError && <Alert type="error" showIcon message="Climate finance could not be loaded." style={{ marginBottom: "1rem" }} />}{!financeLoading && !financeError && financeRows.length === 0 ? <Empty description="No climate finance entries match the selected filters." /> : <Table className="registry-table" rowKey="recordId" columns={financeColumns} dataSource={financeRows} loading={financeLoading} pagination={{ current: financePage, pageSize: PAGE_SIZE, total: financeTotal, onChange: setFinancePage }} scroll={{ x: 1100 }} />}</div>
 
-      <div className="registry-table-section"><h3 className="section-title">Technology Development &amp; Transfer Support</h3><Table className="registry-table" rowKey="id" columns={supportColumns(true)} dataSource={technologyRows} loading={technologyLoading} locale={{ emptyText: "No technology transfer entries are available." }} pagination={{ current: technologyPage, pageSize: PAGE_SIZE, total: technologyTotal, onChange: setTechnologyPage }} scroll={{ x: 900 }} /></div>
+      <div className="registry-table-section"><h3 className="section-title">Technology Development &amp; Transfer Support</h3><Space wrap style={{ marginBottom: "1rem" }}><Input.Search allowClear placeholder="Search support entries" onSearch={(value) => { setTechnologyPage(1); setCapacityPage(1); setSupportQuery(value.trim()); }} style={{ width: 280 }} /><Input placeholder="Sector" value={supportSector} onChange={(event) => setSupportSector(event.target.value || undefined)} onPressEnter={() => { setTechnologyPage(1); setCapacityPage(1); }} style={{ width: 160 }} /><Select allowClear placeholder="Status" value={supportStatus} onChange={(value) => { setTechnologyPage(1); setCapacityPage(1); setSupportStatus(value); }} options={["Completed", "On-Going", "Terminated"].map((value) => ({ label: value, value }))} style={{ width: 160 }} /></Space><Table className="registry-table" rowKey="id" columns={supportColumns(true)} dataSource={technologyRows} loading={technologyLoading} locale={{ emptyText: "No technology transfer entries are available." }} pagination={{ current: technologyPage, pageSize: PAGE_SIZE, total: technologyTotal, onChange: setTechnologyPage }} scroll={{ x: 900 }} /></div>
       <div className="registry-table-section"><h3 className="section-title">Capacity Building Support</h3><Table className="registry-table" rowKey="id" columns={supportColumns(false)} dataSource={capacityRows} loading={capacityLoading} locale={{ emptyText: "No capacity building entries are available." }} pagination={{ current: capacityPage, pageSize: PAGE_SIZE, total: capacityTotal, onChange: setCapacityPage }} scroll={{ x: 900 }} /></div>
 
       <Modal title={selectedSupport?.title} open={!!selectedSupport} onCancel={() => setSelectedSupport(null)} footer={null}><Alert type="info" showIcon message="Synthetic demonstration record" style={{ marginBottom: "1rem" }} />{selectedSupport && <Descriptions column={1} bordered size="small"><Descriptions.Item label="Description">{selectedSupport.description || "Not available"}</Descriptions.Item><Descriptions.Item label="Technology Type">{selectedSupport.technologyType || "Not applicable"}</Descriptions.Item><Descriptions.Item label="Timeframe">{selectedSupport.timeframe || "Not available"}</Descriptions.Item><Descriptions.Item label="Recipient Entity">{selectedSupport.recipientEntity || "Not available"}</Descriptions.Item><Descriptions.Item label="Implementing Entity">{selectedSupport.implementingEntity || "Not available"}</Descriptions.Item><Descriptions.Item label="Type">{selectedSupport.type || "Not available"}</Descriptions.Item><Descriptions.Item label="Sector">{selectedSupport.sector || "Not available"}</Descriptions.Item><Descriptions.Item label="Subsector">{selectedSupport.subsector || "Not available"}</Descriptions.Item><Descriptions.Item label="Status"><Tag color={supportStatusColor[selectedSupport.status] || "default"}>{selectedSupport.status}</Tag></Descriptions.Item><Descriptions.Item label="Impact / Estimated Result">{selectedSupport.impactEstimatedResult || "Not available"}</Descriptions.Item><Descriptions.Item label="Additional Information">{selectedSupport.additionalInformation || "Not available"}</Descriptions.Item></Descriptions>}</Modal>

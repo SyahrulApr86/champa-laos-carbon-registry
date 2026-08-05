@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { Action } from "@app/shared/casl/action.enum";
@@ -16,8 +16,23 @@ export class CommunityProgramController {
 
   // Public, unauthenticated - this registry is intentionally fully public.
   @Get("public/list")
-  async publicList() {
-    return await this.communityProgramService.publicList();
+  async publicList(
+    @Query("q") q?: string,
+    @Query("category") category?: string,
+    @Query("region") region?: string,
+    @Query("status") status?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("size") size?: string
+  ) {
+    return await this.communityProgramService.publicList({
+      q,
+      category,
+      region,
+      status,
+      page: page ? parseInt(page, 10) : 1,
+      pageSize: pageSize ? parseInt(pageSize, 10) : size ? parseInt(size, 10) : 10,
+    });
   }
 
   @Get("public/summary")
@@ -33,7 +48,7 @@ export class CommunityProgramController {
     try {
       return await this.communityProgramService.publicDetail(id);
     } catch (error) {
-      return { found: false };
+      return { data: null, meta: { availability: "not_available" } };
     }
   }
 

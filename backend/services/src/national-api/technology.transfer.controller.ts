@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { Action } from "@app/shared/casl/action.enum";
@@ -18,8 +18,18 @@ export class TechnologyTransferController {
   // mirroring SRN's public "Technology Development & Transfer Support
   // Received" table.
   @Get("public/list")
-  async publicList() {
-    return await this.technologyTransferService.publicList();
+  async publicList(
+    @Query("q") q?: string,
+    @Query("sector") sector?: string,
+    @Query("status") status?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string
+  ) {
+    return await this.technologyTransferService.publicList({
+      q, sector, status,
+      page: page ? parseInt(page, 10) : 1,
+      pageSize: pageSize ? parseInt(pageSize, 10) : 10,
+    });
   }
 
   @ApiBearerAuth()

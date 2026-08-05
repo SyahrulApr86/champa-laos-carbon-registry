@@ -18,12 +18,17 @@ export class ClimateFinanceController {
   async publicSearch(
     @Query("q") q: string,
     @Query("page") page?: string,
-    @Query("size") size?: string
+    @Query("size") size?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("sector") sector?: string,
+    @Query("channel") channel?: string,
+    @Query("status") status?: string
   ) {
     return await this.climateFinanceService.publicSearch(
       q,
       page ? parseInt(page, 10) : 1,
-      size ? parseInt(size, 10) : 10
+      pageSize ? parseInt(pageSize, 10) : size ? parseInt(size, 10) : 10,
+      { sector, channel, status }
     );
   }
 

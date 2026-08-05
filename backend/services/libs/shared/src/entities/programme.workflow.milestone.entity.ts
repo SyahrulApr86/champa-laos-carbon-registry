@@ -23,7 +23,7 @@ export class ProgrammeWorkflowMilestone {
   @Column({ type: "varchar", length: 48 })
   status: string;
 
-  @Column({ type: "enum", enum: PublicAvailability, default: PublicAvailability.NOT_CONFIGURED })
+  @Column({ type: "enum", enum: PublicAvailability, enumName: "public_availability_enum", default: PublicAvailability.NOT_CONFIGURED })
   availability: PublicAvailability;
 
   @Column({ type: "timestamptz", nullable: true })

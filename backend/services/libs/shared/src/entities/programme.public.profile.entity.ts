@@ -15,7 +15,7 @@ export class ProgrammePublicProfile {
   @Column({ type: "text", nullable: true })
   vulnerabilitySummary: string | null;
 
-  @Column({ type: "enum", enum: PublicAvailability, default: PublicAvailability.NOT_CONFIGURED })
+  @Column({ type: "enum", enum: PublicAvailability, enumName: "public_availability_enum", default: PublicAvailability.NOT_CONFIGURED })
   vulnerabilityAvailability: PublicAvailability;
 
   @Column({ type: "jsonb", default: () => "'{}'" })

@@ -16,7 +16,7 @@ export class ProgrammePublicDocument {
   @Column({ type: "varchar", length: 80 })
   category: string;
 
-  @Column({ type: "enum", enum: PublicAvailability })
+  @Column({ type: "enum", enum: PublicAvailability, enumName: "public_availability_enum" })
   availability: PublicAvailability;
 
   @Column({ type: "varchar", length: 500, nullable: true })

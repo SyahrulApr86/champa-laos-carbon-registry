@@ -22,7 +22,7 @@ export class CertificateLedgerEvent {
   @Column({ type: "varchar", length: 128, nullable: true })
   parentEventId: string | null;
 
-  @Column({ type: "enum", enum: CertificateLedgerEventType })
+  @Column({ type: "enum", enum: CertificateLedgerEventType, enumName: "certificate_ledger_event_type_enum" })
   eventType: CertificateLedgerEventType;
 
   @Column({ type: "decimal", precision: 18, scale: 6 })
@@ -37,10 +37,10 @@ export class CertificateLedgerEvent {
   @Column({ type: "bigint", nullable: true })
   toOwnerCompanyId: string | null;
 
-  @Column({ type: "enum", enum: CertificatePortionState, nullable: true })
+  @Column({ type: "enum", enum: CertificatePortionState, enumName: "certificate_portion_state_enum", nullable: true })
   fromState: CertificatePortionState | null;
 
-  @Column({ type: "enum", enum: CertificatePortionState, nullable: true })
+  @Column({ type: "enum", enum: CertificatePortionState, enumName: "certificate_portion_state_enum", nullable: true })
   toState: CertificatePortionState | null;
 
   @Column({ type: "timestamptz" })

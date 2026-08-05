@@ -18,7 +18,7 @@ export class CertificatePortion {
   @Column({ type: "bigint", nullable: true })
   ownerCompanyId: string | null;
 
-  @Column({ type: "enum", enum: CertificatePortionState })
+  @Column({ type: "enum", enum: CertificatePortionState, enumName: "certificate_portion_state_enum" })
   state: CertificatePortionState;
 
   @Column({ type: "decimal", precision: 18, scale: 6 })

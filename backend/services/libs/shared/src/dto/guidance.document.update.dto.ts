@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsNotEmpty,
   IsOptional,
@@ -7,12 +7,13 @@ import {
   MaxLength,
 } from "class-validator";
 
-export class GuidanceDocumentCreateDto {
-  @ApiProperty()
+export class GuidanceDocumentUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)
-  title: string;
+  title?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -26,12 +27,12 @@ export class GuidanceDocumentCreateDto {
   @MaxLength(100)
   category?: string;
 
-  // External link or a base64 data-URI (data:<mimetype>;base64,<data>).
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @Matches(/^(https?:\/\/|data:[^;]+;base64,)/i, {
     message: "documentUrl must be an HTTP(S) URL or a base64 data URI",
   })
-  documentUrl: string;
+  documentUrl?: string;
 }

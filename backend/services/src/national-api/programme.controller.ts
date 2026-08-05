@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Param,
   Put,
   Query,
   UseGuards,
@@ -49,12 +50,17 @@ import { ApiKeyJwtAuthGuard } from "@app/shared/auth/guards/api-jwt-key.guard";
 import { ProgrammeService } from "@app/shared/programme/programme.service";
 import { CreditCancelDto } from "@app/shared/dto/credit.cancel.dto";
 import { CreditAssignDto } from "@app/shared/dto/credit.assign.dto";
+import { CertificateRegistryService } from "@app/shared/certificate-registry/certificate.registry.service";
+import { CertificatePortionState } from "@app/shared/enum/certificate.ledger.enum";
 
 @ApiTags("Programme")
 @ApiBearerAuth()
 @Controller("programme")
 export class ProgrammeController {
-  constructor(private programmeService: ProgrammeService) {}
+  constructor(
+    private programmeService: ProgrammeService,
+    private certificateRegistryService: CertificateRegistryService
+  ) {}
 
   // Public, unauthenticated per-certificate listing for the Mitigation
   // tab's "Emission Reduction Certificates" table (SRN Indonesia's SPE
@@ -71,6 +77,41 @@ export class ProgrammeController {
       page ? parseInt(page, 10) : 1,
       pageSize ? parseInt(pageSize, 10) : 10
     );
+  }
+
+  // Canonical certificate API. The legacy public/certificates projection is
+  // retained while dashboard clients migrate to this metadata-rich contract.
+  @Get("public/certificate-registry")
+  async publicCertificateRegistry(
+    @Query("q") q?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("scheme") scheme?: string,
+    @Query("sector") sector?: string,
+    @Query("state") state?: CertificatePortionState,
+    @Query("holderId") holderId?: string
+  ) {
+    return this.certificateRegistryService.getPublicCertificates({
+      q,
+      page: page ? parseInt(page, 10) : 1,
+      pageSize: pageSize ? parseInt(pageSize, 10) : 10,
+      scheme,
+      sector,
+      state,
+      holderId,
+    });
+  }
+
+  @Get("public/certificate-registry/:certificateId")
+  async publicCertificateDetail(@Param("certificateId") certificateId: string) {
+    return this.certificateRegistryService.getPublicCertificateDetail(certificateId);
+  }
+
+  // Public-safe mitigation detail capability used by F23. This does not
+  // expose internal workflow actors or unpublished documents.
+  @Get("public/mitigation-detail/:programmeId")
+  async publicMitigationDetail(@Param("programmeId") programmeId: string) {
+    return this.certificateRegistryService.getPublicMitigationDetail(programmeId);
   }
 
   @ApiBearerAuth()

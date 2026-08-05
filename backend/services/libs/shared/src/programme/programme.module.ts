@@ -31,10 +31,12 @@ import { DocumentEntity } from "../entities/document.entity";
 import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
 import { CommunityProgramEntity } from "../entities/community.program.entity";
 import { ReddPlusEntity } from "../entities/redd.plus.entity";
+import { CertificateRegistryModule } from "../certificate-registry/certificate.registry.module";
 
 @Module({
   imports: [
     ProgrammeLedgerModule,
+    CertificateRegistryModule,
     CaslModule,
     TypeOrmModule.forFeature([
       Programme,

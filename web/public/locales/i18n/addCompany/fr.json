@@ -13,6 +13,7 @@
   "unsupportedFormat": "Format de fichier non pris en charge !",
   "maxUploadSize": "La taille maximale de téléchargement de fichier est de 5 Mo !",
   "role": "Rôle",
+  "proponentCategory": "Proponent Category",
   "certifier": "Certificateur",
   "programmeDeveleper": "Développeur",
   "min": "Ministère",

@@ -8,6 +8,7 @@ import { Company } from "@app/shared/entities/company.entity";
 import { User } from "@app/shared/entities/user.entity";
 import { Programme } from "@app/shared/entities/programme.entity";
 import { CompanyRole } from "@app/shared/enum/company.role.enum";
+import { ProponentCategory } from "@app/shared/enum/proponent.category.enum";
 import { CompanyState } from "@app/shared/enum/company.state.enum";
 import { Sector } from "@app/shared/enum/sector.enum";
 import { GHGs } from "@app/shared/enum/ghgs.enum";
@@ -100,6 +101,10 @@ const EXTRA_COMPANIES: Array<{
   role: CompanyRole;
   email: string;
   province: string;
+  // Derived from each company's own name/legal form (Co Ltd/Enterprise vs
+  // Cooperative) - the same "honest, not guessed" rule as the rest of this
+  // seeder, not an invented classification.
+  proponentCategory: ProponentCategory;
 }> = [
   {
     name: "Vientiane Solar Development Co., Ltd",
@@ -107,6 +112,7 @@ const EXTRA_COMPANIES: Array<{
     role: CompanyRole.PROJECT_DEVELOPER,
     email: "info@vientianesolar.la",
     province: "Vientiane Capital",
+    proponentCategory: ProponentCategory.PRIVATE_SECTOR,
   },
   {
     name: "Mekong Biogas Solutions Sole Co., Ltd",
@@ -114,6 +120,7 @@ const EXTRA_COMPANIES: Array<{
     role: CompanyRole.PROJECT_DEVELOPER,
     email: "contact@mekongbiogas.la",
     province: "Savannakhet",
+    proponentCategory: ProponentCategory.PRIVATE_SECTOR,
   },
   {
     name: "Champasak Agroforestry Cooperative",
@@ -121,6 +128,7 @@ const EXTRA_COMPANIES: Array<{
     role: CompanyRole.PROJECT_DEVELOPER,
     email: "office@champasak-agroforestry.la",
     province: "Champasak",
+    proponentCategory: ProponentCategory.COMMUNITY_BASED_ORGANISATION,
   },
   {
     name: "Luang Prabang Clean Cookstove Enterprise",
@@ -128,6 +136,7 @@ const EXTRA_COMPANIES: Array<{
     role: CompanyRole.PROJECT_DEVELOPER,
     email: "hello@lpqcookstove.la",
     province: "Luang Prabang",
+    proponentCategory: ProponentCategory.PRIVATE_SECTOR,
   },
 ];
 
@@ -240,10 +249,21 @@ export class DemoSeederService {
         address: `${c.province}, Lao PDR`,
         country: "LA",
         state: CompanyState.ACTIVE,
+        proponentCategory: c.proponentCategory,
         createdTime: this.pastDate(this.int(200, 500)),
       } as any);
       created.push(saved as Company);
     }
+
+    // Lao Green Energy Co Ltd is the sole base-seed (organisations.csv)
+    // Project Developer - classify it from its own legal-form suffix ("Co
+    // Ltd") rather than leaving it "Not Specified" forever, same honesty
+    // rule as EXTRA_COMPANIES above.
+    await this.companyRepo.update(
+      { taxId: "20001LA", proponentCategory: null },
+      { proponentCategory: ProponentCategory.PRIVATE_SECTOR }
+    );
+
     this.logger.log(`Seeded ${created.length} extra demo companies`);
     return created;
   }

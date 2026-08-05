@@ -110,6 +110,7 @@ interface PublicAnalyticsSummary {
   };
   projectsBySector: Record<string, number>;
   proponentsByRole: Record<string, number>;
+  proponentsByCategory: Record<string, number>;
   creditsBySector: Record<string, number>;
   creditsByProponentRole: Record<string, number>;
 }
@@ -121,6 +122,7 @@ const emptySummary: PublicAnalyticsSummary = {
   credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
   projectsBySector: {},
   proponentsByRole: {},
+  proponentsByCategory: {},
   creditsBySector: {},
   creditsByProponentRole: {},
 };
@@ -175,6 +177,7 @@ const CarbonDashboard = () => {
             },
             projectsBySector: data.projectsBySector ?? {},
             proponentsByRole: data.proponentsByRole ?? {},
+            proponentsByCategory: data.proponentsByCategory ?? {},
             creditsBySector: data.creditsBySector ?? {},
             creditsByProponentRole: data.creditsByProponentRole ?? {},
           });
@@ -309,6 +312,14 @@ const CarbonDashboard = () => {
       title: t(`companyRoles:${role}`, { defaultValue: role }),
     })
   );
+
+  // Institutional-type breakdown of Project Developers only (Government/
+  // Private Sector/NGO/Academia/CBO/International Organisation) - filtered
+  // to non-zero buckets since most categories will honestly be empty until
+  // more proponents self-classify at registration.
+  const proponentCategoryData = Object.entries(summary.proponentsByCategory)
+    .filter(([, value]) => value > 0)
+    .map(([category, value]) => ({ value, title: category }));
 
   // Champa is a single-scheme national registry (no JCM/Gold Standard/
   // Verra co-registration exists), so these are honestly single-bucket
@@ -519,6 +530,18 @@ const CarbonDashboard = () => {
               totalLabel={t("homepage:totalOrganisations")}
             />
           </div>
+
+          {proponentCategoryData.length > 0 && (
+            <div className="donut-card">
+              <h3 className="section-title">
+                Number of Proponents by Category
+              </h3>
+              <DonutBreakdown
+                data={proponentCategoryData}
+                totalLabel={t("homepage:totalOrganisations")}
+              />
+            </div>
+          )}
 
           <div className="donut-card">
             <h3 className="section-title">

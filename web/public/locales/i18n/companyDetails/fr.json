@@ -4,6 +4,7 @@
   "taxId": "Identifiant Fiscal",
   "paymentId": "ID de Paiement d'Inscription",
   "companyRole": "Rôle",
+  "proponentCategory": "Proponent Category",
   "email": "E-mail",
   "phoneNo": "Téléphone",
   "website": "Site Web",

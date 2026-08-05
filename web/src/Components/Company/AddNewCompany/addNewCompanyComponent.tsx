@@ -31,6 +31,7 @@ import { RcFile, UploadFile } from 'antd/lib/upload';
 import { UserProps } from '../../../Definitions/Definitions/userInformationContext.definitions';
 import validator from 'validator';
 import { CompanyRole } from '../../../Definitions/Enums/company.role.enum';
+import { ProponentCategory } from '../../../Definitions/Enums/proponentCategory.enum';
 import { useConnection } from '../../../Context/ConnectionContext/connectionContext';
 import { useUserContext } from '../../../Context/UserInformationContext/userInformationContext';
 import { getBase64 } from '../../../Definitions/Definitions/programme.definitions';
@@ -256,6 +257,10 @@ export const AddNewCompanyComponent = (props: any) => {
       if (state?.record?.companyRole !== CompanyRole.DESIGNATED_NATIONAL_AUTHORITY) {
         values.taxId = formOneValues.taxId;
         values.paymentId = formOneValues.paymentId;
+      }
+
+      if (state?.record?.companyRole === CompanyRole.PROJECT_DEVELOPER) {
+        values.proponentCategory = formOneValues.proponentCategory;
       }
 
       if (formOneValues.website) {
@@ -661,6 +666,28 @@ export const AddNewCompanyComponent = (props: any) => {
                       )}
                     </Radio.Group>
                   </Form.Item>
+
+                  {companyRole === CompanyRole.PROJECT_DEVELOPER && (
+                    <Form.Item
+                      label={t('addCompany:proponentCategory')}
+                      name="proponentCategory"
+                      initialValue={state?.record?.proponentCategory}
+                      rules={[
+                        {
+                          required: true,
+                          message: `${t('addCompany:proponentCategory')} ${t('isRequired')}`,
+                        },
+                      ]}
+                    >
+                      <Select size="large" allowClear>
+                        {Object.values(ProponentCategory).map((category) => (
+                          <Select.Option key={category} value={category}>
+                            {category}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
 
                   <Form.Item
                     name="phoneNo"

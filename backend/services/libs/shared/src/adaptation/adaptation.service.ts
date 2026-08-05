@@ -9,6 +9,36 @@ import { AdaptationStage } from "../enum/adaptation.stage.enum";
 import { CompanyRole } from "../enum/company.role.enum";
 import { User } from "../entities/user.entity";
 import { Company } from "../entities/company.entity";
+import {
+  createPublicMeta,
+  PublicDetailResponse,
+  PublicListResponse,
+} from "../public-data/public.data.contract";
+
+export interface AdaptationPublicRow {
+  adaptationId: string;
+  title: string;
+  sector: string;
+  region: string | null;
+  status: string;
+}
+
+export interface AdaptationPublicDetail extends AdaptationPublicRow {
+  found: boolean;
+  description: string;
+  period: { start: null; end: null; availability: "not_configured" };
+  duration: null;
+  goal: { value: null; availability: "not_configured" };
+  vulnerability: { value: null; availability: "not_configured" };
+  documents: { items: []; availability: "not_configured" };
+  responsibleOrganisation: {
+    name: string | null;
+    address: string | null;
+    type: string | null;
+    availability: "available" | "not_available";
+  };
+  createdAt: number;
+}
 
 @Injectable()
 export class AdaptationService {
@@ -86,8 +116,9 @@ export class AdaptationService {
   async publicSearch(
     q: string,
     page = 1,
-    size = 10
-  ): Promise<{ data: any[]; total: number }> {
+    size = 10,
+    filters: { sector?: string; region?: string; status?: string } = {}
+  ): Promise<PublicListResponse<AdaptationPublicRow>> {
     const keyword = (q || "").trim();
     const safePage = Math.max(1, page);
     const safeSize = Math.min(50, Math.max(1, size));
@@ -103,26 +134,51 @@ export class AdaptationService {
         keyword: `%${keyword}%`,
       });
     }
+    if (filters.sector) {
+      qb = qb.andWhere(`"adaptation"."sector" = :sector`, {
+        sector: filters.sector,
+      });
+    }
+    if (filters.region) {
+      qb = qb.andWhere(`"adaptation"."region" = :region`, {
+        region: filters.region,
+      });
+    }
+    if (filters.status) {
+      qb = qb.andWhere(`"adaptation"."currentStage" = :status`, {
+        status: filters.status,
+      });
+    }
 
     const [results, total] = await qb.getManyAndCount();
 
     return {
-      data: results.map((r) => ({
-        adaptationId: r.adaptationId,
-        title: r.title,
-        sector: r.sector,
-        region: r.region,
-        status: r.currentStage,
-      })),
-      total,
+      data: results.map((r) => this.toPublicRow(r)),
+      meta: createPublicMeta(
+        {
+          q: q || null,
+          sector: filters.sector || null,
+          region: filters.region || null,
+          status: filters.status || null,
+        },
+        {
+          pagination: {
+            page: safePage,
+            page_size: safeSize,
+            total_items: total,
+          },
+        }
+      ),
     };
   }
 
-  async publicSummary(): Promise<{
+  async publicSummary(): Promise<{ data: {
     totalProjects: number;
     bySector: Record<string, number>;
     byStage: Record<string, number>;
-  }> {
+    sectorUnit: "records";
+    stageUnit: "records";
+  }; meta: ReturnType<typeof createPublicMeta> }> {
     const projects = await this.adaptationRepo.find();
 
     const bySector: Record<string, number> = {};
@@ -145,9 +201,14 @@ export class AdaptationService {
     }
 
     return {
-      totalProjects: projects.length,
-      bySector,
-      byStage,
+      data: {
+        totalProjects: projects.length,
+        bySector,
+        byStage,
+        sectorUnit: "records",
+        stageUnit: "records",
+      },
+      meta: createPublicMeta({}, { pagination: { total_items: projects.length } }),
     };
   }
 
@@ -158,17 +219,25 @@ export class AdaptationService {
   // (a real FK on the entity), matching SRN's "Responsible organization"
   // panel - this project registry, unlike CommunityProgramEntity, does
   // track a submitting organisation.
-  async publicDetail(id: string): Promise<any> {
+  async publicDetail(
+    id: string
+  ): Promise<PublicDetailResponse<AdaptationPublicDetail>> {
     const key = (id || "").trim();
     if (!key) {
-      return { found: false };
+      return {
+        data: null,
+        meta: createPublicMeta({ id: id || null }, { availability: "not_available" }),
+      };
     }
 
     const project = await this.adaptationRepo.findOneBy({
       adaptationId: key,
     });
     if (!project) {
-      return { found: false };
+      return {
+        data: null,
+        meta: createPublicMeta({ id: key }, { availability: "not_available" }),
+      };
     }
 
     const company = await this.companyRepo.findOneBy({
@@ -176,17 +245,34 @@ export class AdaptationService {
     });
 
     return {
-      found: true,
-      adaptationId: project.adaptationId,
-      title: project.title,
-      description: project.description,
-      sector: project.sector,
-      region: project.region,
-      currentStage: project.currentStage,
-      responsibleOrgName: company?.name,
-      responsibleOrgAddress: company?.address,
-      responsibleOrgType: company?.companyRole,
-      createdAt: project.createdAt,
+      data: {
+        found: true,
+        ...this.toPublicRow(project),
+        description: project.description,
+        period: { start: null, end: null, availability: "not_configured" },
+        duration: null,
+        goal: { value: null, availability: "not_configured" },
+        vulnerability: { value: null, availability: "not_configured" },
+        documents: { items: [], availability: "not_configured" },
+        responsibleOrganisation: {
+          name: company?.name ?? null,
+          address: company?.address ?? null,
+          type: company?.companyRole ?? null,
+          availability: company ? "available" : "not_available",
+        },
+        createdAt: project.createdAt,
+      },
+      meta: createPublicMeta({ id: key }, { unit: "records", pagination: { total_items: 1 } }),
+    };
+  }
+
+  private toPublicRow(record: AdaptationProjectEntity): AdaptationPublicRow {
+    return {
+      adaptationId: record.adaptationId,
+      title: record.title,
+      sector: record.sector,
+      region: record.region ?? null,
+      status: record.currentStage,
     };
   }
 }

@@ -27,12 +27,17 @@ export class AdaptationController {
   async publicSearch(
     @Query("q") q: string,
     @Query("page") page?: string,
-    @Query("size") size?: string
+    @Query("size") size?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("sector") sector?: string,
+    @Query("region") region?: string,
+    @Query("status") status?: string
   ) {
     return await this.adaptationService.publicSearch(
       q,
       page ? parseInt(page, 10) : 1,
-      size ? parseInt(size, 10) : 10
+      pageSize ? parseInt(pageSize, 10) : size ? parseInt(size, 10) : 10,
+      { sector, region, status }
     );
   }
 
@@ -49,7 +54,7 @@ export class AdaptationController {
     try {
       return await this.adaptationService.publicDetail(id);
     } catch (error) {
-      return { found: false };
+      return { data: null, meta: { availability: "not_available" } };
     }
   }
 

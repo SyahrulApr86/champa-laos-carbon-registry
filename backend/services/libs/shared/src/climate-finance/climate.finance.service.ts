@@ -3,6 +3,28 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ClimateFinanceEntity } from "../entities/climate.finance.entity";
 import { ClimateFinanceCreateDto } from "../dto/climate.finance.create.dto";
+import {
+  createPublicMeta,
+  PublicListResponse,
+} from "../public-data/public.data.contract";
+
+export interface ClimateFinancePublicRow {
+  recordId: string;
+  title: string;
+  description: string;
+  channel: string;
+  recipientEntity: string;
+  implementingEntity: string;
+  dateSigned: number;
+  dateClosing: number | null;
+  amountLAK: number | null;
+  amountUSD: number | null;
+  sector: string;
+  financialInstrument: string;
+  status: string;
+  type: string;
+  createdAt: number;
+}
 
 @Injectable()
 export class ClimateFinanceService {
@@ -25,8 +47,9 @@ export class ClimateFinanceService {
   async publicSearch(
     q: string,
     page = 1,
-    size = 10
-  ): Promise<{ data: ClimateFinanceEntity[]; total: number }> {
+    size = 10,
+    filters: { sector?: string; channel?: string; status?: string } = {}
+  ): Promise<PublicListResponse<ClimateFinancePublicRow>> {
     const keyword = (q || "").trim();
     const safePage = Math.max(1, page);
     const safeSize = Math.min(50, Math.max(1, size));
@@ -43,20 +66,45 @@ export class ClimateFinanceService {
         { keyword: `%${keyword}%` }
       );
     }
+    if (filters.sector) {
+      qb = qb.andWhere(`"finance"."sector" = :sector`, { sector: filters.sector });
+    }
+    if (filters.channel) {
+      qb = qb.andWhere(`"finance"."channel" = :channel`, { channel: filters.channel });
+    }
+    if (filters.status) {
+      qb = qb.andWhere(`"finance"."status" = :status`, { status: filters.status });
+    }
 
     const [data, total] = await qb.getManyAndCount();
 
-    return { data, total };
+    return {
+      data: data.map((record) => this.toPublicRow(record)),
+      meta: createPublicMeta(
+        {
+          q: q || null,
+          sector: filters.sector || null,
+          channel: filters.channel || null,
+          status: filters.status || null,
+        },
+        {
+          pagination: { page: safePage, page_size: safeSize, total_items: total },
+        }
+      ),
+    };
   }
 
-  async publicSummary(): Promise<{
-    totalAmountLAK: number;
-    totalAmountUSD: number;
+  async publicSummary(): Promise<{ data: {
+    totalAmountLAK: number | null;
+    totalAmountUSD: number | null;
     bySector: Record<string, number>;
     bySectorLAK: Record<string, number>;
     bySectorUSD: Record<string, number>;
-    byChannel: Record<string, { amount: number; percentage: number }>;
-  }> {
+    byChannel: Record<string, { amount: number; percentage: number | null }>;
+    byChannelLAK: Record<string, { amount: number; percentage: number | null }>;
+    byChannelUSD: Record<string, { amount: number; percentage: number | null }>;
+    currencyAvailability: { LAK: "available" | "not_available"; USD: "available" | "not_available" };
+  }; meta: ReturnType<typeof createPublicMeta> }> {
     const records = await this.climateFinanceRepo.find();
 
     let totalAmountLAK = 0;
@@ -67,37 +115,79 @@ export class ClimateFinanceService {
     // Currency-specific splits, additive: sum only the actual amountLAK /
     // amountUSD values entered per record, never derived/converted.
     const bySectorUSD: Record<string, number> = {};
-    const byChannelAmount: Record<string, number> = {};
+    const byChannelAmountLAK: Record<string, number> = {};
+    const byChannelAmountUSD: Record<string, number> = {};
+    let hasLAK = false;
+    let hasUSD = false;
 
     for (const record of records) {
-      const lak = Number(record.amountLAK) || 0;
-      const usd = Number(record.amountUSD) || 0;
-      totalAmountLAK += lak;
-      totalAmountUSD += usd;
-
-      bySector[record.sector] = (bySector[record.sector] || 0) + lak;
-      bySectorUSD[record.sector] = (bySectorUSD[record.sector] || 0) + usd;
-      byChannelAmount[record.channel] =
-        (byChannelAmount[record.channel] || 0) + lak;
+      const lak = record.amountLAK == null ? null : Number(record.amountLAK);
+      const usd = record.amountUSD == null ? null : Number(record.amountUSD);
+      if (lak !== null) {
+        hasLAK = true;
+        totalAmountLAK += lak;
+        bySector[record.sector] = (bySector[record.sector] || 0) + lak;
+        byChannelAmountLAK[record.channel] =
+          (byChannelAmountLAK[record.channel] || 0) + lak;
+      }
+      if (usd !== null) {
+        hasUSD = true;
+        totalAmountUSD += usd;
+        bySectorUSD[record.sector] = (bySectorUSD[record.sector] || 0) + usd;
+        byChannelAmountUSD[record.channel] =
+          (byChannelAmountUSD[record.channel] || 0) + usd;
+      }
     }
 
-    const byChannel: Record<string, { amount: number; percentage: number }> =
-      {};
-    for (const channel of Object.keys(byChannelAmount)) {
-      const amount = byChannelAmount[channel];
-      byChannel[channel] = {
-        amount,
-        percentage: totalAmountLAK > 0 ? (amount / totalAmountLAK) * 100 : 0,
-      };
-    }
+    const toChannelBreakdown = (amounts: Record<string, number>, total: number) =>
+      Object.fromEntries(
+        Object.entries(amounts).map(([channel, amount]) => [channel, {
+          amount,
+          percentage: total > 0 ? (amount / total) * 100 : null,
+        }])
+      ) as Record<string, { amount: number; percentage: number | null }>;
+    const byChannelLAK = toChannelBreakdown(byChannelAmountLAK, totalAmountLAK);
+    const byChannelUSD = toChannelBreakdown(byChannelAmountUSD, totalAmountUSD);
 
     return {
-      totalAmountLAK,
-      totalAmountUSD,
-      bySector,
-      bySectorLAK: bySector,
-      bySectorUSD,
-      byChannel,
+      data: {
+        totalAmountLAK: hasLAK ? totalAmountLAK : null,
+        totalAmountUSD: hasUSD ? totalAmountUSD : null,
+        bySector,
+        bySectorLAK: bySector,
+        bySectorUSD,
+        byChannel: byChannelLAK,
+        byChannelLAK,
+        byChannelUSD,
+        currencyAvailability: {
+          LAK: hasLAK ? "available" : "not_available",
+          USD: hasUSD ? "available" : "not_available",
+        },
+      },
+      meta: createPublicMeta({}, {
+        unit: "currency amount",
+        pagination: { total_items: records.length },
+      }),
+    };
+  }
+
+  private toPublicRow(record: ClimateFinanceEntity): ClimateFinancePublicRow {
+    return {
+      recordId: String(record.id),
+      title: record.title,
+      description: record.description,
+      channel: record.channel,
+      recipientEntity: record.recipientEntity,
+      implementingEntity: record.implementingEntity,
+      dateSigned: record.dateSigned,
+      dateClosing: record.dateClosing ?? null,
+      amountLAK: record.amountLAK == null ? null : Number(record.amountLAK),
+      amountUSD: record.amountUSD == null ? null : Number(record.amountUSD),
+      sector: record.sector,
+      financialInstrument: record.financialInstrument,
+      status: record.status,
+      type: record.type,
+      createdAt: record.createdAt,
     };
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { TechnologyTransferEntity } from "../entities/technology.transfer.entity";
 import { TechnologyTransferCreateDto } from "../dto/technology.transfer.create.dto";
+import { createPublicMeta, PublicListResponse } from "../public-data/public.data.contract";
 
 @Injectable()
 export class TechnologyTransferService {
@@ -27,9 +28,30 @@ export class TechnologyTransferService {
   // Public, unauthenticated - this data is intentionally fully public,
   // mirroring SRN's public "Technology Development & Transfer Support
   // Received" table.
-  async publicList(): Promise<TechnologyTransferEntity[]> {
-    return await this.technologyTransferRepo.find({
+  async publicList(options: {
+    q?: string;
+    sector?: string;
+    status?: string;
+    page?: number;
+    pageSize?: number;
+  } = {}): Promise<PublicListResponse<TechnologyTransferEntity>> {
+    const page = Math.max(1, options.page || 1);
+    const pageSize = Math.min(50, Math.max(1, options.pageSize || 10));
+    const records = await this.technologyTransferRepo.find({
       order: { createdAt: "DESC" },
     });
+    const keyword = (options.q || "").trim().toLowerCase();
+    const filtered = records.filter((record) =>
+      (!keyword || `${record.title} ${record.recipientEntity} ${record.implementingEntity}`.toLowerCase().includes(keyword)) &&
+      (!options.sector || record.sector === options.sector) &&
+      (!options.status || record.status === options.status)
+    );
+    return {
+      data: filtered.slice((page - 1) * pageSize, page * pageSize),
+      meta: createPublicMeta(
+        { q: options.q || null, sector: options.sector || null, status: options.status || null },
+        { pagination: { page, page_size: pageSize, total_items: filtered.length } }
+      ),
+    };
   }
 }

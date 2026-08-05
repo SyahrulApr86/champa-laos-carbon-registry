@@ -1,0 +1,23 @@
+.ndc-disclosure {
+  color: #65748b;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: -0.5rem 0 1rem;
+}
+
+.ndc-metadata-strip {
+  color: #65748b;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  gap: 0.75rem 1.25rem;
+  margin: 1rem 0;
+}
+
+.ndc-state {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  min-height: 8rem;
+}

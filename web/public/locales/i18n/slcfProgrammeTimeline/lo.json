@@ -1,78 +1,78 @@
 {
-  "remarks": "Remarks",
-  "ref": "Reference",
+  "remarks": "ຂໍ້ສັງເກດ",
+  "ref": "ອ້າງອິງ",
 
-  "programmeCreatedTitle": "Project Created",
-  "programmeCreatedDescription": "The project was created by {}",
+  "programmeCreatedTitle": "ສ້າງໂຄງການ",
+  "programmeCreatedDescription": "ໂຄງການດັ່ງກ່າວຖືກສ້າງຂຶ້ນໂດຍ {}",
 
-  "infApprovedTitle": "Initial Notification Approved",
-  "infApprovedDescription": "The Initial Notification was approved by {} ",
+  "infApprovedTitle": "ອະນຸມັດການແຈ້ງເຕືອນເບື້ອງຕົ້ນ",
+  "infApprovedDescription": "ການແຈ້ງເຕືອນເບື້ອງຕົ້ນໄດ້ຮັບການອະນຸມັດໂດຍ {}",
 
-  "infRejectedTitle": "Initial Notification Rejected",
-  "infRejectedDescription": "The Initial Notification was rejected by {}",
+  "infRejectedTitle": "ການແຈ້ງເຕືອນເບື້ອງຕົ້ນຖືກປະຕິເສດ",
+  "infRejectedDescription": "ການແຈ້ງເຕືອນເບື້ອງຕົ້ນຖືກປະຕິເສດໂດຍ {}",
 
-  "noObjectionLetterGeneratedTitle": "Letter of No Objection Issued",
-  "noObjectionLetterGeneratedDescription": "The Letter of no objection was issued by Designated National Authority",
+  "noObjectionLetterGeneratedTitle": "ຈົດໝາຍ​ບໍ່​ມີ​ການ​ຄັດຄ້ານ",
+  "noObjectionLetterGeneratedDescription": "ໜັງສື​ທີ່​ບໍ່​ມີ​ການ​ຄັດ​ຄ້ານ​ແມ່ນ​ໄດ້​ອອກ​ໃຫ້​ໂດຍ​ອົງການ​ປົກຄອງ​ແຫ່ງ​ຊາດ​ທີ່​ໄດ້​ກຳນົດ​ໄວ້",
 
-  "pddSubmttedTitle": "Project Design Document Created",
-  "pddSubmittedDescription": "Project Design Document was created by {}",
+  "pddSubmttedTitle": "ສ້າງເອກະສານການອອກແບບໂຄງການ",
+  "pddSubmittedDescription": "ເອກະສານການອອກແບບໂຄງການຖືກສ້າງຂື້ນໂດຍ {}",
 
-  "pddRejectedICTitle": "Project Design Document Rejected by Independent Certifier",
-  "pddRejectedDNATitle": "Project Design Document Rejected by DNA",
-  "pddRejectedDescription": "Project Design Document was rejected by {}",
+  "pddRejectedICTitle": "ເອກະສານການອອກແບບໂຄງການຖືກປະຕິເສດໂດຍຜູ້ຢັ້ງຢືນເອກະລາດ",
+  "pddRejectedDNATitle": "ເອກະສານການອອກແບບໂຄງການຖືກປະຕິເສດໂດຍ DNA",
+  "pddRejectedDescription": "ເອກະສານການອອກແບບໂຄງການຖືກປະຕິເສດໂດຍ {}",
 
-  "pddApprovedICTitle": "Project Design Document Accepted by Independent Certifier",
-  "pddApprovedDNATitle": "Project Design Document Accepted by DNA",
-  "pddApprovedDescription": "Project Designed Document was approved by {}",
+  "pddApprovedICTitle": "ເອກະສານການອອກແບບໂຄງການໄດ້ຮັບການຍອມຮັບໂດຍຜູ້ຢັ້ງຢືນເອກະລາດ",
+  "pddApprovedDNATitle": "ເອກະສານການອອກແບບໂຄງການຍອມຮັບໂດຍ DNA",
+  "pddApprovedDescription": "ເອກະສານທີ່ອອກແບບໂຄງການໄດ້ຮັບການອະນຸມັດໂດຍ {}",
 
-  "validationReportCreatedTitle": "Validation Report Created",
-  "validationReportCreatedDescription": "The Validation Report was created by {}",
+  "validationReportCreatedTitle": "ສ້າງລາຍງານການກວດສອບແລ້ວ",
+  "validationReportCreatedDescription": "ບົດລາຍງານການກວດສອບຖືກສ້າງຂື້ນໂດຍ {}",
 
-  "validationReportRejectedTitle": "Validation Report Rejected",
-  "validationReportRejectedDescription": "The Validation Report was rejected by {}",
+  "validationReportRejectedTitle": "ລາຍງານການກວດສອບຖືກປະຕິເສດ",
+  "validationReportRejectedDescription": "ບົດລາຍງານການກວດສອບຖືກປະຕິເສດໂດຍ {}",
 
-  "validationReportApprovedTitle": "Validation Report Rejected",
-  "validationReportApprovedDescription": "The Validation Report was rejected by {}",
+  "validationReportApprovedTitle": "ລາຍງານການກວດສອບຖືກປະຕິເສດ",
+  "validationReportApprovedDescription": "ບົດລາຍງານການກວດສອບຖືກປະຕິເສດໂດຍ {}",
 
-  "authorisedTitle": "Project Registered",
-  "authorisedDescription": "The project was registered under UNDP",
+  "authorisedTitle": "ໂຄງການລົງທະບຽນ",
+  "authorisedDescription": "ໂຄງການດັ່ງກ່າວໄດ້ລົງທະບຽນພາຍໃຕ້ UNDP",
 
-  "creditsAuthorisedTitle": "Credits Authorised",
-  "creditsAuthorisedDescription": "{} number of credits were Authorised",
+  "creditsAuthorisedTitle": "ສິນເຊື່ອທີ່ໄດ້ຮັບອະນຸຍາດ",
+  "creditsAuthorisedDescription": "{} ຈໍານວນສິນເຊື່ອໄດ້ຮັບອະນຸຍາດ",
 
-  "monitoringReportCreatedTitle": "Monitoring Report Created",
-  "monitoringReportCreatedDescription": "The Monitoring Report was created by {}",
+  "monitoringReportCreatedTitle": "ສ້າງບົດລາຍງານການຕິດຕາມ",
+  "monitoringReportCreatedDescription": "ບົດລາຍງານການຕິດຕາມຖືກສ້າງຂື້ນໂດຍ {}",
 
-  "monitoringReportApprovedTitle": "Monitoring Report Accepted",
-  "monitoringReportApprovedDescription": "The Monitoring Report was approved by {}",
+  "monitoringReportApprovedTitle": "ຍອມຮັບບົດລາຍງານການຕິດຕາມ",
+  "monitoringReportApprovedDescription": "ບົດລາຍງານການຕິດຕາມໄດ້ຮັບການອະນຸມັດໂດຍ {}",
 
-  "monitoringReportRejectedTitle": "Monitoring Report Rejected",
-  "monitoringReportRejectedDescription": "The Monitoring Report was rejected by {}",
+  "monitoringReportRejectedTitle": "ລາຍງານການຕິດຕາມຖືກປະຕິເສດ",
+  "monitoringReportRejectedDescription": "ບົດລາຍງານການຕິດຕາມຖືກປະຕິເສດໂດຍ {}",
 
-  "verificationReportCreatedTitle": "Verification Report Created",
-  "verificationReportCreatedDescription": "The Verification Report was created by {}",
+  "verificationReportCreatedTitle": "ສ້າງລາຍງານການຢັ້ງຢືນແລ້ວ",
+  "verificationReportCreatedDescription": "ບົດລາຍງານການຢັ້ງຢືນຖືກສ້າງຂື້ນໂດຍ {}",
 
-  "verificationReportApprovedTitle": "Verification Report Approved by DNA",
-  "verificationReportApprovedDescription": "The Verification Report was approved by {}",
+  "verificationReportApprovedTitle": "ບົດລາຍງານການກວດສອບໄດ້ຮັບການອະນຸມັດໂດຍ DNA",
+  "verificationReportApprovedDescription": "ບົດລາຍງານການຢັ້ງຢືນໄດ້ຮັບການອະນຸມັດໂດຍ {}",
 
-  "verificationReportRejectedTitle": "Verification Report Rejected by DNA",
-  "verificationReportRejectedDescription": "The Verification Report was rejected by {}",
+  "verificationReportRejectedTitle": "ບົດລາຍງານການຢັ້ງຢືນຖືກປະຕິເສດໂດຍ DNA",
+  "verificationReportRejectedDescription": "ບົດລາຍງານການຢັ້ງຢືນໄດ້ຖືກປະຕິເສດໂດຍ {}",
 
-  "creditIssuedTitle": "Credit Issued",
-  "creditIssuedDescription": "{} credits have been issued for the project",
+  "creditIssuedTitle": "ສິນເຊື່ອອອກ",
+  "creditIssuedDescription": "ເຄຣດິດ {} ໄດ້ຖືກອອກໃຫ້ສໍາລັບໂຄງການ",
 
-  "creditTransferedTitle": "Credit Transfered",
-  "creditTransferedDescription": "{} credits have been transferred to {} from {}",
+  "creditTransferedTitle": "ໂອນສິນເຊື່ອແລ້ວ",
+  "creditTransferedDescription": "ເຄຣດິດ {} ຖືກໂອນໄປໃຫ້ {} ຈາກ {}",
 
-  "retireRequestedTitle": "Credit Retirement Request",
-  "retireRequestedDescription": "{} Credits have been requested to retire from {} for the {}.",
+  "retireRequestedTitle": "ການຮ້ອງຂໍເງິນບໍານານສິນເຊື່ອ",
+  "retireRequestedDescription": "{} ສິນເຊື່ອໄດ້ຖືກຮ້ອງຂໍໃຫ້ເຊົາຈາກ {} ສໍາລັບ {}.",
 
-  "retirementApprovedTitle": "Credit Retirement Accepted",
-  "retirementApprovedDescription": "{} request to retire {} credits from {} was accepted.",
+  "retirementApprovedTitle": "ສິນເຊື່ອເງິນບໍານານໄດ້ຮັບການຍອມຮັບ",
+  "retirementApprovedDescription": "{} ການຮ້ອງຂໍຖອນເງິນ {} ເຄຣດິດຈາກ {} ໄດ້ຖືກຍອມຮັບ.",
 
-  "retirementCancelledTitle": "Credit Retirement Cancelled",
-  "retirementCancelledDescription": "{} request to retire {} credits from {} was cancelled",
+  "retirementCancelledTitle": "ການປ່ອຍສິນເຊື່ອບໍານານຖືກຍົກເລີກ",
+  "retirementCancelledDescription": "{} ການຮ້ອງຂໍຖອນເງິນ {} ເຄຣດິດຈາກ {} ຖືກຍົກເລີກແລ້ວ",
 
-  "retirementRejectedTitle": "Credit Retirement Rejected",
-  "retirementRejectedDescription": "{} request to retire {} credits from {} was rejected."
+  "retirementRejectedTitle": "ສິນເຊື່ອບໍານານຖືກປະຕິເສດ",
+  "retirementRejectedDescription": "{} ການຮ້ອງຂໍຖອນເງິນ {} ເຄຣດິດຈາກ {} ຖືກປະຕິເສດ."
 }

@@ -21,6 +21,12 @@ export interface AnalyticsMeta {
   source?: { type?: string; label?: string };
   methodology_version?: string | null;
   filters?: Record<string, string | number | boolean | null | undefined>;
+  pagination?: {
+    page?: number;
+    page_size?: number;
+    total_items?: number;
+    total_pages?: number;
+  };
   disclosure?: string;
   availability?: Availability;
 }
@@ -276,4 +282,3 @@ export const humanMetricValue = (value: number | null, availability: Availabilit
   if (availability !== "available" || value === null) return "Not available";
   return value.toLocaleString("en-US");
 };
-

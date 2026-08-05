@@ -54,6 +54,7 @@ import { RecognizedMitigationService } from "@app/shared/recognized-mitigation/r
 import { RecognizedMitigationCreateDto } from "@app/shared/dto/recognized.mitigation.create.dto";
 import { RecognizedMitigationStatus } from "@app/shared/enum/recognized.mitigation.status.enum";
 import { buildDemoSeedScenario, renderSeedCoverageReport } from "./scenario";
+import { CanonicalCertificateDemoLoader } from "./canonical-certificate-demo.loader";
 import { assertSafeDemoSeedEnvironment } from "./safety";
 
 // Deterministic small PRNG so re-runs (and different operators) produce the
@@ -163,7 +164,8 @@ export class DemoSeederService {
     private emissionTradingService: EmissionTradingService,
     private expertService: ExpertService,
     private guidanceDocumentService: GuidanceDocumentService,
-    private recognizedMitigationService: RecognizedMitigationService
+    private recognizedMitigationService: RecognizedMitigationService,
+    private canonicalCertificateDemoLoader: CanonicalCertificateDemoLoader,
   ) {}
 
   private pick<T>(arr: T[]): T {
@@ -186,71 +188,26 @@ export class DemoSeederService {
     assertSafeDemoSeedEnvironment(process.env);
     const scenario = buildDemoSeedScenario();
     this.logger.log(
-      `Demo seeder starting: ${scenario.version}; ${scenario.records.length} fixture records; sha256=${scenario.hash}`
+      `Demo seeder starting: ${scenario.version}; ${scenario.records.length} fixture records; sha256=${scenario.hash}`,
     );
 
-    // W1 intentionally defaults to a non-mutating scenario check. The final
-    // database writer is W2SeedLoader because W2 owns the lot/portion/ledger
-    // schema. This prevents the former additive seeder from being mistaken
-    // for an idempotent production-scale loader.
-    if (process.env.CHAMPA_DEMO_SEED_MODE !== "legacy") {
-      this.logger.log(`Demo scenario ready; no database writes performed.\n${renderSeedCoverageReport(scenario)}`);
+    const mode = process.env.CHAMPA_DEMO_SEED_MODE ?? "plan";
+    if (mode === "plan") {
+      this.logger.log(
+        `Demo scenario ready; no database writes performed.\n${renderSeedCoverageReport(scenario)}`,
+      );
       return;
     }
-    if (process.env.CHAMPA_ALLOW_LEGACY_ADDITIVE !== "true") {
-      throw new Error(
-        "Legacy additive seed is disabled. Implement W2SeedLoader and use loadScenarioIdempotently instead."
+    if (mode === "replace") {
+      const result = await this.canonicalCertificateDemoLoader.load(scenario);
+      this.logger.log(
+        `Canonical certificate demo ledger ${result.status}; sha256=${result.hash}`,
       );
+      return;
     }
-    this.logger.warn(
-      "Running the legacy additive seed by explicit operator override; it is not the W1 production-scale scenario loader."
+    throw new Error(
+      "Unsupported CHAMPA_DEMO_SEED_MODE. Use 'plan' (default) or 'replace'; legacy additive mode is not available.",
     );
-
-    const guard = await this.programmeRepo.count();
-    if (guard > 3) {
-      this.logger.warn(
-        `Programme table already has ${guard} rows (more than the base seed) - refusing to run twice. ` +
-          `This script is additive-only and not idempotent; re-running against an already-seeded ` +
-          `database would double up every module. Reset with 'docker compose down -v' first if you ` +
-          `want a fresh demo dataset.`
-      );
-      return;
-    }
-
-    const extraCompanies = await this.seedExtraCompanies();
-    const mae = await this.companyRepo.findOneBy({ taxId: "00001LA" });
-    const energyMinistry = await this.companyRepo.findOneBy({
-      taxId: "10001LA",
-    });
-    const laoGreenEnergy = await this.companyRepo.findOneBy({
-      taxId: "20001LA",
-    });
-    const bureauVeritas = await this.companyRepo.findOneBy({
-      taxId: "30001LA",
-    });
-    const developers = [laoGreenEnergy, ...extraCompanies].filter(Boolean);
-
-    if (!mae || !laoGreenEnergy || !bureauVeritas) {
-      this.logger.error(
-        "Base seed companies (organisations.csv) not found - run national-api once first so IMPORT_ORG completes, then re-run the seeder."
-      );
-      return;
-    }
-
-    await this.seedProgrammes(developers, mae);
-    await this.seedAdaptationProjects(developers);
-    await this.seedCommunityPrograms();
-    await this.seedReddPlus();
-    await this.seedClimateFinance();
-    await this.seedTechnologyTransfer();
-    await this.seedCapacityBuilding();
-    await this.seedNdcTargets();
-    await this.seedEmissionCeilingsAndTrading(developers, energyMinistry);
-    await this.seedExperts();
-    await this.seedGuidanceDocuments();
-    await this.seedRecognizedMitigation(developers);
-
-    this.logger.log("Demo seeder finished");
   }
 
   private async seedExtraCompanies(): Promise<Company[]> {
@@ -284,7 +241,7 @@ export class DemoSeederService {
     // rule as EXTRA_COMPANIES above.
     await this.companyRepo.update(
       { taxId: "20001LA", proponentCategory: null },
-      { proponentCategory: ProponentCategory.PRIVATE_SECTOR }
+      { proponentCategory: ProponentCategory.PRIVATE_SECTOR },
     );
 
     this.logger.log(`Seeded ${created.length} extra demo companies`);
@@ -300,7 +257,7 @@ export class DemoSeederService {
     proponentCompanyId: number,
     startDaysAgo: number,
     creditEst: number,
-    externalIdSuffix: string
+    externalIdSuffix: string,
   ): { dto: ProgrammeDto; user: User } {
     const startTime = this.pastDate(startDaysAgo);
     const dto: any = {
@@ -322,9 +279,9 @@ export class DemoSeederService {
       environmentalAssessmentRegistrationNo: `EARN-${externalIdSuffix}`,
       designDocument:
         "data:application/pdf;base64," +
-        Buffer.from(
-          `Champa demo design document for ${title}`
-        ).toString("base64"),
+        Buffer.from(`Champa demo design document for ${title}`).toString(
+          "base64",
+        ),
     };
 
     const user = {
@@ -337,7 +294,7 @@ export class DemoSeederService {
 
   private async seedProgrammes(
     developers: Company[],
-    mae: Company
+    mae: Company,
   ): Promise<void> {
     const projects: Array<[string, Sector, SectoralScope, string, number]> = [
       [
@@ -441,7 +398,7 @@ export class DemoSeederService {
         proponent.companyId,
         startDaysAgo,
         credit,
-        String(idx).padStart(3, "0")
+        String(idx).padStart(3, "0"),
       );
 
       try {
@@ -463,7 +420,7 @@ export class DemoSeederService {
     // stage-distribution pass avoids the race - verified empirically
     // against the running replicator container.
     this.logger.log(
-      "Waiting for ledger-replicator to settle before applying stage distribution..."
+      "Waiting for ledger-replicator to settle before applying stage distribution...",
     );
     // Promise.withResolvers() would need Node 22+; this repo's Dockerfile
     // pins node:20-alpine, so the plain executor form is required here.
@@ -498,7 +455,7 @@ export class DemoSeederService {
       await this.programmeRepo.save(saved);
     }
     this.logger.log(
-      `Applied stage distribution to ${createdIds.length} programmes`
+      `Applied stage distribution to ${createdIds.length} programmes`,
     );
   }
 
@@ -578,7 +535,7 @@ export class DemoSeederService {
         await this.adaptationService.updateStage(
           saved.id,
           { stage: saved.currentStage },
-          { companyRole: CompanyRole.DESIGNATED_NATIONAL_AUTHORITY } as User
+          { companyRole: CompanyRole.DESIGNATED_NATIONAL_AUTHORITY } as User,
         );
         this.logger.log(`Seeded adaptation project: ${title}`);
       } catch (e) {
@@ -854,13 +811,16 @@ export class DemoSeederService {
         type: ClimateActionType.MITIGATION,
         sector: "Energy",
         status: this.pick([SupportStatus.ON_GOING, SupportStatus.COMPLETED]),
-        impactEstimatedResult: "Reduced technical losses and improved local O&M capacity.",
+        impactEstimatedResult:
+          "Reduced technical losses and improved local O&M capacity.",
       };
       try {
         await this.technologyTransferService.create(dto);
         this.logger.log(`Seeded technology transfer record: ${title}`);
       } catch (e) {
-        this.logger.error(`Failed to seed technology transfer "${title}": ${e}`);
+        this.logger.error(
+          `Failed to seed technology transfer "${title}": ${e}`,
+        );
       }
     }
   }
@@ -899,7 +859,8 @@ export class DemoSeederService {
         type: ClimateActionType.CROSS_CUTTING,
         sector,
         status: this.pick([SupportStatus.COMPLETED, SupportStatus.ON_GOING]),
-        impactEstimatedResult: "Improved institutional capacity for NDC tracking and reporting.",
+        impactEstimatedResult:
+          "Improved institutional capacity for NDC tracking and reporting.",
       };
       try {
         await this.capacityBuildingService.create(dto);
@@ -935,7 +896,7 @@ export class DemoSeederService {
         const target = Math.round(baseline * targetFactor[sector]);
         const progress = (year - 2023) / (2030 - 2023);
         const achieved = Math.round(
-          baseline + (target - baseline) * progress * (0.6 + this.rand() * 0.3)
+          baseline + (target - baseline) * progress * (0.6 + this.rand() * 0.3),
         );
         const dto: NdcTargetCreateDto = {
           year,
@@ -950,7 +911,7 @@ export class DemoSeederService {
           await this.ndcTargetService.create(dto);
         } catch (e) {
           this.logger.error(
-            `Failed to seed NDC target ${sector}/${year}: ${e}`
+            `Failed to seed NDC target ${sector}/${year}: ${e}`,
           );
         }
       }
@@ -960,7 +921,7 @@ export class DemoSeederService {
 
   private async seedEmissionCeilingsAndTrading(
     developers: Company[],
-    energyMinistry: Company
+    energyMinistry: Company,
   ): Promise<void> {
     for (const company of developers) {
       for (const year of [2025, 2026]) {
@@ -975,7 +936,7 @@ export class DemoSeederService {
           await this.emissionTradingService.createCeiling(dto);
         } catch (e) {
           this.logger.error(
-            `Failed to seed emission ceiling for ${company.name}: ${e}`
+            `Failed to seed emission ceiling for ${company.name}: ${e}`,
           );
         }
       }
@@ -990,7 +951,7 @@ export class DemoSeederService {
         await this.emissionTradingService.createParticipant(partDto);
       } catch (e) {
         this.logger.error(
-          `Failed to seed emission participant for ${company.name}: ${e}`
+          `Failed to seed emission participant for ${company.name}: ${e}`,
         );
       }
     }
@@ -1013,7 +974,9 @@ export class DemoSeederService {
         }
       }
     }
-    this.logger.log("Seeded emission ceilings, participants, and trading records");
+    this.logger.log(
+      "Seeded emission ceilings, participants, and trading records",
+    );
   }
 
   private async seedExperts(): Promise<void> {
@@ -1099,7 +1062,7 @@ export class DemoSeederService {
         documentUrl:
           "data:application/pdf;base64," +
           Buffer.from(`Champa demo guidance document: ${title}`).toString(
-            "base64"
+            "base64",
           ),
       };
       try {
@@ -1161,7 +1124,7 @@ export class DemoSeederService {
         this.logger.log(`Seeded recognized mitigation action: ${title}`);
       } catch (e) {
         this.logger.error(
-          `Failed to seed recognized mitigation action "${title}": ${e}`
+          `Failed to seed recognized mitigation action "${title}": ${e}`,
         );
       }
     }

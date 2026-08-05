@@ -6,6 +6,7 @@ import {
 } from "typeorm";
 import { EntitySubject } from "./entity.subject";
 import { NumberTransformer } from "../functions/number.transformer.decorator";
+import { GuidanceDocumentStatus } from "../enum/guidance.document.status.enum";
 
 // Downloadable guidance/reference document (PDF, etc.) published under the
 // Instruments > Module directory. Recorded by DNA/Ministry, publicly
@@ -31,11 +32,42 @@ export class GuidanceDocumentEntity implements EntitySubject {
   @Column({ type: "text" })
   documentUrl: string;
 
+  @Column({ nullable: true })
+  documentGroupId: number;
+
+  @Column({ type: "int", default: 1 })
+  version: number;
+
+  @Column({
+    type: "enum",
+    enum: GuidanceDocumentStatus,
+    default: GuidanceDocumentStatus.PUBLISHED,
+  })
+  status: GuidanceDocumentStatus;
+
   @Column({ type: "bigint", transformer: NumberTransformer })
   createdAt: number;
 
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   updatedAt: number;
+
+  @Column({ nullable: true })
+  createdBy: number;
+
+  @Column({ nullable: true })
+  updatedBy: number;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  publishedAt: number;
+
+  @Column({ nullable: true })
+  publishedBy: number;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  archivedAt: number;
+
+  @Column({ nullable: true })
+  archivedBy: number;
 
   @BeforeInsert()
   setCreatedAt() {

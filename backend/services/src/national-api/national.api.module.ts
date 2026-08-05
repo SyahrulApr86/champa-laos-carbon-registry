@@ -27,6 +27,7 @@ import { ReddPlusController } from "./redd.plus.controller";
 import { ExpertController } from "./expert.controller";
 import { GuidanceDocumentController } from "./guidance.document.controller";
 import { RecognizedMitigationController } from "./recognized.mitigation.controller";
+import { CertificateRegistryModule } from "@app/shared/certificate-registry/certificate.registry.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { RecognizedMitigationController } from "./recognized.mitigation.controll
     }),
     SharedModule,
     CoreModule,
+    CertificateRegistryModule,
   ],
   controllers: [
     NationalAPIController,

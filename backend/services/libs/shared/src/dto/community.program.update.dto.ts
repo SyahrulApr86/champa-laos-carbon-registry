@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsEnum,
   IsInt,
@@ -12,29 +12,32 @@ import {
 import { CommunityProgramCategory } from "../enum/community.program.category.enum";
 import { CommunityProgramStatus } from "../enum/community.program.status.enum";
 
-export class CommunityProgramCreateDto {
-  @ApiProperty()
+export class CommunityProgramUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(200)
-  name: string;
+  name?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(200)
-  region: string;
+  region?: string;
 
-  @ApiProperty({ enum: CommunityProgramCategory })
-  @IsNotEmpty()
+  @ApiPropertyOptional({ enum: CommunityProgramCategory })
+  @IsOptional()
   @IsEnum(CommunityProgramCategory)
-  category: CommunityProgramCategory;
+  category?: CommunityProgramCategory;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(5000)
-  description: string;
+  description?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -42,12 +45,12 @@ export class CommunityProgramCreateDto {
   @Min(0)
   participantCount?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @Min(1900)
   @Max(2200)
-  startYear: number;
+  startYear?: number;
 
   @ApiPropertyOptional({ enum: CommunityProgramStatus })
   @IsOptional()

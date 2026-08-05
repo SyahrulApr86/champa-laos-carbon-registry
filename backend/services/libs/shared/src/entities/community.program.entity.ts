@@ -1,5 +1,6 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   PrimaryGeneratedColumn,
@@ -37,6 +38,12 @@ export class CommunityProgramEntity implements EntitySubject {
   @Column({ type: "text" })
   description: string;
 
+  @Column({ nullable: true })
+  createdByUserId: number;
+
+  @Column({ nullable: true })
+  updatedByUserId: number;
+
   @Column({ type: "int", nullable: true })
   participantCount: number;
 
@@ -57,10 +64,24 @@ export class CommunityProgramEntity implements EntitySubject {
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   updatedAt: number;
 
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  archivedAt: number;
+
+  @Column({ nullable: true })
+  archivedByUserId: number;
+
+  @Column({ type: "text", nullable: true })
+  archiveReason: string;
+
   @BeforeInsert()
   setCreatedAt() {
     const timestamp = new Date().getTime();
     this.createdAt = timestamp;
     this.updatedAt = timestamp;
+  }
+
+  @BeforeUpdate()
+  setUpdatedAt() {
+    this.updatedAt = new Date().getTime();
   }
 }

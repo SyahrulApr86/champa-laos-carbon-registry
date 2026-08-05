@@ -3,4 +3,5 @@ export enum AdaptationStage {
   UNDER_REVIEW = "UnderReview",
   APPROVED = "Approved",
   REJECTED = "Rejected",
+  ARCHIVED = "Archived",
 }

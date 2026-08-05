@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsEnum,
   IsNotEmpty,
@@ -8,23 +8,25 @@ import {
 } from "class-validator";
 import { AdaptationSector } from "../enum/adaptation.sector.enum";
 
-export class AdaptationCreateDto {
-  @ApiProperty()
+export class AdaptationUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(200)
-  title: string;
+  title?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(5000)
-  description: string;
+  description?: string;
 
-  @ApiProperty({ enum: AdaptationSector })
-  @IsNotEmpty()
+  @ApiPropertyOptional({ enum: AdaptationSector })
+  @IsOptional()
   @IsEnum(AdaptationSector)
-  sector: AdaptationSector;
+  sector?: AdaptationSector;
 
   @ApiPropertyOptional()
   @IsOptional()

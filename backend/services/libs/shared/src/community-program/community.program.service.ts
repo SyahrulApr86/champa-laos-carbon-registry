@@ -1,8 +1,14 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { CommunityProgramEntity } from "../entities/community.program.entity";
 import { CommunityProgramCreateDto } from "../dto/community.program.create.dto";
+import { CommunityProgramUpdateDto } from "../dto/community.program.update.dto";
+import { CommunityProgramArchiveDto } from "../dto/community.program.archive.dto";
+import { CommunityProgramStatus } from "../enum/community.program.status.enum";
+import { CompanyRole } from "../enum/company.role.enum";
+import { Role } from "../casl/role.enum";
+import { User } from "../entities/user.entity";
 import {
   createPublicMeta,
   PublicDetailResponse,
@@ -42,14 +48,89 @@ export class CommunityProgramService {
   ) {}
 
   async create(
-    dto: CommunityProgramCreateDto
+    dto: CommunityProgramCreateDto,
+    user?: User
   ): Promise<CommunityProgramEntity> {
+    // The authenticated controller always supplies a user. The optional
+    // actor preserves the migration-safe synthetic demo seeder contract.
+    if (user) {
+      this.assertCanManage(user);
+    }
     this.logger.verbose("Community program create received", dto.name);
-    const record = this.communityProgramRepo.create(dto);
+    const record = this.communityProgramRepo.create({
+      ...dto,
+      createdByUserId: user?.id ?? null,
+    });
     const saved = await this.communityProgramRepo.save(record);
 
     saved.programId = "CCP-" + String(saved.id).padStart(4, "0");
     return await this.communityProgramRepo.save(saved);
+  }
+
+  async query(
+    user: User,
+    includeArchived = false
+  ): Promise<CommunityProgramEntity[]> {
+    this.assertCanManage(user);
+    return await this.communityProgramRepo.find({
+      where: includeArchived ? {} : { archivedAt: IsNull() },
+      order: { createdAt: "DESC" },
+    });
+  }
+
+  async managementDetail(
+    id: number,
+    user: User
+  ): Promise<CommunityProgramEntity> {
+    this.assertCanManage(user);
+    return await this.findOne(id);
+  }
+
+  async update(
+    id: number,
+    dto: CommunityProgramUpdateDto,
+    user: User
+  ): Promise<CommunityProgramEntity> {
+    this.assertCanManage(user);
+    const record = await this.findOne(id);
+    this.assertActive(record);
+
+    if (Object.keys(dto).length === 0) {
+      throw new HttpException(
+        "At least one community program field is required",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    if (dto.status === CommunityProgramStatus.ARCHIVED) {
+      throw new HttpException(
+        "Use the archive lifecycle action to archive a community program",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    Object.assign(record, dto, {
+      updatedAt: new Date().getTime(),
+      updatedByUserId: user.id ?? null,
+    });
+    return await this.communityProgramRepo.save(record);
+  }
+
+  async archive(
+    id: number,
+    dto: CommunityProgramArchiveDto,
+    user: User
+  ): Promise<CommunityProgramEntity> {
+    this.assertCanManage(user);
+    const record = await this.findOne(id);
+    this.assertActive(record);
+
+    record.status = CommunityProgramStatus.ARCHIVED;
+    record.updatedAt = new Date().getTime();
+    record.archivedAt = new Date().getTime();
+    record.archivedByUserId = user.id ?? null;
+    record.archiveReason = dto.reason ?? null;
+    record.updatedByUserId = user.id ?? null;
+    return await this.communityProgramRepo.save(record);
   }
 
   // Public, unauthenticated listing - this registry is intentionally fully
@@ -69,6 +150,7 @@ export class CommunityProgramService {
     const page = Math.max(1, options.page || 1);
     const pageSize = Math.min(50, Math.max(1, options.pageSize || 10));
     const records = await this.communityProgramRepo.find({
+      where: { archivedAt: IsNull() },
       order: { createdAt: "DESC" },
     });
     const filtered = records.filter((record) => {
@@ -102,13 +184,22 @@ export class CommunityProgramService {
     totalParticipants: number | null;
     categoryUnit: "records";
     participantUnit: "participants";
+    byStatus: Record<string, number>;
+    statusUnit: "records";
   }; meta: ReturnType<typeof createPublicMeta> }> {
-    const records = await this.communityProgramRepo.find();
+    const records = await this.communityProgramRepo.find({
+      where: { archivedAt: IsNull() },
+    });
 
     let totalParticipants = 0;
     let hasParticipants = false;
     const byCategory: Record<string, number> = {};
     const byRegion: Record<string, number> = {};
+    const byStatus: Record<string, number> = {};
+
+    for (const status of Object.values(CommunityProgramStatus)) {
+      byStatus[status] = 0;
+    }
 
     for (const record of records) {
       if (record.participantCount !== null && record.participantCount !== undefined) {
@@ -117,6 +208,7 @@ export class CommunityProgramService {
       }
       byCategory[record.category] = (byCategory[record.category] || 0) + 1;
       byRegion[record.region] = (byRegion[record.region] || 0) + 1;
+      byStatus[record.status] = (byStatus[record.status] || 0) + 1;
     }
 
     return {
@@ -127,6 +219,8 @@ export class CommunityProgramService {
         totalParticipants: hasParticipants ? totalParticipants : null,
         categoryUnit: "records",
         participantUnit: "participants",
+        byStatus,
+        statusUnit: "records",
       },
       meta: createPublicMeta({}, { unit: "records", pagination: { total_items: records.length } }),
     };
@@ -150,6 +244,7 @@ export class CommunityProgramService {
 
     const record = await this.communityProgramRepo.findOneBy({
       programId: key,
+      archivedAt: IsNull(),
     });
     if (!record) {
       return {
@@ -193,5 +288,40 @@ export class CommunityProgramService {
       status: record.status,
       startYear: record.startYear,
     };
+  }
+
+  private async findOne(id: number): Promise<CommunityProgramEntity> {
+    const record = await this.communityProgramRepo.findOneBy({ id });
+    if (!record) {
+      throw new HttpException(
+        "Community program not found",
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return record;
+  }
+
+  private assertCanManage(user: User) {
+    if (
+      user.role === Role.Root ||
+      ((user.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY ||
+        user.companyRole === CompanyRole.MINISTRY) &&
+        user.role !== Role.ViewOnly)
+    ) {
+      return;
+    }
+    throw new HttpException(
+      "Only DNA or Ministry users can manage community programs",
+      HttpStatus.FORBIDDEN
+    );
+  }
+
+  private assertActive(record: CommunityProgramEntity) {
+    if (record.archivedAt !== null && record.archivedAt !== undefined) {
+      throw new HttpException(
+        "Archived community programs cannot be changed",
+        HttpStatus.CONFLICT
+      );
+    }
   }
 }

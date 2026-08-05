@@ -34,6 +34,7 @@ import { ReddPlusEntity } from "../entities/redd.plus.entity";
 import { CertificateRegistryModule } from "../certificate-registry/certificate.registry.module";
 import { CertificateLot } from "../entities/certificate.lot.entity";
 import { CertificatePortion } from "../entities/certificate.portion.entity";
+import { CertificateLedgerEvent } from "../entities/certificate.ledger.event.entity";
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { CertificatePortion } from "../entities/certificate.portion.entity";
       ReddPlusEntity,
       CertificateLot,
       CertificatePortion,
+      CertificateLedgerEvent,
     ]),
     UtilModule,
     CompanyModule,

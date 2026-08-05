@@ -205,7 +205,10 @@ export class DemoSeederService {
       this.logger.log(
         `Canonical certificate demo ledger ${result.status}; sha256=${result.hash}`,
       );
-      const publicResult = await this.nonCertificatePublicDemoLoader.load(scenario);
+      // Replace mode must regenerate deterministic public records as well as
+      // the canonical ledger. Otherwise an upgraded fixture could leave a
+      // visually sparse but technically "complete" previous demo in place.
+      const publicResult = await this.nonCertificatePublicDemoLoader.load(scenario, true);
       this.logger.log(
         `Non-certificate public demo data ${publicResult.status}; sha256=${publicResult.hash}`,
       );

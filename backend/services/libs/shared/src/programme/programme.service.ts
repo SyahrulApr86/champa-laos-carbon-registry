@@ -142,7 +142,8 @@ import { CreditAuditLogType } from "../enum/credit.audit.log.type.enum";
 import { TxType } from "../enum/txtype.enum";
 import { CertificateLot } from "../entities/certificate.lot.entity";
 import { CertificatePortion } from "../entities/certificate.portion.entity";
-import { CertificatePortionState, PublicAvailability } from "../enum/certificate.ledger.enum";
+import { CertificateLedgerEvent } from "../entities/certificate.ledger.event.entity";
+import { CertificateLedgerEventType, CertificatePortionState, PublicAvailability } from "../enum/certificate.ledger.enum";
 
 export interface PublicCertificate {
   accountHolder: string | null;
@@ -273,7 +274,9 @@ export class ProgrammeService {
     @InjectRepository(CertificateLot)
     private certificateLotRepo: Repository<CertificateLot>,
     @InjectRepository(CertificatePortion)
-    private certificatePortionRepo: Repository<CertificatePortion>
+    private certificatePortionRepo: Repository<CertificatePortion>,
+    @InjectRepository(CertificateLedgerEvent)
+    private certificateLedgerEventRepo: Repository<CertificateLedgerEvent>
   ) {}
 
   private fileExtensionMap = new Map([
@@ -8235,11 +8238,16 @@ export class ProgrammeService {
       this.companyRepo.find({ where: { state: CompanyState.ACTIVE } }),
       this.certificateLotRepo.find(),
     ]);
-    const portions = lots.length
-      ? await this.certificatePortionRepo.find({
+    const [portions, ledgerEvents] = lots.length
+      ? await Promise.all([
+          this.certificatePortionRepo.find({
           where: { certificateLotId: In(lots.map((lot) => lot.certificateLotId)) },
-        })
-      : [];
+          }),
+          this.certificateLedgerEventRepo.find({
+            where: { certificateLotId: In(lots.map((lot) => lot.certificateLotId)) },
+          }),
+        ])
+      : [[], []];
     const programmesById = new Map(programmes.map((programme) => [programme.programmeId, programme]));
     const companiesById = new Map(companies.map((company) => [Number(company.companyId), company]));
     const amount = (value: unknown) => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -8270,10 +8278,14 @@ export class ProgrammeService {
       .filter((portion) => portion.state === state)
       .reduce((total, portion) => total + amount(portion.quantity), 0);
     const issuedTotal = lots.reduce((total, lot) => total + amount(lot.issuedQuantity), 0);
+    const transferredEventVolume = ledgerEvents
+      .filter((event) => event.eventType === CertificateLedgerEventType.TRANSFERRED)
+      .reduce((total, event) => total + amount(event.quantity), 0);
     const certificateMetrics = lots.length
       ? {
           certificate_lot_count: lots.length,
           issued: issuedTotal,
+          transferred: transferredEventVolume,
           available: hasCompleteLotState ? stateBalance(CertificatePortionState.AVAILABLE) : null,
           retired: hasCompleteLotState ? stateBalance(CertificatePortionState.RETIRED) : null,
           cancelled: hasCompleteLotState ? stateBalance(CertificatePortionState.CANCELLED) : null,
@@ -8284,6 +8296,7 @@ export class ProgrammeService {
       : {
           certificate_lot_count: 0,
           issued: null,
+          transferred: null,
           available: null,
           retired: null,
           cancelled: null,

@@ -5,14 +5,13 @@ import AppHeader from "../../Components/AppHeader/appHeader";
 import VerificationAgencyList from "./VerificationAgencyList";
 import RosterOfExpertList from "./RosterOfExpertList";
 import GuidanceDocumentList from "./GuidanceDocumentList";
+import PublicDisclosure from "../../Components/PublicDisclosure/PublicDisclosure";
+import { useTranslation } from "react-i18next";
 import "./instruments.scss";
 
-// Static, informational "Instruments" page mirroring SRN Indonesia's
-// Instruments nav dropdown (Methodology / Roster of Expert / Validation-
-// Verification Agency / Module / Registration links). Genuinely
-// data-backed items link to their real pages; the rest are described
-// honestly as not yet populated rather than filled with placeholder data.
 const Instruments = () => {
+  const { t } = useTranslation(["instruments"]);
+
   useEffect(() => {
     if (window.location.hash) {
       const id = window.location.hash.replace("#", "");
@@ -28,76 +27,51 @@ const Instruments = () => {
       <AppHeader />
 
       <div className="instruments-body-container">
-        <h1 className="instruments-title">Instruments</h1>
-        <p className="instruments-subtitle">
-          Reference documents and directories supporting Lao PDR&apos;s
-          carbon market.
-        </p>
+        <h1 className="instruments-title">{t("instrumentsTitle")}</h1>
+        <p className="instruments-subtitle">{t("instrumentsSubtitle")}</p>
+        <PublicDisclosure />
 
         <section className="instruments-section">
-          <h2>Methodology Directory</h2>
-          <p>
-            Browse the list of GHG accounting methodologies approved for
-            use in Lao PDR&apos;s carbon market.
-          </p>
+          <h2>{t("methodologySectionTitle")}</h2>
+          <p>{t("methodologySectionBody")}</p>
           <Link to="/methodology" className="instruments-link">
-            Open Methodology Directory →
+            {t("methodologyOpen")}
           </Link>
         </section>
 
         <section className="instruments-section" id="vva">
-          <h2>Validation and Verification Bodies</h2>
-          <p>
-            Independent certifiers registered on Champa validate and verify
-            project claims before MAE authorisation. The registry below
-            lists active, independently-certified verification agencies.
-          </p>
+          <h2>{t("agencySectionTitle")}</h2>
+          <p>{t("agencySectionBody")}</p>
           <VerificationAgencyList />
         </section>
 
         <section className="instruments-section" id="roster-of-expert">
-          <h2>Roster of Experts</h2>
-          <p>
-            Accredited technical experts registered by DNA/Ministry to
-            support carbon market activities in Lao PDR.
-          </p>
+          <h2>{t("expertSectionTitle")}</h2>
+          <p>{t("expertSectionBody")}</p>
           <RosterOfExpertList />
         </section>
 
         <section className="instruments-section">
-          <h2>Legal &amp; Regulatory Framework</h2>
-          <p>
-            Champa supports implementation of Lao PDR&apos;s Decree on Carbon
-            Credits (28 May 2025), the legal instrument establishing the
-            framework for authorising, registering, and overseeing carbon
-            market activities in Lao PDR.
-          </p>
+          <h2>{t("policySectionTitle")}</h2>
+          <p>{t("policySectionBody")}</p>
         </section>
 
         <section className="instruments-section" id="module">
-          <h2>Module</h2>
-          <p>
-            Downloadable guidance documents supporting proponents,
-            verification agencies, and DNA/Ministry staff working with
-            Champa.
-          </p>
+          <h2>{t("moduleSectionTitle")}</h2>
+          <p>{t("moduleSectionBody")}</p>
           <GuidanceDocumentList />
         </section>
 
         <section className="instruments-section">
-          <h2>Source Code &amp; Technical Documentation</h2>
-          <p>
-            Champa is built on UNDP&apos;s open-source National Carbon
-            Registry. The source code and technical documentation are
-            publicly available.
-          </p>
+          <h2>{t("sourceCodeTitle")}</h2>
+          <p>{t("sourceCodeBody")}</p>
           <a
             href="https://github.com/undp/carbon-registry"
             target="_blank"
             rel="noopener noreferrer"
             className="instruments-link"
           >
-            View on GitHub →
+            {t("sourceCodeLink")}
           </a>
         </section>
       </div>

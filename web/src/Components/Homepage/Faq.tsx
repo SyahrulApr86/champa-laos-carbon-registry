@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
+import { Button, Input } from "antd";
 import "./Dashboard.scss";
 import { ChevronDown } from "react-bootstrap-icons";
 import { Envelope } from "react-bootstrap-icons";
@@ -6,7 +7,7 @@ import { Trans, useTranslation } from "react-i18next";
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(0);
-  const { t } = useTranslation(["homepage"]);
+  const { t } = useTranslation(["homepage", "instruments"]);
 
   const toggleItem = (index) => {
     setOpenIndex((prev) => (prev === index ? null : index));
@@ -14,7 +15,7 @@ const FAQ = () => {
 
   return (
     <div className="faq-container" id="faq">
-      <h2 className="header-title">FAQ - Common questions:</h2>
+      <h2 className="header-title">{t("homepage:faqTitle")}</h2>
       <div className="faq-list">
         <div className="faq-item">
           <button
@@ -233,6 +234,29 @@ const FAQ = () => {
           )}
         </div>
       </div>
+      <section className="faq-contact" aria-labelledby="faq-contact-title">
+        <h3 id="faq-contact-title">{t("instruments:faqContactTitle")}</h3>
+        <p>{t("instruments:faqContactBody")}</p>
+        <form
+          onSubmit={(event: FormEvent<HTMLFormElement>) => event.preventDefault()}
+          className="faq-contact-form"
+        >
+          <Input placeholder={t("instruments:contactName")} name="name" />
+          <Input placeholder={t("instruments:contactEmail")} name="email" type="email" />
+          <Input.TextArea
+            placeholder={t("instruments:contactMessage")}
+            name="message"
+            required
+            rows={4}
+          />
+          <Button disabled htmlType="submit">
+            {t("instruments:contactSubmit")}
+          </Button>
+        </form>
+        <p className="faq-contact-not-configured">
+          {t("instruments:contactNotConfigured")}
+        </p>
+      </section>
     </div>
   );
 };

@@ -1,20 +1,24 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, Min } from "class-validator";
 
 export class EmissionCeilingCreateDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   companyId: number;
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @Min(2000)
+  @Max(2100)
   year: number;
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
   units: number;
 
   @ApiPropertyOptional()
@@ -29,7 +33,7 @@ export class EmissionCeilingCreateDto {
 
   @ApiPropertyOptional({ default: "tCO2e" })
   @IsOptional()
-  @IsString()
+  @IsIn(["tCO2e"])
   unit?: string;
 
   @ApiPropertyOptional({ enum: ["synthetic_demo", "configured", "not_configured"] })

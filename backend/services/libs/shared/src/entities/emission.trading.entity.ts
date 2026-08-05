@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { EntitySubject } from "./entity.subject";
 import { NumberTransformer } from "../functions/number.transformer.decorator";
+import { EmissionLifecycleEvent } from "../emission-trading/emission.lifecycle";
 
 // A configured ceiling-market event. It is not a certificate transaction and
 // does not change certificate supply unless W2 later supplies an approved,
@@ -21,6 +22,9 @@ export class EmissionTradingEntity implements EntitySubject {
 
   @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
   valueLAK: number;
+
+  @Column({ type: "varchar", nullable: true, default: "LAK" })
+  currency: string;
 
   @Column({ type: "varchar", nullable: true })
   seriesName: string;
@@ -48,8 +52,31 @@ export class EmissionTradingEntity implements EntitySubject {
   @Column({ type: "bigint", transformer: NumberTransformer })
   createdAt: number;
 
+  @Column({ type: "varchar", nullable: true, default: "active" })
+  lifecycleStatus: string;
+
+  @Column({ type: "varchar", nullable: true })
+  lifecycleReason: string;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  updatedAt: number;
+
+  @Column({ type: "int", nullable: true })
+  createdBy: number;
+
+  @Column({ type: "int", nullable: true })
+  updatedBy: number;
+
+  @Column({ type: "int", nullable: true })
+  reversalOfTradeId: number;
+
+  @Column({ type: "jsonb", nullable: true })
+  lifecycleHistory: EmissionLifecycleEvent[];
+
   @BeforeInsert()
   setCreatedAt() {
-    this.createdAt = new Date().getTime();
+    const timestamp = new Date().getTime();
+    this.createdAt = timestamp;
+    this.updatedAt = timestamp;
   }
 }

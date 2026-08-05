@@ -15,7 +15,7 @@ import {
 import "./Dashboard.scss";
 import "./DashboardAnalytics.scss";
 
-export const DONUT_PALETTE = [
+const DONUT_PALETTE = [
   COLOR_CONFIGS.PRIMARY_THEME_COLOR,
   COLOR_CONFIGS.ACCENT_GOLD_COLOR,
   COLOR_CONFIGS.PRIMARY_RED_COLOR,

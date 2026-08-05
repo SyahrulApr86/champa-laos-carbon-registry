@@ -152,17 +152,20 @@ const emptySummary: PublicAnalyticsSummary = {
 };
 
 interface EmissionTradingSummary {
-  year: number | null;
-  ceiling: { totalUnits: number; companies: number };
-  trading: { totalUnits: number; totalValueLAK: number; companies: number };
-  today: { totalUnits: number; totalValueLAK: number };
+  configuration: {
+    venue_status: "synthetic_demo" | "configured" | "not_configured";
+    venue_name: string | null;
+    policy_status: string;
+    settlement_status: string;
+  };
+  ceiling: { totalUnits: number; companies: number; unit: string };
+  trading: { totalUnits: number; totalValueLAK: number; companies: number; unit: string; currency: string };
 }
 
 const emptyTradingSummary: EmissionTradingSummary = {
-  year: null,
-  ceiling: { totalUnits: 0, companies: 0 },
-  trading: { totalUnits: 0, totalValueLAK: 0, companies: 0 },
-  today: { totalUnits: 0, totalValueLAK: 0 },
+  configuration: { venue_status: "not_configured", venue_name: null, policy_status: "not_configured", settlement_status: "not_applicable" },
+  ceiling: { totalUnits: 0, companies: 0, unit: "tCO2e" },
+  trading: { totalUnits: 0, totalValueLAK: 0, companies: 0, unit: "tCO2e", currency: "LAK" },
 };
 
 const CarbonDashboard = () => {
@@ -243,19 +246,23 @@ const CarbonDashboard = () => {
         if (tradingResponse?.data) {
           const data = tradingResponse.data;
           setTradingSummary({
-            year: data.year ?? null,
+            configuration: {
+              venue_status: data.configuration?.venue_status ?? "not_configured",
+              venue_name: data.configuration?.venue_name ?? null,
+              policy_status: data.configuration?.policy_status ?? "not_configured",
+              settlement_status: data.configuration?.settlement_status ?? "not_applicable",
+            },
             ceiling: {
               totalUnits: data.ceiling?.totalUnits ?? 0,
               companies: data.ceiling?.companies ?? 0,
+              unit: data.ceiling?.unit ?? "tCO2e",
             },
             trading: {
               totalUnits: data.trading?.totalUnits ?? 0,
               totalValueLAK: data.trading?.totalValueLAK ?? 0,
               companies: data.trading?.companies ?? 0,
-            },
-            today: {
-              totalUnits: data.today?.totalUnits ?? 0,
-              totalValueLAK: data.today?.totalValueLAK ?? 0,
+              unit: data.trading?.unit ?? "tCO2e",
+              currency: data.trading?.currency ?? "LAK",
             },
           });
         }
@@ -658,18 +665,19 @@ const CarbonDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Emission Ceiling & Trading (SRN's PTBAE-PU equivalent) */}
+        {/* Configurable ceiling-market capability; never a certificate balance. */}
         <section className="section">
           <h3 className="section-title">Emission Ceiling &amp; Trading</h3>
           <p className="registry-table-subtitle">
-            Technical approval for upper emission limits, and carbon
-            exchange trading, for business actors registered with Champa.
+            {tradingSummary.configuration.venue_status === "not_configured"
+              ? "Market policy and venue are not configured."
+              : "Synthetic demonstration market — not official Lao PDR market activity or certificate records."}
           </p>
           <div className="donut-grid">
             <div className="donut-card">
               <div className="main-statistic">
                 <div className="statistic-value">
-                  {tradingSummary.ceiling.totalUnits.toLocaleString()}
+                  {tradingSummary.ceiling.totalUnits.toLocaleString()} {tradingSummary.ceiling.unit}
                 </div>
                 <div className="statistic-title">Total Ceiling Units</div>
               </div>
@@ -687,7 +695,7 @@ const CarbonDashboard = () => {
             <div className="donut-card">
               <div className="main-statistic">
                 <div className="statistic-value">
-                  {tradingSummary.trading.totalUnits.toLocaleString()}
+                  {tradingSummary.trading.totalUnits.toLocaleString()} {tradingSummary.trading.unit}
                 </div>
                 <div className="statistic-title">Total Units Traded</div>
               </div>
@@ -695,21 +703,19 @@ const CarbonDashboard = () => {
             <div className="donut-card">
               <div className="main-statistic">
                 <div className="statistic-value">
-                  {tradingSummary.today.totalUnits.toLocaleString()}
+                  {tradingSummary.trading.companies}
                 </div>
                 <div className="statistic-title">
-                  Daily Trading Volume (tCO2e)
+                  Market Participants in Trades
                 </div>
               </div>
             </div>
             <div className="donut-card">
               <div className="main-statistic">
                 <div className="statistic-value">
-                  {tradingSummary.today.totalValueLAK
-                    ? `LAK ${tradingSummary.today.totalValueLAK.toLocaleString()}`
-                    : "LAK 0"}
+                  {`LAK ${tradingSummary.trading.totalValueLAK.toLocaleString()}`}
                 </div>
-                <div className="statistic-title">Daily Trading Value</div>
+                <div className="statistic-title">Entered Market Value (LAK)</div>
               </div>
             </div>
           </div>

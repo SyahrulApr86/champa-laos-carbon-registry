@@ -63,10 +63,11 @@ function validateEnvelope(payload, endpoint) {
     const row = Array.isArray(payload?.data) ? payload.data[0] : payload?.data;
     const balances = row?.certificate_balances ?? row?.balances;
     if (object(balances)) {
-      const names = ["issued", "available", "assigned_to_exchange", "withheld", "retired", "cancelled"];
-      assert(names.every((name) => Number.isFinite(balances[name])), "certificate balance fields must be numeric", failures);
-      if (names.every((name) => Number.isFinite(balances[name]))) {
-        const conserved = balances.available + balances.assigned_to_exchange + balances.withheld + balances.retired + balances.cancelled + (balances.other_explicit_non_circulating ?? 0);
+      const assigned = balances.assigned_to_exchange ?? balances.exchange_assigned;
+      const values = [balances.available, assigned, balances.withheld, balances.retired, balances.cancelled];
+      assert(values.every(Number.isFinite), "certificate balance fields must be numeric", failures);
+      if (values.every(Number.isFinite)) {
+        const conserved = balances.available + assigned + balances.withheld + balances.retired + balances.cancelled + (balances.other_explicit_non_circulating ?? 0);
         assert(Number(row?.issued_quantity) === conserved, "certificate conservation invariant failed", failures);
       }
     } else {

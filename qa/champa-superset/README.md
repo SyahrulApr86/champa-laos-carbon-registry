@@ -17,6 +17,7 @@ workspace root cannot be discovered from the worktree path.
 ```sh
 node qa/champa-superset/scripts/evidence-index.mjs
 node qa/champa-superset/scripts/policy-leakage-scan.mjs
+node qa/champa-superset/scripts/ui-api-mismatch.mjs
 
 # Requires a disposable demo API instance. Add --require-base in CI.
 CHAMPA_BASE=http://localhost:3000/api \

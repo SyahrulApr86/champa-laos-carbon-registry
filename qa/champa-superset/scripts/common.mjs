@@ -59,21 +59,27 @@ export function readManifest() {
     const start = match.index;
     const end = featureStarts[index + 1]?.index ?? raw.length;
     const block = raw.slice(start, end);
-    const value = (key) => block.match(new RegExp(`^    ${key}: [\\\"']?(.+?)[\\\"']?$`, "m"))?.[1]?.trim();
-    const inlineList = (key) => {
-      const text = value(key);
+    const value = (key, indent = "    ") => block.match(new RegExp(`^${indent}${key}: [\\\"']?(.+?)[\\\"']?$`, "m"))?.[1]?.trim();
+    const inlineList = (key, indent = "      ") => {
+      const text = value(key, indent);
       if (!text?.startsWith("[")) return [];
       return text.slice(1, -1).split(",").map((entry) => entry.trim().replace(/^[\\\"']|[\\\"']$/g, "")).filter(Boolean);
+    };
+    const list = (key) => {
+      const inline = inlineList(key);
+      if (inline.length) return inline;
+      const matched = block.match(new RegExp(`^      ${key}:\\n((?:        - .+\\n)+)`, "m"));
+      return matched?.[1].match(/^        - (.+)$/gm)?.map((entry) => entry.replace(/^        - /, "").replace(/^[\\\"']|[\\\"']$/g, "")) ?? [];
     };
     return {
       id: match[1],
       title: value("title") ?? "Untitled feature",
       owner_workstream: value("owner_workstream") ?? "unassigned",
-      dependencies: inlineList("dependencies"),
+      dependencies: inlineList("dependencies", "      "),
       seed_requirements: [],
       acceptance_criteria: [],
       evidence: { manifest_block: block },
-      current_champa: { routes: inlineList("routes"), components: inlineList("components"), apis: inlineList("apis"), entities: inlineList("entities") },
+      current_champa: { routes: list("routes"), components: list("components"), apis: list("apis"), entities: list("entities") },
     };
   });
   return { features };

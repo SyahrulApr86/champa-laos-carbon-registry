@@ -1,9 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { EntitySubject } from "./entity.subject";
 import { Sector } from "../enum/sector.enum";
 import { FinanceChannel } from "../enum/finance.channel.enum";
@@ -85,6 +80,12 @@ export class ClimateFinanceEntity implements EntitySubject {
 
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   updatedAt: number;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  archivedAt: number;
+
+  @Column({ type: "text", nullable: true })
+  archiveReason: string;
 
   @BeforeInsert()
   setCreatedAt() {

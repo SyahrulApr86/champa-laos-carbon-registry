@@ -2,9 +2,9 @@ import { ConnectionProps } from "../../Definitions/Definitions/connectionContext
 import { CERTIFICATE_REGISTRY_MANAGEMENT_API } from "./certificateRegistryManagement.constants";
 import {
   CertificateLifecycleEvent,
-  CertificateLotDetail,
+  CertificateLotDetailResponse,
+  CertificateLotListResponse,
   CertificateLotFormValues,
-  CertificateLotSummary,
 } from "./certificateRegistryManagement.types";
 
 export const listCertificateLots = (
@@ -15,11 +15,11 @@ export const listCertificateLots = (
   if (query.q) params.set("q", query.q);
   if (query.includeArchived) params.set("includeArchived", "true");
   const suffix = params.toString() ? `?${params.toString()}` : "";
-  return connection.get<CertificateLotSummary[]>(`${CERTIFICATE_REGISTRY_MANAGEMENT_API.lots}${suffix}`);
+  return connection.get<CertificateLotListResponse>(`${CERTIFICATE_REGISTRY_MANAGEMENT_API.lots}${suffix}`);
 };
 
 export const getCertificateLot = (connection: ConnectionProps, certificateLotId: string) =>
-  connection.get<CertificateLotDetail>(CERTIFICATE_REGISTRY_MANAGEMENT_API.lot(certificateLotId));
+  connection.get<CertificateLotDetailResponse>(CERTIFICATE_REGISTRY_MANAGEMENT_API.lot(certificateLotId));
 
 export const createCertificateLot = (connection: ConnectionProps, values: CertificateLotFormValues) =>
   connection.post(CERTIFICATE_REGISTRY_MANAGEMENT_API.createLot, values);

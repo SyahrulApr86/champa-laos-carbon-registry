@@ -45,7 +45,7 @@ const CertificateRegistryManagementPage = () => {
     setLoading(true);
     try {
       const response = await listCertificateLots(connection, { q: query });
-      setRows(Array.isArray(response.data) ? response.data : []);
+      setRows(response.data?.data ?? []);
     } catch {
       setRows([]);
       message.error("Certificate registry management is unavailable");
@@ -61,7 +61,7 @@ const CertificateRegistryManagementPage = () => {
   const selectLot = async (certificateLotId: string) => {
     try {
       const response = await getCertificateLot(connection, certificateLotId);
-      setSelected(response.data);
+      setSelected(response.data.data);
     } catch {
       message.error("Unable to load certificate lot detail");
     }

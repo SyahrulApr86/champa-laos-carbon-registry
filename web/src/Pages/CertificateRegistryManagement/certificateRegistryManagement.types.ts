@@ -47,6 +47,18 @@ export interface CertificateLotSummary {
   editable: boolean;
 }
 
+export interface CertificateLotListResponse {
+  data: CertificateLotSummary[];
+  meta?: {
+    pagination?: {
+      page: number;
+      page_size: number;
+      total_items: number;
+      total_pages: number;
+    };
+  };
+}
+
 export interface CertificatePortion {
   certificate_portion_id: string;
   owner_company_id: string | null;
@@ -72,4 +84,8 @@ export interface CertificateLotDetail {
   portions: CertificatePortion[];
   events: CertificateEvent[];
   editable: boolean;
+}
+
+export interface CertificateLotDetailResponse {
+  data: CertificateLotDetail;
 }

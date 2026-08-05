@@ -102,6 +102,14 @@ export class ProgrammeController {
     });
   }
 
+  @Get("public/certificate-registry/metrics")
+  async publicCertificateRegistryMetrics(
+    @Query("scheme") scheme?: string,
+    @Query("sector") sector?: string
+  ) {
+    return this.certificateRegistryService.getPublicCertificateMetrics({ scheme, sector });
+  }
+
   @Get("public/certificate-registry/:certificateId")
   async publicCertificateDetail(@Param("certificateId") certificateId: string) {
     return this.certificateRegistryService.getPublicCertificateDetail(certificateId);

@@ -196,6 +196,39 @@ export class CertificateRegistryService {
     return { data: { ...this.publicCertificateRow(lot, portions, events, programme ?? undefined, holders), audit_history: events.map((event) => this.publicEvent(event)) }, meta: this.meta(lot.provenance, 1, 1, 1, {}) };
   }
 
+  /** Source facts for F01. W3 owns presentation and must not combine these with ceiling trades. */
+  async getPublicCertificateMetrics(query: Pick<CertificateRegistryQuery, "scheme" | "sector"> = {}): Promise<any> {
+    const allLots = await this.lotRepo.find({ order: { certificateId: "ASC" } });
+    const programmeMap = await this.programmeMap(allLots.map((lot) => lot.programmeId));
+    const portions = await this.portionRepo.find({ where: { certificateLotId: In(allLots.map((lot) => lot.certificateLotId)) } });
+    const events = await this.eventRepo.find({ where: { certificateLotId: In(allLots.map((lot) => lot.certificateLotId)) } });
+    const holders = await this.companyMap(portions.map((portion) => portion.ownerCompanyId).filter(Boolean) as string[]);
+    const rows = allLots.map((lot) => this.publicCertificateRow(
+      lot,
+      portions.filter((portion) => portion.certificateLotId === lot.certificateLotId),
+      events.filter((event) => event.certificateLotId === lot.certificateLotId),
+      programmeMap.get(lot.programmeId), holders
+    )).filter((row) => this.matchesCertificateQuery(row, query));
+    const sum = (selector: (row: any) => number) => rows.reduce((total, row) => total + selector(row), 0);
+    const source = allLots[0]?.provenance ?? {};
+    return {
+      data: {
+        formula_id: "certificate_registry_metrics_v1",
+        certificate_lot_count: rows.length,
+        issued_total: sum((row) => row.issued_quantity),
+        available_balance: sum((row) => row.balances.available),
+        transferred_event_total: sum((row) => row.event_totals.transferred),
+        retired_balance: sum((row) => row.balances.retired),
+        cancelled_balance: sum((row) => row.balances.cancelled),
+        exchange_assigned_balance: sum((row) => row.balances.exchange_assigned),
+        withheld_balance: sum((row) => row.balances.withheld),
+        buffer_balance: sum((row) => row.balances.buffer),
+        unit: rows[0]?.unit ?? "tCO2e",
+      },
+      meta: this.meta(source, rows.length, 1, rows.length || 1, { scheme: query.scheme ?? null, sector: query.sector ?? null }),
+    };
+  }
+
   async getPublicMitigationDetail(programmeId: string): Promise<any> {
     const programme = await this.programmeRepo.findOneBy({ programmeId });
     if (!programme) return { data: null, meta: this.meta({}, 0, 1, 1, {}) };

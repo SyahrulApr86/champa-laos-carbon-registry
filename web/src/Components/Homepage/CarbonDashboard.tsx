@@ -310,6 +310,26 @@ const CarbonDashboard = () => {
     })
   );
 
+  // Champa is a single-scheme national registry (no JCM/Gold Standard/
+  // Verra co-registration exists), so these are honestly single-bucket
+  // charts - not fabricated, this mirrors SRN Indonesia's own live data,
+  // which is also ~100% one scheme (SPEI) with every other scheme at 0.
+  const registrySchemeProponentsData = [
+    { value: summary.totalProjects, title: "Champa National Registry" },
+    { value: 0, title: "JCM" },
+    { value: 0, title: "Gold Standard" },
+    { value: 0, title: "Verra/VCS" },
+    { value: 0, title: "Others" },
+  ];
+
+  const registrySchemeCreditsData = [
+    { value: summary.credits.issued, title: "Champa National Registry" },
+    { value: 0, title: "JCM" },
+    { value: 0, title: "Gold Standard" },
+    { value: 0, title: "Verra/VCS" },
+    { value: 0, title: "Others" },
+  ];
+
   const creditsBySectorData = Object.entries(summary.creditsBySector)
     .filter(([, value]) => value > 0)
     .map(([sector, value]) => ({ value, title: sector }));
@@ -482,11 +502,31 @@ const CarbonDashboard = () => {
 
           <div className="donut-card">
             <h3 className="section-title">
+              Number of Proponents by Registry Scheme
+            </h3>
+            <DonutBreakdown
+              data={registrySchemeProponentsData}
+              totalLabel={t("homepage:totprojects")}
+            />
+          </div>
+
+          <div className="donut-card">
+            <h3 className="section-title">
               {t("homepage:proponentdistribution")}
             </h3>
             <DonutBreakdown
               data={proponentData}
               totalLabel={t("homepage:totalOrganisations")}
+            />
+          </div>
+
+          <div className="donut-card">
+            <h3 className="section-title">
+              Number of SPE by Registry Scheme
+            </h3>
+            <DonutBreakdown
+              data={registrySchemeCreditsData}
+              totalLabel={t("homepage:totcredits")}
             />
           </div>
 

@@ -16,7 +16,7 @@ import EmissionCeilingTradingTabs from "./EmissionCeilingTradingTabs";
 import "./Dashboard.scss";
 import "./DashboardAnalytics.scss";
 
-const DONUT_PALETTE = [
+export const DONUT_PALETTE = [
   COLOR_CONFIGS.PRIMARY_THEME_COLOR,
   COLOR_CONFIGS.ACCENT_GOLD_COLOR,
   COLOR_CONFIGS.PRIMARY_RED_COLOR,

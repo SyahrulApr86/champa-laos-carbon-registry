@@ -2,6 +2,7 @@
   "syntheticDisclosureTitle": "Synthetic demonstration content",
   "syntheticDisclosureBody": "This public content and any linked directory records are demonstration material, not official Lao PDR policy, authority, agency, expert, contact, or market records.",
   "syntheticDisclosurePeriod": "Scenario: Champa registry demonstration · As of: {{asOf}} · Coverage: {{periodStart}}–{{periodEnd}}",
+  "contentMetadata": "Content version: champa-content-demo-v1 · Publication: synthetic_demo · Owner: pending approved publication policy",
   "aboutTitle": "About Champa",
   "aboutIntroTitle": "What is Champa?",
   "aboutIntroBody": "Champa is a configurable public registry capability for documenting climate activities, registry instruments, and transparent reporting. This deployment is a demonstration environment; its policy, authority, market, and content configuration is not published as an official Lao PDR decision.",

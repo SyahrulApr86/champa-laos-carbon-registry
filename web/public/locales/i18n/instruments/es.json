@@ -2,6 +2,7 @@
   "syntheticDisclosureTitle": "Contenido de demostración sintético",
   "syntheticDisclosureBody": "Este contenido público y sus directorios son material de demostración, no registros oficiales de política, autoridad, agencia, expertos, contactos o mercado de la RDP Lao.",
   "syntheticDisclosurePeriod": "Escenario: demostración del registro Champa · Fecha: {{asOf}} · Cobertura: {{periodStart}}–{{periodEnd}}",
+  "contentMetadata": "Versión de contenido: champa-content-demo-v1 · Publicación: synthetic_demo · Propietario: política de publicación aprobada pendiente",
   "aboutTitle": "Acerca de Champa",
   "aboutIntroTitle": "¿Qué es Champa?",
   "aboutIntroBody": "Champa es una capacidad configurable de registro público para documentar actividades climáticas, instrumentos del registro e informes transparentes. Esta implementación es un entorno de demostración; su configuración política, institucional, de mercado y de contenido no se publica como una decisión oficial de la RDP Lao.",

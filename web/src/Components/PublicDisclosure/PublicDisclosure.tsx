@@ -26,6 +26,11 @@ const PublicDisclosure: React.FC<PublicDisclosureProps> = ({
           periodEnd,
         })}
       </small>
+      <small>
+        {t("contentMetadata", {
+          defaultValue: "Content version: champa-content-demo-v1 · Publication: synthetic_demo · Owner: pending approved publication policy",
+        })}
+      </small>
     </aside>
   );
 };

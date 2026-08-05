@@ -9,6 +9,7 @@
   "address": "Address",
   "country": "Country",
   "companyRole": "Role",
+  "proponentCategory": "Proponent Category",
   "state": "Status",
   "creditBalance": "Credit Balance",
   "secondaryAccountBalanceLocal": "Secondary Account Balance - Local",

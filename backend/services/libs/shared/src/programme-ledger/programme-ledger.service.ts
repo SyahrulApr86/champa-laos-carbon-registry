@@ -22,6 +22,7 @@ import { CompanyRole } from "../enum/company.role.enum";
 import { MitigationProperties } from "../dto/mitigation.properties";
 import { RetireType } from "../enum/retire.type.enum";
 import { GovernmentCreditAccounts } from "../enum/government.credit.accounts.enum";
+import { OrganisationCreditAccounts } from "../enum/organisation.credit.accounts.enum";
 import { ProjectProposalStage } from "../enum/projectProposalStage.enum";
 import { ProjectEntity } from "../entities/projects.entity";
 import { ActivityStateEnum } from "../enum/activity.state.enum";
@@ -1233,6 +1234,299 @@ export class ProgrammeLedgerService {
       return updatedProgramme;
     }
     return updatedProgramme;
+  }
+
+  /**
+   * Apply an irreversible credit state transition atomically to the
+   * programme ledger and the owning organisation accounts.
+   *
+   * Exchange assignment uses a secondary account on the same organisation
+   * (companyId#exchange); it is not a fabricated exchange organisation and
+   * keeps the credits out of the owner's available balance until a future
+   * exchange transaction consumes them.
+   */
+  public async applyProgrammeCreditStatus(
+    programmeId: string,
+    allocations: { companyId: number; amount: number }[],
+    action: TxType.CANCEL | TxType.ASSIGN_TO_EXCHANGE,
+    txRef: string
+  ): Promise<Programme> {
+    if (!allocations.length) {
+      throw new HttpException(
+        this.helperService.formatReqMessagesString("programme.totalAmount>0", []),
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const ownerIds = [...new Set(allocations.map(({ companyId }) => companyId))];
+    const companyAccounts = ownerIds.flatMap((companyId) => [
+      String(companyId),
+      ...(action === TxType.ASSIGN_TO_EXCHANGE
+        ? [`${companyId}#${OrganisationCreditAccounts.EXCHANGE}`]
+        : []),
+    ]);
+    const getQueries = {};
+    getQueries[this.ledger.tableName] = { programmeId };
+    getQueries[this.ledger.companyTableName] = { txId: companyAccounts };
+
+    let updatedProgramme: Programme;
+    const response = await this.ledger.getAndUpdateTx(
+      getQueries,
+      (results: Record<string, dom.Value[]>) => {
+        const programmes: Programme[] = results[this.ledger.tableName].map(
+          (domValue) =>
+            plainToClass(Programme, JSON.parse(JSON.stringify(domValue)))
+        );
+        if (!programmes.length) {
+          throw new HttpException(
+            this.helperService.formatReqMessagesString(
+              "programme.programmeNotExistWIthId",
+              [programmeId]
+            ),
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        const programme = programmes[0];
+        if (programme.currentStage !== ProgrammeStage.AUTHORISED) {
+          throw new HttpException(
+            this.helperService.formatReqMessagesString(
+              "programme.programmeNotInCreditIssuedState",
+              []
+            ),
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        if (
+          !programme.creditOwnerPercentage?.length &&
+          programme.companyId.length > 1
+        ) {
+          throw new HttpException(
+            this.helperService.formatReqMessagesString(
+              "programme.noOwnershipPercForCompany",
+              []
+            ),
+            HttpStatus.BAD_REQUEST
+          );
+        }
+        const ownerPercentages = programme.creditOwnerPercentage?.length
+          ? programme.creditOwnerPercentage.map((value) => Number(value) || 0)
+          : [100];
+        const currentBalance = Number(programme.creditBalance) || 0;
+        const amountsByOwner = new Map<number, number>();
+        for (const allocation of allocations) {
+          const amount = Number(allocation.amount);
+          const ownerId = Number(allocation.companyId);
+          if (!Number.isFinite(amount) || amount <= 0) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString(
+                "programme.totalAmount>0",
+                []
+              ),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          const ownerIndex = programme.companyId
+            .map((companyId) => Number(companyId))
+            .indexOf(ownerId);
+          if (ownerIndex < 0) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString(
+                "programme.companyIsNotTheOwnerOfProg",
+                [ownerId]
+              ),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          amountsByOwner.set(
+            ownerId,
+            (amountsByOwner.get(ownerId) || 0) + amount
+          );
+        }
+
+        const frozenCredits = programme.creditFrozen || [];
+        let totalAmount = 0;
+        for (const [ownerId, amount] of amountsByOwner) {
+          const ownerIndex = programme.companyId
+            .map((companyId) => Number(companyId))
+            .indexOf(ownerId);
+          const ownerBalance = this.helperService.halfUpToPrecision(
+            (currentBalance * ownerPercentages[ownerIndex]) / 100
+          );
+          const availableBalance = this.helperService.halfUpToPrecision(
+            ownerBalance - (Number(frozenCredits[ownerIndex]) || 0)
+          );
+          if (amount > availableBalance) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString(
+                "programme.companyHaveNoEnoughCredits",
+                [ownerId]
+              ),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          totalAmount += amount;
+        }
+
+        if (totalAmount > currentBalance) {
+          throw new HttpException(
+            this.helperService.formatReqMessagesString(
+              "programme.companyHaveNoEnoughCredits",
+              []
+            ),
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        const remainingBalance = this.helperService.halfUpToPrecision(
+          currentBalance - totalAmount
+        );
+        const remainingByOwner = programme.companyId.map((companyId, index) => {
+          const ownerId = Number(companyId);
+          const ownerBalance =
+            (currentBalance * ownerPercentages[index]) / 100;
+          return Math.max(
+            0,
+            ownerBalance - (amountsByOwner.get(ownerId) || 0)
+          );
+        });
+        const updatedPercentages = remainingByOwner.map((amount) =>
+          remainingBalance > 0
+            ? this.helperService.halfUpToPrecision(
+                (amount * 100) / remainingBalance,
+                6
+              )
+            : 0
+        );
+
+        const cancelled = new Array(programme.companyId.length).fill(0);
+        const assignedToExchange = new Array(
+          programme.companyId.length
+        ).fill(0);
+        for (let index = 0; index < programme.companyId.length; index++) {
+          cancelled[index] = Number(programme.creditCancelled?.[index]) || 0;
+          assignedToExchange[index] =
+            Number(programme.creditAssignedToExchange?.[index]) || 0;
+        }
+        for (const [ownerId, amount] of amountsByOwner) {
+          const ownerIndex = programme.companyId
+            .map((companyId) => Number(companyId))
+            .indexOf(ownerId);
+          if (action === TxType.CANCEL) {
+            cancelled[ownerIndex] = this.helperService.halfUpToPrecision(
+              cancelled[ownerIndex] + amount
+            );
+          } else {
+            assignedToExchange[ownerIndex] =
+              this.helperService.halfUpToPrecision(
+                assignedToExchange[ownerIndex] + amount
+              );
+          }
+        }
+
+        const companyBalances = {};
+        for (const company of results[this.ledger.companyTableName]) {
+          const account = plainToClass(
+            CreditOverall,
+            JSON.parse(JSON.stringify(company))
+          );
+          companyBalances[account.txId] = Number(account.credit) || 0;
+        }
+
+        const updateMap = {};
+        const updateWhereMap = {};
+        const insertMap = {};
+        for (const [ownerId, amount] of amountsByOwner) {
+          const ownerAccount = String(ownerId);
+          if (
+            companyBalances[ownerAccount] === undefined ||
+            companyBalances[ownerAccount] < amount
+          ) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString(
+                "programme.companyHaveNoEnoughCredits",
+                [ownerId]
+              ),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          const ownerTxRef = `${txRef}#${programme.serialNo}`;
+          updateMap[this.ledger.companyTableName + "#" + ownerAccount] = {
+            credit: this.helperService.halfUpToPrecision(
+              companyBalances[ownerAccount] - amount
+            ),
+            txRef: ownerTxRef,
+            txType: action,
+          };
+          updateWhereMap[this.ledger.companyTableName + "#" + ownerAccount] = {
+            txId: ownerAccount,
+          };
+
+          if (action === TxType.ASSIGN_TO_EXCHANGE) {
+            const exchangeAccount = `${ownerId}#${OrganisationCreditAccounts.EXCHANGE}`;
+            const exchangeCredit =
+              (companyBalances[exchangeAccount] || 0) + amount;
+            const exchangeKey =
+              this.ledger.companyTableName + "#" + exchangeAccount;
+            if (companyBalances[exchangeAccount] !== undefined) {
+              updateMap[exchangeKey] = {
+                credit: this.helperService.halfUpToPrecision(exchangeCredit),
+                txRef: ownerTxRef,
+                txType: action,
+              };
+              updateWhereMap[exchangeKey] = { txId: exchangeAccount };
+            } else {
+              insertMap[exchangeKey] = {
+                credit: this.helperService.halfUpToPrecision(exchangeCredit),
+                txRef: ownerTxRef,
+                txType: action,
+                txId: exchangeAccount,
+              };
+            }
+          }
+        }
+
+        const previousTxTime = programme.txTime;
+        const txTime = new Date().getTime();
+        const txType = action;
+        const programmePayload = {
+          txTime,
+          txRef,
+          txType,
+          creditChange: totalAmount,
+          creditBalance: remainingBalance,
+          companyId: programme.companyId,
+          currentStage: programme.currentStage,
+          creditOwnerPercentage: updatedPercentages,
+          creditCancelled: cancelled,
+          creditAssignedToExchange: assignedToExchange,
+        };
+        updateMap[this.ledger.tableName] = programmePayload;
+        updateWhereMap[this.ledger.tableName] = {
+          programmeId,
+          currentStage: ProgrammeStage.AUTHORISED.valueOf(),
+          txTime: previousTxTime,
+        };
+
+        updatedProgramme = plainToClass(Programme, {
+          ...programme,
+          ...programmePayload,
+        });
+        return [updateMap, updateWhereMap, insertMap];
+      }
+    );
+
+    if (response[this.ledger.tableName]?.length > 0) {
+      return updatedProgramme;
+    }
+    throw new HttpException(
+      this.helperService.formatReqMessagesString(
+        "programme.internalErrorStatusUpdating",
+        []
+      ),
+      HttpStatus.INTERNAL_SERVER_ERROR
+    );
   }
 
   public async getProgrammeById(programmeId: string): Promise<Programme> {

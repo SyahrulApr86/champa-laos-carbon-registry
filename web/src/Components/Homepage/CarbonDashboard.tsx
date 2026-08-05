@@ -111,9 +111,9 @@ interface PublicAnalyticsSummary {
     issued: number;
     transferred: number;
     retired: number;
-    available: number;
     cancelled: number;
     assignedToExchange: number;
+    available: number;
   };
   projectsBySector: Record<string, number>;
   proponentsByRole: Record<string, number>;
@@ -166,7 +166,7 @@ const emptyTradingSummary: EmissionTradingSummary = {
 };
 
 const CarbonDashboard = () => {
-  const { i18n, t } = useTranslation(["common", "homepage", "companyRoles"]);
+  const { t } = useTranslation(["common", "homepage", "companyRoles"]);
   const { get } = useConnection();
   const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
   const [tradingSummary, setTradingSummary] = useState<EmissionTradingSummary>(
@@ -181,7 +181,9 @@ const CarbonDashboard = () => {
   useEffect(() => {
     const fetchPublicSummary = async () => {
       try {
-        const response: any = await get(API_PATHS.PUBLIC_ANALYTICS_SUMMARY);
+        const response = await get<PublicAnalyticsSummary>(
+          API_PATHS.PUBLIC_ANALYTICS_SUMMARY
+        );
         if (response?.data) {
           const data = response.data;
           setSummary({
@@ -203,9 +205,9 @@ const CarbonDashboard = () => {
               issued: data.credits?.issued ?? 0,
               transferred: data.credits?.transferred ?? 0,
               retired: data.credits?.retired ?? 0,
-              available: data.credits?.available ?? 0,
               cancelled: data.credits?.cancelled ?? 0,
               assignedToExchange: data.credits?.assignedToExchange ?? 0,
+              available: data.credits?.available ?? 0,
             },
             projectsBySector: data.projectsBySector ?? {},
             proponentsByRole: data.proponentsByRole ?? {},
@@ -342,6 +344,16 @@ const CarbonDashboard = () => {
     { value: summary.credits.issued, title: t("homepage:issued") },
     { value: summary.credits.transferred, title: t("homepage:transferred") },
     { value: summary.credits.retired, title: t("homepage:retired") },
+    {
+      value: summary.credits.cancelled,
+      title: t("homepage:cancelled", { defaultValue: "Cancelled" }),
+    },
+    {
+      value: summary.credits.assignedToExchange,
+      title: t("homepage:assignedToExchange", {
+        defaultValue: "Assigned to Exchange",
+      }),
+    },
   ];
 
   const sectorData = Object.entries(summary.projectsBySector)
@@ -355,12 +367,13 @@ const CarbonDashboard = () => {
     })
   );
 
-  const categoryData = Object.entries(summary.proponentsByCategory).map(
-    ([category, value]) => ({
-      value,
-      title: category,
-    })
-  );
+  // Institutional-type breakdown of Project Developers only (Government/
+  // Private Sector/NGO/Academia/CBO/International Organisation) - filtered
+  // to non-zero buckets since most categories will honestly be empty until
+  // more proponents self-classify at registration.
+  const proponentCategoryData = Object.entries(summary.proponentsByCategory)
+    .filter(([, value]) => value > 0)
+    .map(([category, value]) => ({ value, title: category }));
 
   // Champa is a single-scheme national registry (no JCM/Gold Standard/
   // Verra co-registration exists), so these are honestly single-bucket
@@ -592,15 +605,19 @@ const CarbonDashboard = () => {
             />
           </div>
 
-          <div className="donut-card">
-            <h3 className="section-title">
-              {t("homepage:proponentCategoryDistribution")}
-            </h3>
-            <DonutBreakdown
-              data={categoryData}
-              totalLabel={t("homepage:totalOrganisations")}
-            />
-          </div>
+          {proponentCategoryData.length > 0 && (
+            <div className="donut-card">
+              <h3 className="section-title">
+                {t("homepage:proponentCategoryDistribution", {
+                  defaultValue: "Number of Proponents by Category",
+                })}
+              </h3>
+              <DonutBreakdown
+                data={proponentCategoryData}
+                totalLabel={t("homepage:totalOrganisations")}
+              />
+            </div>
+          )}
 
           <div className="donut-card">
             <h3 className="section-title">

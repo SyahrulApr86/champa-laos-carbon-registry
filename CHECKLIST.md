@@ -37,7 +37,7 @@ not yet built (reason stated); explicit exceptions are marked and never silently
 
 - [x] Mitigation NEK 6 doughnuts (Proponents/Category/SPE-by-schema/Verified-by-proponent/SPE-by-sector/Verified-by-sector) — full 6-chart parity this round (registry-scheme donuts N/A, single-country registry)
 - [x] Mitigation NEK stage sidebar (General/Technical/Validation/Verification/SPE-style counts) — built this round using Champa's real `ProgrammeStage` values (New/AwaitingAuthorization/Authorised/Approved/Rejected), not fabricated Indonesia-specific sub-stages
-- [x] Emission Reduction Certificate panel (Issued/Available/Retired/Cancelled/Assigned) — built this round (Cancelled/Assigned honestly 0/N/A, no such flow exists)
+- [x] Emission Reduction Certificate panel (Issued/Available/Retired/Cancelled/Assigned) — backed by Programme ledger cancellation and exchange-assignment transitions; zero remains the honest value until a real action occurs
 - [x] PTBAE-PU stats (Units/Trading/Companies/Power Units/Daily Trading) — `EmissionCeilingTradingTabs.tsx`
 - [x] Map GeoJSON-equivalent province aggregation, Activity Type categories — built this round
 - [x] NDC 6-sector filter + 2 charts (combo baseline/emission, grouped claimed/verified) — built; claimed/verified distinction added this round

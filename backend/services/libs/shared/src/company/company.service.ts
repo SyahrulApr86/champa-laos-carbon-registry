@@ -881,6 +881,7 @@ export class CompanyService {
         "companyExport." + company.companyRole,
         []
       );
+      dto.proponentCategory = company.proponentCategory ?? "";
       dto.state = orgStateKey;
       dto.creditBalance = company.creditBalance;
       dto.secondaryAccountBalanceLocal = secondaryAccountBalanceLocal

@@ -89,6 +89,9 @@ export class Programme implements EntitySubject {
   @Column("real", { array: true, nullable: true })
   creditTransferred: number[];
 
+  @Column("real", { array: true, nullable: true })
+  creditAssignedToExchange: number[];
+
   @Column({ nullable: true })
   constantVersion: string;
 

@@ -16,6 +16,7 @@ interface CertificateRow {
   availableUnits: number;
   retiredUnits: number;
   cancelledUnits: number;
+  assignedToExchangeUnits: number;
   issuedDate: string | null;
 }
 
@@ -23,6 +24,7 @@ const statusColor: Record<string, string> = {
   Active: "green",
   Retired: "gold",
   Cancelled: "red",
+  "Assigned to Exchange": "blue",
 };
 
 const PAGE_SIZE = 10;
@@ -48,7 +50,7 @@ const CertificateRegistryTable = () => {
         );
         setRows(response?.data ?? []);
         setTotal(response?.response?.data?.total ?? 0);
-      } catch (error) {
+      } catch {
         setRows([]);
         setTotal(0);
       } finally {
@@ -129,6 +131,12 @@ const CertificateRegistryTable = () => {
       title: "Cancelled Units",
       dataIndex: "cancelledUnits",
       key: "cancelledUnits",
+      render: formatUnits,
+    },
+    {
+      title: "Assigned to Exchange",
+      dataIndex: "assignedToExchangeUnits",
+      key: "assignedToExchangeUnits",
       render: formatUnits,
     },
     {

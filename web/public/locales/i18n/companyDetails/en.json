@@ -4,6 +4,7 @@
   "taxId": "VAT Registration #",
   "paymentId": "Registration Payment ID",
   "companyRole": "Role",
+  "proponentCategory": "Proponent Category",
   "email": "Email",
   "phoneNo": "Phone Number",
   "website": "Website",

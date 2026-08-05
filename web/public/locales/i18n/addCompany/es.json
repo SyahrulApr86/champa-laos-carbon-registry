@@ -13,6 +13,7 @@
   "unsupportedFormat": "Formato de archivo no compatible!",
   "maxUploadSize": "El tamaño máximo de carga de archivo es de 5 MB!",
   "role": "Rol",
+  "proponentCategory": "Proponent Category",
   "certifier": "Certificador",
   "programmeDeveleper": "Desarrollador",
   "min": "Ministerio",

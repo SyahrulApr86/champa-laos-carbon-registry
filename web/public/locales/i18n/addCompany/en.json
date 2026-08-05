@@ -17,6 +17,7 @@
   "unsupportedFormat": "Unsupported file format!",
   "maxUploadSize": "Maximum upload file size is {{maxUploadSize}}!",
   "role": "Role",
+  "proponentCategory": "Proponent Category",
   "Certifier": "Certifier (VVB)",
   "ProgrammeDeveloper": "Project Developer",
   "Ministry": "Ministry",

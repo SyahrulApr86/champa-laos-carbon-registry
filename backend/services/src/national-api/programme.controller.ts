@@ -31,6 +31,7 @@ import { ProgrammeCertify } from "@app/shared/dto/programme.certify";
 import { ProgrammeDocumentDto } from "@app/shared/dto/programme.document.dto";
 import { ProgrammeDto } from "@app/shared/dto/programme.dto";
 import { ProgrammeMitigationIssue } from "@app/shared/dto/programme.mitigation.issue";
+import { ProgrammeCreditAction } from "@app/shared/dto/programme.credit.action";
 import { ProgrammeReject } from "@app/shared/dto/programme.reject";
 import { ProgrammeRetire } from "@app/shared/dto/programme.retire";
 import { ProgrammeRevoke } from "@app/shared/dto/programme.revoke";
@@ -233,6 +234,37 @@ export class ProgrammeController {
   @Put("retire")
   async programmeRetire(@Body() body: ProgrammeRetire, @Request() req) {
     return this.programmeService.retireProgramme(body, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    TransferFreezeGuard,
+    ApiKeyJwtAuthGuard,
+    PoliciesGuardEx(true, Action.Update, ProgrammeTransferRequest)
+  )
+  @Put("cancel")
+  async programmeCancel(
+    @Body() body: ProgrammeCreditAction,
+    @Request() req
+  ) {
+    return this.programmeService.cancelProgrammeCredits(body, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    TransferFreezeGuard,
+    ApiKeyJwtAuthGuard,
+    PoliciesGuardEx(true, Action.Update, ProgrammeTransferRequest)
+  )
+  @Put("assignToExchange")
+  async programmeAssignToExchange(
+    @Body() body: ProgrammeCreditAction,
+    @Request() req
+  ) {
+    return this.programmeService.assignProgrammeCreditsToExchange(
+      body,
+      req.user
+    );
   }
 
   @ApiBearerAuth()

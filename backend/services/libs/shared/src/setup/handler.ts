@@ -146,8 +146,6 @@ export const handler: Handler = async (event) => {
           : undefined;
       const nameOfMinister =
         fields[6] && fields[6].length > 0 ? fields[6] : undefined;
-      const institutionCategory =
-        fields[7] && fields[7].length > 0 ? (fields[7] as any) : undefined;
 
       try {
         const org = await companyService.create({
@@ -171,7 +169,6 @@ export const handler: Handler = async (event) => {
           provinces: [],
           regions: [],
           state: undefined, //double check this
-          institutionCategory: institutionCategory,
         });
       } catch (e) {
         console.log("Fail to create company", fields[1], e);

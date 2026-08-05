@@ -27,6 +27,7 @@ export interface CommunityPublicDetail extends CommunityPublicRow {
   goals: { value: null; availability: "not_available" };
   responsibleOrganisation: { value: null; availability: "not_configured" };
   vulnerability: { value: null; availability: "not_configured" };
+  documents: { items: []; availability: "not_configured" };
   location: { region: string; availability: "available" | "not_available" };
   createdAt: number;
 }
@@ -171,6 +172,7 @@ export class CommunityProgramService {
         goals: { value: null, availability: "not_available" },
         responsibleOrganisation: { value: null, availability: "not_configured" },
         vulnerability: { value: null, availability: "not_configured" },
+        documents: { items: [], availability: "not_configured" },
         location: {
           region: record.region,
           availability: record.region ? "available" : "not_available",

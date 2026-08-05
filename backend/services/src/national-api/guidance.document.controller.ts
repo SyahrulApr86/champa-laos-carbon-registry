@@ -1,11 +1,24 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { Action } from "@app/shared/casl/action.enum";
 import { PoliciesGuardEx } from "@app/shared/casl/policy.guard";
 import { GuidanceDocumentService } from "@app/shared/guidance-document/guidance.document.service";
 import { GuidanceDocumentCreateDto } from "@app/shared/dto/guidance.document.create.dto";
+import { GuidanceDocumentUpdateDto } from "@app/shared/dto/guidance.document.update.dto";
 import { GuidanceDocumentEntity } from "@app/shared/entities/guidance.document.entity";
+import { GuidanceDocumentStatus } from "@app/shared/enum/guidance.document.status.enum";
 
 @ApiTags("GuidanceDocument")
 @Controller("guidanceDocument")
@@ -43,8 +56,85 @@ export class GuidanceDocumentController {
     JwtAuthGuard,
     PoliciesGuardEx(false, Action.Manage, GuidanceDocumentEntity)
   )
+  @Get("admin")
+  async adminList(
+    @Query("search") search?: string,
+    @Query("status") status?: GuidanceDocumentStatus,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string
+  ) {
+    return await this.guidanceDocumentService.findAdminList(
+      search,
+      status,
+      page ? parseInt(page, 10) : 1,
+      pageSize ? parseInt(pageSize, 10) : 25
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, GuidanceDocumentEntity)
+  )
+  @Get("admin/:id")
+  async adminDetail(@Param("id", ParseIntPipe) id: number) {
+    return await this.guidanceDocumentService.findAdminOne(id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, GuidanceDocumentEntity)
+  )
   @Post()
-  async create(@Body() dto: GuidanceDocumentCreateDto) {
-    return await this.guidanceDocumentService.create(dto);
+  async create(
+    @Body() dto: GuidanceDocumentCreateDto,
+    @Request() request: any
+  ) {
+    return await this.guidanceDocumentService.create(dto, request.user?.id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, GuidanceDocumentEntity)
+  )
+  @Put(":id")
+  async update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: GuidanceDocumentUpdateDto,
+    @Request() request: any
+  ) {
+    return await this.guidanceDocumentService.update(
+      id,
+      dto,
+      request.user?.id
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, GuidanceDocumentEntity)
+  )
+  @Post(":id/publish")
+  async publish(
+    @Param("id", ParseIntPipe) id: number,
+    @Request() request: any
+  ) {
+    return await this.guidanceDocumentService.publish(id, request.user?.id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, GuidanceDocumentEntity)
+  )
+  @Post(":id/archive")
+  async archive(
+    @Param("id", ParseIntPipe) id: number,
+    @Request() request: any
+  ) {
+    return await this.guidanceDocumentService.archive(id, request.user?.id);
   }
 }

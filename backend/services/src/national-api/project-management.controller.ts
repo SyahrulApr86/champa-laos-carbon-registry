@@ -95,8 +95,16 @@ export class ProjectManagementController {
   // redd), mirroring SRN Indonesia's own Activity Type map filter; defaults
   // to "mitigation" to preserve this endpoint's original behaviour.
   @Get("public/mapSummary")
-  async publicMapSummary(@Query("activityType") activityType?: string) {
-    return this.programmeService.getPublicMapSummary(activityType);
+  async publicMapSummary(
+    @Query("activityType") activityType?: string,
+    @Query("province") province?: string,
+    @Query("search") search?: string
+  ) {
+    return this.programmeService.getPublicMapSummary(
+      activityType,
+      province,
+      search
+    );
   }
 
   // Public, unauthenticated single-project detail lookup — see

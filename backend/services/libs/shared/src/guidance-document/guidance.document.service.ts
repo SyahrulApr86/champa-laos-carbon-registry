@@ -67,6 +67,7 @@ export class GuidanceDocumentService {
         source_type: "synthetic_demo",
         scenario: "Champa registry demonstration",
         availability: filtered.length ? "available" : "empty",
+        categories: [...new Set(documents.map((document) => document.category).filter(Boolean))],
         disclosure: "Synthetic demonstration data — not official Lao PDR guidance records.",
       },
     };

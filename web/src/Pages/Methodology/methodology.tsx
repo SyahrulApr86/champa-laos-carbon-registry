@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, Button, Col, Empty, Input, Row, Select, Table, Tag } from "antd";
+import { Alert, Button, Card, Col, Empty, Input, Row, Select, Table, Tabs, Tag } from "antd";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
@@ -52,6 +52,7 @@ const MethodologyDirectory = () => {
   const [status, setStatus] = useState<MethodologyStatus>();
   const [sortBy, setSortBy] = useState("methodologyNumber");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [view, setView] = useState("approved");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -149,6 +150,17 @@ const MethodologyDirectory = () => {
           />
         )}
 
+        <Tabs
+          activeKey={view}
+          onChange={setView}
+          items={[
+            { key: "approved", label: t("approvedMethodologies", { defaultValue: "Approved methodologies" }) },
+            { key: "submission", label: t("submissionProcess", { defaultValue: "Submission process" }) },
+          ]}
+          style={{ marginBottom: 20 }}
+        />
+
+        {view === "approved" ? <>
         <Row gutter={[16, 16]} className="methodology-filters">
           <Col xs={24} sm={12} md={8}>
             <Search
@@ -242,6 +254,18 @@ const MethodologyDirectory = () => {
             },
           }}
         />
+        </> : (
+          <Card title={t("submissionProcessTitle", { defaultValue: "Submitting a methodology" })}>
+            <ol className="methodology-process-list">
+              <li>{t("submissionProcessStep1", { defaultValue: "Prepare a methodology description, scope, unit, version, and source reference." })}</li>
+              <li>{t("submissionProcessStep2", { defaultValue: "Submit the package through the configured channel; this demo does not create an official submission." })}</li>
+              <li>{t("submissionProcessStep3", { defaultValue: "A configured owner records review, publication status, and any public download link." })}</li>
+            </ol>
+            <p className="methodology-policy-note">
+              {t("submissionProcessNote", { defaultValue: "Submission authority, review timeline, and approval criteria are not configured in this demonstration." })}
+            </p>
+          </Card>
+        )}
         <p className="methodology-policy-note">
           {t("methodologyPolicyNote", {
             defaultValue: "Methodology approval and source claims remain configurable until published by an approved owner.",

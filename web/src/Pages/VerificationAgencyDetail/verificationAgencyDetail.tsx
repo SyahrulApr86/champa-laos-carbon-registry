@@ -33,6 +33,11 @@ interface CertifierDetail {
 const dateOfMillis = (epochMillis?: number | null) =>
   epochMillis ? new Date(Number(epochMillis)).toLocaleDateString() : "-";
 
+const validityStatus = (epochMillis?: number | null) => {
+  if (!epochMillis) return "not_available";
+  return Number(epochMillis) < Date.now() ? "expired" : "valid";
+};
+
 const yesNoUnset = (value: boolean | null | undefined) => {
   if (value === true) return <Tag color="green">Yes</Tag>;
   if (value === false) return <Tag color="default">No</Tag>;
@@ -100,6 +105,13 @@ const VerificationAgencyDetail = () => {
                 <div className="verification-agency-detail-title">
                   {detail.name}
                 </div>
+                {detail.logo && (
+                  <img
+                    className="verification-agency-detail-logo"
+                    src={detail.logo}
+                    alt={`${detail.name} logo`}
+                  />
+                )}
                 <p className="verification-agency-detail-status">
                   {t("publicationStatus", { defaultValue: "Publication status" })}: {detail.publicationStatus || t("synthetic", { defaultValue: "Synthetic demo" })}
                 </p>
@@ -120,6 +132,13 @@ const VerificationAgencyDetail = () => {
                           detail.certificateValidUntil
                         )}`
                       : t("notAvailable", { defaultValue: "Not available" })}
+                    {detail.certificateValidUntil && (
+                      <Tag color={validityStatus(detail.certificateValidUntil) === "expired" ? "error" : "success"}>
+                        {validityStatus(detail.certificateValidUntil) === "expired"
+                          ? t("expired", { defaultValue: "Expired" })
+                          : t("valid", { defaultValue: "Valid" })}
+                      </Tag>
+                    )}
                   </Descriptions.Item>
                   <Descriptions.Item label={t("certificateDocument", { defaultValue: "Certificate document" })}>
                     {detail.certificateDocumentUrl ? (

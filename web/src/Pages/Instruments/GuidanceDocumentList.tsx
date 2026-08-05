@@ -22,6 +22,7 @@ interface GuidanceDocumentRow {
 interface GuidanceResponse {
   data?: GuidanceDocumentRow[];
   total?: number;
+  meta?: { categories?: string[] };
 }
 
 const unwrap = (response: any): GuidanceResponse => {
@@ -36,6 +37,7 @@ const GuidanceDocumentList = () => {
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState<string>();
+  const [categories, setCategories] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -57,6 +59,7 @@ const GuidanceDocumentList = () => {
       const payload = unwrap(response);
       setRows(payload.data ?? []);
       setTotal(payload.total ?? 0);
+      setCategories(payload.meta?.categories ?? []);
     } catch {
       setRows([]);
       setTotal(0);
@@ -97,7 +100,7 @@ const GuidanceDocumentList = () => {
             setPage(1);
             setCategory(value);
           }}
-          options={[]}
+          options={categories.map((value) => ({ value, label: value }))}
           notFoundContent={t("notAvailable", { defaultValue: "Not available" })}
         />
         <Select

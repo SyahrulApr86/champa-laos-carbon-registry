@@ -38,7 +38,7 @@
       }
     }
 
-    .verification-agency-detail-title {
+.verification-agency-detail-title {
       font-family: 'MuseoSans';
       font-size: 1.6rem;
       font-weight: 700;
@@ -50,4 +50,17 @@
       margin-bottom: 2rem;
     }
   }
+}
+
+.verification-agency-detail-logo {
+  display: block;
+  max-width: 180px;
+  max-height: 100px;
+  object-fit: contain;
+  margin: 0 0 1rem;
+}
+
+.verification-agency-detail-status {
+  color: #718096;
+  margin-bottom: 1rem;
 }

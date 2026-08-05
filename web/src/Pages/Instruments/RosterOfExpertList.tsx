@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Button, Empty, Input, Select, Table, Tag } from "antd";
+import { Alert, Button, Card, Empty, Input, Select, Table, Tabs, Tag } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
@@ -57,6 +57,7 @@ const RosterOfExpertList = () => {
   const [province, setProvince] = useState<string>();
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [view, setView] = useState("directory");
   const [rows, setRows] = useState<ExpertRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -125,6 +126,23 @@ const RosterOfExpertList = () => {
           style={{ marginBottom: 16 }}
         />
       )}
+      <Tabs
+        activeKey={view}
+        onChange={setView}
+        items={[
+          { key: "directory", label: t("expertDirectoryTab", { defaultValue: "Expert directory" }) },
+          { key: "qualification", label: t("qualificationTab", { defaultValue: "Qualifications" }) },
+        ]}
+      />
+      {view === "qualification" ? (
+        <Card title={t("qualificationTitle", { defaultValue: "Qualification and publication fields" })}>
+          <ul>
+            <li>{t("qualificationItem1", { defaultValue: "Expertise and certification are displayed only when the public record supplies them." })}</li>
+            <li>{t("qualificationItem2", { defaultValue: "Experience is expressed in years and a missing value remains Not available." })}</li>
+            <li>{t("qualificationItem3", { defaultValue: "The public roster contains synthetic demonstration records until an approved publication source is configured." })}</li>
+          </ul>
+        </Card>
+      ) : <>
       <div className="directory-toolbar">
         <Input.Search
           placeholder={t("expertSearch", { defaultValue: "Search by name or institution" })}
@@ -194,6 +212,7 @@ const RosterOfExpertList = () => {
           },
         }}
       />
+      </>}
     </div>
   );
 };

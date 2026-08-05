@@ -18,12 +18,20 @@ export class ExpertController {
   async publicList(
     @Query("search") search?: string,
     @Query("page") page?: string,
-    @Query("pageSize") pageSize?: string
+    @Query("pageSize") pageSize?: string,
+    @Query("certification") certification?: string,
+    @Query("province") province?: string,
+    @Query("sortBy") sortBy?: "name" | "yearsOfExperience",
+    @Query("sortOrder") sortOrder?: "asc" | "desc"
   ) {
     return await this.expertService.publicSearch(
       search,
       page ? parseInt(page, 10) : 1,
-      pageSize ? parseInt(pageSize, 10) : 10
+      pageSize ? parseInt(pageSize, 10) : 10,
+      certification,
+      province,
+      sortBy ?? "name",
+      sortOrder ?? "asc"
     );
   }
 

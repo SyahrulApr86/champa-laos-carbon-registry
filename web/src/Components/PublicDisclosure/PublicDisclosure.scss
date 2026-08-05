@@ -1,0 +1,16 @@
+.public-disclosure {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #b8d8c7;
+  border-left: 4px solid #1c6b43;
+  border-radius: 0.35rem;
+  background: #f2faf5;
+  color: #214c37;
+  line-height: 1.45;
+}
+
+.public-disclosure small {
+  color: #4b6d5a;
+}

@@ -27,8 +27,10 @@ export class MethodologyService {
     category?: Sector,
     status?: MethodologyStatus,
     page = 1,
-    size = 10
-  ): Promise<DataListResponseDto> {
+    size = 10,
+    sortBy: "methodologyNumber" | "name" | "source" = "methodologyNumber",
+    sortOrder: "asc" | "desc" = "asc"
+  ): Promise<DataListResponseDto & { page: number; pageSize: number; totalPages: number; meta: Record<string, unknown> }> {
     let qb = this.methodologyRepo.createQueryBuilder("methodology");
 
     if (keyword) {
@@ -46,13 +48,60 @@ export class MethodologyService {
       qb = qb.andWhere(`methodology."status" = :status`, { status });
     }
 
+    const sortColumns = {
+      methodologyNumber: `methodology."methodologyNumber"`,
+      name: `methodology."name"`,
+      source: `methodology."source"`,
+    } as const;
+    const safePage = Math.max(1, page);
+    const safeSize = Math.min(50, Math.max(1, size));
     const [data, total] = await qb
-      .orderBy(`methodology."methodologyNumber"`, "ASC")
-      .offset(size * page - size)
-      .limit(size)
+      .orderBy(sortColumns[sortBy] ?? sortColumns.methodologyNumber, sortOrder === "desc" ? "DESC" : "ASC")
+      .addOrderBy(`methodology."id"`, "ASC")
+      .offset(safeSize * safePage - safeSize)
+      .limit(safeSize)
       .getManyAndCount();
 
-    return new DataListResponseDto(data, total);
+    return {
+      ...new DataListResponseDto(
+        data.map((record) => ({
+          ...record,
+          publicationStatus: record.status,
+          methodologyVersion: null,
+          documentUrl: null,
+        })),
+        total
+      ),
+      page: safePage,
+      pageSize: safeSize,
+      totalPages: Math.ceil(total / safeSize),
+      meta: {
+        dataset_kind: "demo_synthetic",
+        source_type: "synthetic_demo",
+        scenario: "Champa registry demonstration",
+        availability: data.length ? "available" : "empty",
+        disclosure: "Synthetic demonstration data — not official Lao PDR policy or approval records.",
+      },
+    };
+  }
+
+  async findPublicOne(id: number) {
+    const record = await this.methodologyRepo.findOneBy({ id });
+    if (!record) {
+      throw new HttpException("Methodology not found", HttpStatus.NOT_FOUND);
+    }
+    return {
+      ...record,
+      publicationStatus: record.status,
+      methodologyVersion: null,
+      documentUrl: null,
+      meta: {
+        dataset_kind: "demo_synthetic",
+        source_type: "synthetic_demo",
+        scenario: "Champa registry demonstration",
+        disclosure: "Synthetic demonstration data — not official Lao PDR policy or approval records.",
+      },
+    };
   }
 
   async findOne(id: number): Promise<MethodologyEntity> {

@@ -34,15 +34,24 @@ export class MethodologyController {
     @Query("category") category?: Sector,
     @Query("status") status?: MethodologyStatus,
     @Query("page") page?: string,
-    @Query("size") size?: string
+    @Query("size") size?: string,
+    @Query("sortBy") sortBy?: "methodologyNumber" | "name" | "source",
+    @Query("sortOrder") sortOrder?: "asc" | "desc"
   ) {
     return await this.methodologyService.findPublic(
       keyword,
       category,
       status,
       page ? parseInt(page, 10) : 1,
-      size ? parseInt(size, 10) : 10
+      size ? parseInt(size, 10) : 10,
+      sortBy ?? "methodologyNumber",
+      sortOrder ?? "asc"
     );
+  }
+
+  @Get("public/:id")
+  async getPublicMethodology(@Param("id", ParseIntPipe) id: number) {
+    return await this.methodologyService.findPublicOne(id);
   }
 
   @ApiBearerAuth()

@@ -50,8 +50,12 @@ export class ExpertService {
   async publicSearch(
     q: string,
     page = 1,
-    size = 10
-  ): Promise<{ data: ExpertPublicRow[]; total: number }> {
+    size = 10,
+    certification?: string,
+    province?: string,
+    sortBy: "name" | "yearsOfExperience" = "name",
+    sortOrder: "asc" | "desc" = "asc"
+  ): Promise<{ data: ExpertPublicRow[]; total: number; page: number; pageSize: number; meta: Record<string, unknown> }> {
     const keyword = (q || "").trim();
     const safePage = Math.max(1, page);
     const safeSize = Math.min(50, Math.max(1, size));
@@ -59,9 +63,11 @@ export class ExpertService {
     let qb = this.expertRepo
       .createQueryBuilder("expert")
       .where(`"expert"."status" = :status`, { status: ExpertStatus.ACTIVE })
-      .orderBy(`"expert"."name"`, "ASC")
-      .skip((safePage - 1) * safeSize)
-      .take(safeSize);
+      .orderBy(
+        sortBy === "yearsOfExperience" ? `"expert"."yearsOfExperience"` : `"expert"."name"`,
+        sortOrder === "desc" ? "DESC" : "ASC"
+      )
+      .addOrderBy(`"expert"."id"`, "ASC");
 
     if (keyword) {
       qb = qb.andWhere(
@@ -69,6 +75,18 @@ export class ExpertService {
         { keyword: `%${keyword}%` }
       );
     }
+
+    if (certification) {
+      qb = qb.andWhere(`"expert"."certification" ILIKE :certification`, {
+        certification: `%${certification}%`,
+      });
+    }
+
+    if (province) {
+      qb = qb.andWhere(`"expert"."province" = :province`, { province });
+    }
+
+    qb = qb.skip((safePage - 1) * safeSize).take(safeSize);
 
     const [results, total] = await qb.getManyAndCount();
 
@@ -83,6 +101,15 @@ export class ExpertService {
         province: r.province,
       })),
       total,
+      page: safePage,
+      pageSize: safeSize,
+      meta: {
+        dataset_kind: "demo_synthetic",
+        source_type: "synthetic_demo",
+        scenario: "Champa registry demonstration",
+        availability: results.length ? "available" : "empty",
+        disclosure: "Synthetic demonstration data — not official Lao PDR expert records.",
+      },
     };
   }
 }

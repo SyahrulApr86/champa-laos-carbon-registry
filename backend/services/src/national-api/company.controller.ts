@@ -233,9 +233,23 @@ export class CompanyController {
   // @UseGuards/@CheckPolicies. Only public-safe fields are returned - see
   // CompanyService.getPublicVerificationAgencies for the field allowlist.
   @Get("public/certifiers")
-  async getPublicCertifiers() {
+  async getPublicCertifiers(
+    @Query("search") search?: string,
+    @Query("scheme") scheme?: "certificate" | "ceiling",
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("sortBy") sortBy?: "name" | "country",
+    @Query("sortOrder") sortOrder?: "asc" | "desc"
+  ) {
     try {
-      return await this.companyService.getPublicVerificationAgencies();
+      return await this.companyService.getPublicVerificationAgencies(
+        search,
+        scheme,
+        page ? parseInt(page, 10) : 1,
+        pageSize ? parseInt(pageSize, 10) : 10,
+        sortBy ?? "name",
+        sortOrder ?? "asc"
+      );
     } catch (err) {
       return [];
     }

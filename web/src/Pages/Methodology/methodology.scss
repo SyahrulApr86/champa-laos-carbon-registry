@@ -32,6 +32,21 @@
     .methodology-description {
       color: variables.$title-text-color;
       padding: 8px 12px;
+
+      p {
+        margin-bottom: 0.5rem;
+      }
+
+      small,
+      .methodology-policy-note {
+        color: #718096;
+      }
+    }
+
+    .methodology-policy-note {
+      margin-top: 1rem;
+      color: #718096;
+      font-size: 0.9rem;
     }
   }
 }

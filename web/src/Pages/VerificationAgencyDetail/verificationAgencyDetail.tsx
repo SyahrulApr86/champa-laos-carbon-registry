@@ -5,6 +5,8 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { API_PATHS } from "../../Config/apiConfig";
 import LayoutFooter from "../../Components/Footer/layout.footer";
 import AppHeader from "../../Components/AppHeader/appHeader";
+import PublicDisclosure from "../../Components/PublicDisclosure/PublicDisclosure";
+import { useTranslation } from "react-i18next";
 import "./verificationAgencyDetail.scss";
 
 interface CertifierDetail {
@@ -22,6 +24,8 @@ interface CertifierDetail {
   appliesToLcam: boolean | null;
   eligibleForSpei: boolean | null;
   eligibleForPtbaePu: boolean | null;
+  publicationStatus?: string | null;
+  certificateDocumentUrl?: string | null;
 }
 
 // createdAt/certificate dates are stored as millisecond epoch timestamps
@@ -45,6 +49,7 @@ const yesNoUnset = (value: boolean | null | undefined) => {
 const VerificationAgencyDetail = () => {
   const { companyId } = useParams<{ companyId: string }>();
   const { get } = useConnection();
+  const { t } = useTranslation(["instruments"]);
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<CertifierDetail | null>(null);
 
@@ -71,7 +76,7 @@ const VerificationAgencyDetail = () => {
         <Row justify="center">
           <Col xs={22} md={16}>
             <Link to="/instruments#vva" className="verification-agency-detail-back">
-              ← Back to Validation/Verification Agencies
+              ← {t("backToAgencies", { defaultValue: "Back to Validation/Verification Agencies" })}
             </Link>
 
             {loading && (
@@ -82,85 +87,97 @@ const VerificationAgencyDetail = () => {
 
             {!loading && !detail && (
               <div className="verification-agency-detail-not-found">
-                <h2>Agency not found</h2>
+                <h2>{t("agencyNotFound", { defaultValue: "Agency not found" })}</h2>
                 <p>
-                  No active Validation/Verification Agency matches this
-                  identifier.
+                  {t("agencyNotFoundBody", { defaultValue: "No public agency matches this identifier." })}
                 </p>
               </div>
             )}
 
             {!loading && detail && (
               <>
+                <PublicDisclosure />
                 <div className="verification-agency-detail-title">
                   {detail.name}
                 </div>
+                <p className="verification-agency-detail-status">
+                  {t("publicationStatus", { defaultValue: "Publication status" })}: {detail.publicationStatus || t("synthetic", { defaultValue: "Synthetic demo" })}
+                </p>
 
                 <Descriptions
                   className="verification-agency-detail-section"
-                  title="Certificate"
+                  title={t("certificate", { defaultValue: "Certificate" })}
                   bordered
                   column={1}
                   size="middle"
                 >
-                  <Descriptions.Item label="Certificate Number">
-                    {detail.certificateNumber || "Not yet recorded"}
+                  <Descriptions.Item label={t("certificateNumber", { defaultValue: "Certificate number" })}>
+                    {detail.certificateNumber || t("notAvailable", { defaultValue: "Not available" })}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Validity Period">
+                  <Descriptions.Item label={t("validityPeriod", { defaultValue: "Validity period" })}>
                     {detail.certificateIssuedDate || detail.certificateValidUntil
                       ? `${dateOfMillis(detail.certificateIssuedDate)} – ${dateOfMillis(
                           detail.certificateValidUntil
                         )}`
-                      : "Not yet recorded"}
+                      : t("notAvailable", { defaultValue: "Not available" })}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t("certificateDocument", { defaultValue: "Certificate document" })}>
+                    {detail.certificateDocumentUrl ? (
+                      <a href={detail.certificateDocumentUrl} target="_blank" rel="noopener noreferrer">
+                        {t("download", { defaultValue: "Download" })}
+                      </a>
+                    ) : (
+                      t("notConfigured", { defaultValue: "Not configured" })
+                    )}
                   </Descriptions.Item>
                 </Descriptions>
 
                 <Descriptions
                   className="verification-agency-detail-section"
-                  title="Scope"
+                  title={t("scope", { defaultValue: "Scope" })}
                   bordered
                   column={1}
                   size="middle"
                 >
-                  <Descriptions.Item label="Sector Coverage">
+                  <Descriptions.Item label={t("sectorCoverage", { defaultValue: "Sector coverage" })}>
                     {detail.scopeSectors && detail.scopeSectors.length > 0
                       ? detail.scopeSectors.join(", ")
-                      : "Not yet recorded"}
+                      : t("notAvailable", { defaultValue: "Not available" })}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Applies to Mitigation Action Design Document">
+                  <Descriptions.Item label={t("appliesToMitigation", { defaultValue: "Applies to mitigation documentation" })}>
                     {yesNoUnset(detail.appliesToDram)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Applies to Mitigation Achievement Report">
+                  <Descriptions.Item label={t("appliesToAchievement", { defaultValue: "Applies to achievement reporting" })}>
                     {yesNoUnset(detail.appliesToLcam)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Eligible for Emission Reduction Certificate Scheme">
+                  <Descriptions.Item label={t("eligibleCertificate", { defaultValue: "Eligible for certificate scheme" })}>
                     {yesNoUnset(detail.eligibleForSpei)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Eligible for Emission Ceiling &amp; Trading Scheme">
+                  <Descriptions.Item label={t("eligibleCeiling", { defaultValue: "Eligible for emission ceiling capability" })}>
                     {yesNoUnset(detail.eligibleForPtbaePu)}
                   </Descriptions.Item>
                 </Descriptions>
 
                 <Descriptions
                   className="verification-agency-detail-section"
-                  title="Contact"
+                  title={t("contact", { defaultValue: "Public contact" })}
                   bordered
                   column={1}
                   size="middle"
                 >
-                  <Descriptions.Item label="Country">
-                    {detail.country || "-"}
+                  <Descriptions.Item label={t("country", { defaultValue: "Country" })}>
+                    {detail.country || t("notAvailable", { defaultValue: "Not available" })}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Address">
-                    {detail.address || "-"}
+                  <Descriptions.Item label={t("address", { defaultValue: "Address" })}>
+                    {detail.address || t("notAvailable", { defaultValue: "Not available" })}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Website">
+                  <Descriptions.Item label={t("website", { defaultValue: "Website" })}>
                     {detail.website ? (
                       <a href={detail.website} target="_blank" rel="noopener noreferrer">
                         {detail.website}
                       </a>
                     ) : (
-                      "-"
+                      t("notAvailable", { defaultValue: "Not available" })
                     )}
                   </Descriptions.Item>
                 </Descriptions>

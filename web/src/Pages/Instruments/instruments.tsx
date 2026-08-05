@@ -31,7 +31,7 @@ const Instruments = () => {
         <p className="instruments-subtitle">{t("instrumentsSubtitle")}</p>
         <PublicDisclosure />
 
-        <section className="instruments-section">
+        <section className="instruments-section" id="methodology">
           <h2>{t("methodologySectionTitle")}</h2>
           <p>{t("methodologySectionBody")}</p>
           <Link to="/methodology" className="instruments-link">

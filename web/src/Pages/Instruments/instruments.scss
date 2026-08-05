@@ -49,3 +49,43 @@
   font-weight: 600;
   text-decoration: underline;
 }
+
+.directory-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.directory-toolbar > * {
+  min-width: 170px;
+  flex: 1 1 170px;
+}
+
+.directory-toolbar .ant-btn {
+  flex: 0 0 auto;
+}
+
+.directory-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.directory-card-meta,
+.directory-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.directory-card-actions {
+  margin-top: 1rem;
+}
+
+.guidance-directory small {
+  display: block;
+  margin-top: 0.75rem;
+  color: #718096;
+}

@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddExpertGuidanceManagement1786000003000
+export class AddExpertGuidanceManagement1786000003001
   implements MigrationInterface
 {
-  name = "AddExpertGuidanceManagement1786000003000";
+  name = "AddExpertGuidanceManagement1786000003001";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "expert_entity" ADD COLUMN IF NOT EXISTS "createdBy" integer`);

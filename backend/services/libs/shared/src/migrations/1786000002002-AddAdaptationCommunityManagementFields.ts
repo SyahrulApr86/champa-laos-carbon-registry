@@ -5,10 +5,10 @@ import { MigrationInterface, QueryRunner } from "typeorm";
  * registries. All new fields are nullable so existing synthetic/demo rows
  * remain valid and retain their original provenance.
  */
-export class AddAdaptationCommunityManagementFields1786000002000
+export class AddAdaptationCommunityManagementFields1786000002002
   implements MigrationInterface
 {
-  name = "AddAdaptationCommunityManagementFields1786000002000";
+  name = "AddAdaptationCommunityManagementFields1786000002002";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

@@ -39,5 +39,7 @@
   "contactSubmit": "Contact submission not configured",
   "contactRequired": "A message is required to preview the form.",
   "faqContactTitle": "Contact configuration",
-  "faqContactBody": "This preview shows the public contact fields observed in the evidence. Delivery, retention, and CAPTCHA policy must be configured by the deployment owner before submission is enabled."
+  "faqContactBody": "This preview shows the public contact fields observed in the evidence. Delivery, retention, and CAPTCHA policy must be configured by the deployment owner before submission is enabled.",
+  "faqFallbackTitle": "Showing local demo FAQ content",
+  "faqFallbackBody": "The public FAQ endpoint is not configured in this environment. The versioned local demonstration content is shown instead of an empty state."
 }

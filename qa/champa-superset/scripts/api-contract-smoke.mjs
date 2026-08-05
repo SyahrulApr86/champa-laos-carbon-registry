@@ -5,8 +5,8 @@ const base = process.env.CHAMPA_BASE?.replace(/\/$/, "");
 const disclosurePrefix = "Synthetic demonstration data";
 const endpoints = [
   { name: "analytics_summary", path: "/national/analytics/public/summary", pagination: false, metricResponse: true },
-  { name: "certificates_first_page", path: "/national/programme/public/certificates?q=&page=1&pageSize=10", pagination: true, certificateResponse: true },
-  { name: "certificates_last_page", path: "/national/programme/public/certificates?q=__w9_empty__&page=999&pageSize=10", pagination: true },
+  { name: "certificates_first_page", path: "/national/programme/public/certificate-registry?q=&page=1&pageSize=10", pagination: true, certificateResponse: true },
+  { name: "certificates_last_page", path: "/national/programme/public/certificate-registry?q=__w9_empty__&page=999&pageSize=10", pagination: true },
   { name: "mitigation_map", path: "/national/projectManagement/public/mapSummary?activityType=mitigation", mapResponse: true },
 ];
 
@@ -50,7 +50,7 @@ function validateEnvelope(payload, endpoint) {
     }
   }
   if (endpoint.metricResponse) {
-    const metrics = payload?.data?.metrics ?? payload?.data?.registry_overview?.metrics;
+    const metrics = payload?.data?.metrics ?? payload?.data?.registry_overview?.certificate_metrics;
     assert(metrics !== undefined, "missing explicit metric collection", failures);
     if (Array.isArray(metrics)) {
       for (const metric of metrics) {
@@ -60,13 +60,14 @@ function validateEnvelope(payload, endpoint) {
     }
   }
   if (endpoint.certificateResponse) {
-    const balances = payload?.data?.certificate_balances ?? payload?.data?.balances;
+    const row = Array.isArray(payload?.data) ? payload.data[0] : payload?.data;
+    const balances = row?.certificate_balances ?? row?.balances;
     if (object(balances)) {
       const names = ["issued", "available", "assigned_to_exchange", "withheld", "retired", "cancelled"];
       assert(names.every((name) => Number.isFinite(balances[name])), "certificate balance fields must be numeric", failures);
       if (names.every((name) => Number.isFinite(balances[name]))) {
         const conserved = balances.available + balances.assigned_to_exchange + balances.withheld + balances.retired + balances.cancelled + (balances.other_explicit_non_circulating ?? 0);
-        assert(balances.issued === conserved, "certificate conservation invariant failed", failures);
+        assert(Number(row?.issued_quantity) === conserved, "certificate conservation invariant failed", failures);
       }
     } else {
       failures.push("missing canonical certificate balance projection for conservation check");

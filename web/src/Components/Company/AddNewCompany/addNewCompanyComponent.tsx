@@ -69,7 +69,7 @@ export const AddNewCompanyComponent = (props: any) => {
   const { state } = useLocation();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const laoPhoneCountries: CountryCode[] = ['LA'];
-  const [loadingList] = useState<boolean>(false);
+  const [loadingList, setLoadingList] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<any[]>([]);
   const [locationError, setLocationError] = useState<string>();
   const [registrationSubmitted, setRegistrationSubmitted] = useState(false);
@@ -88,6 +88,7 @@ export const AddNewCompanyComponent = (props: any) => {
 
 
   const getRegionList = async () => {
+    setLoadingList(true);
     try {
       const response = await get('national/location/registration-provinces');
       const provinces = response.data?.data ?? [];
@@ -102,6 +103,8 @@ export const AddNewCompanyComponent = (props: any) => {
       setLocationError(
         'Lao PDR province choices could not be loaded. Please retry before registering.'
       );
+    } finally {
+      setLoadingList(false);
     }
   };
 

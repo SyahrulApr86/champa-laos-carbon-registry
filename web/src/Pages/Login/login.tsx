@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, message, Row, Select, Spin } from "antd";
+import { Alert, Button, Col, Form, Input, message, Row, Select, Spin } from "antd";
 import React, { FC, Suspense, useContext, useEffect, useState } from "react";
 import "./login.scss";
 import countryLogo from "../../Assets/Images/logo-slider.png";
@@ -34,6 +34,7 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
   const [captchaSvg, setCaptchaSvg] = useState<string>("");
   const [captchaChallengeId, setCaptchaChallengeId] = useState<string>("");
   const [captchaLoading, setCaptchaLoading] = useState<boolean>(false);
+  const [captchaError, setCaptchaError] = useState<string>();
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const ability = useContext(AbilityContext);
@@ -48,12 +49,15 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
 
   const fetchCaptcha = async () => {
     setCaptchaLoading(true);
+    setCaptchaError(undefined);
     try {
       const response = await get(API_PATHS.CAPTCHA);
       setCaptchaChallengeId(response.data.challengeId);
       setCaptchaSvg(response.data.svg);
-    } catch (error: any) {
-      console.log("Error fetching captcha", error);
+    } catch {
+      setCaptchaChallengeId("");
+      setCaptchaSvg("");
+      setCaptchaError("Security code is unavailable. Refresh to try again.");
     } finally {
       setCaptchaLoading(false);
     }
@@ -313,6 +317,19 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                             />
                           </div>
                         </Form.Item>
+                        {captchaError && (
+                          <Alert
+                            type="error"
+                            showIcon
+                            message={captchaError}
+                            action={
+                              <Button size="small" onClick={fetchCaptcha}>
+                                Retry
+                              </Button>
+                            }
+                            style={{ marginBottom: 16 }}
+                          />
+                        )}
                         <Form.Item>
                           <div className="login-submit-btn-container">
                             <Button
@@ -321,6 +338,7 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                               htmlType="submit"
                               block
                               loading={loading}
+                              disabled={!captchaChallengeId || captchaLoading}
                             >
                               {t("common:login")}
                             </Button>

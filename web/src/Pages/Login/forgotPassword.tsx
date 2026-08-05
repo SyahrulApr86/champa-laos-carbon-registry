@@ -126,7 +126,9 @@ const ForgotPassword = () => {
                       }}
                     />
                   </div>
-                  <div className="msg">{`${t('common:email')} ${t('common:isInvalid')}`}</div>
+                  <div className="msg">
+                    We could not process the request. Please check your connection and try again.
+                  </div>
                 </div>
               )}
               <div className="bottom-forgot-password-section">

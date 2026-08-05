@@ -49,4 +49,19 @@ export class CertificateLot {
 
   @Column({ type: "timestamptz" })
   asOf: Date;
+
+  @Column({ type: "varchar", length: 160, nullable: true })
+  createdBy: string | null;
+
+  @Column({ type: "varchar", length: 160, nullable: true })
+  updatedBy: string | null;
+
+  @Column({ type: "timestamptz", nullable: true })
+  archivedAt: Date | null;
+
+  @Column({ type: "varchar", length: 160, nullable: true })
+  archivedBy: string | null;
+
+  @Column({ type: "text", nullable: true })
+  archiveReason: string | null;
 }

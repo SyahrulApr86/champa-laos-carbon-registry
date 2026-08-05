@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { createHash } from "crypto";
 import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
 import { EntityManager, In, Repository } from "typeorm";
 import { CertificateRegistryQuery, RecordCertificateLedgerEventDto } from "../dto/certificate.ledger.dto";
@@ -59,7 +60,7 @@ export class CertificateRegistryService {
       });
       if (!lot) throw new NotFoundException("Certificate lot not found");
 
-      const eventId = `cle-${dto.idempotencyKey}`.slice(0, 128);
+      const eventId = `cle-${createHash("sha256").update(dto.idempotencyKey).digest("hex")}`;
       const recordedAt = new Date();
       const effectiveAt = dto.effectiveAt ? new Date(dto.effectiveAt) : recordedAt;
       if (Number.isNaN(effectiveAt.getTime())) throw new BadRequestException("Invalid effectiveAt");

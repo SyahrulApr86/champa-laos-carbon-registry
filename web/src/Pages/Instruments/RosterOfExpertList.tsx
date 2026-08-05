@@ -3,7 +3,6 @@ import { Alert, Button, Empty, Input, Select, Table, Tag } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
-import { API_PATHS } from "../../Config/apiConfig";
 import PublicDisclosure from "../../Components/PublicDisclosure/PublicDisclosure";
 
 interface ExpertRow {
@@ -78,7 +77,7 @@ const RosterOfExpertList = () => {
       });
       if (certification) params.set("certification", certification);
       if (province) params.set("province", province);
-      const response = await get(`${API_PATHS.EXPERT_PUBLIC_LIST(query, page, pageSize)}&${params.toString()}`);
+      const response = await get(`national/expert/public/list?${params.toString()}`);
       const payload = unwrap(response);
       setRows(payload.data ?? []);
       setTotal(payload.total ?? 0);

@@ -1406,16 +1406,14 @@ export class CompanyService {
   // Public, unauthenticated list of active Validation/Verification agencies
   // (independent certifiers) for the Instruments page. Only public-safe
   // fields are selected - no email, phoneNo, taxId, or creditBalance.
-  async getPublicVerificationAgencies(): Promise<
-    {
-      companyId: number;
-      name: string;
-      country: string;
-      website: string;
-      address: string;
-      logo: string;
-    }[]
-  > {
+  async getPublicVerificationAgencies(
+    search = "",
+    scheme?: "certificate" | "ceiling",
+    page = 1,
+    pageSize = 10,
+    sortBy: "name" | "country" = "name",
+    sortOrder: "asc" | "desc" = "asc"
+  ): Promise<{ data: any[]; total: number; page: number; pageSize: number }> {
     const certifiers = await this.companyRepo.find({
       where: {
         companyRole: CompanyRole.INDEPENDENT_CERTIFIER,
@@ -1424,14 +1422,44 @@ export class CompanyService {
       order: { name: "ASC" },
     });
 
-    return certifiers.map((c) => ({
+    const profiles = await this.certifierProfileRepo.find();
+    const profileByCompany = new Map(profiles.map((profile) => [profile.companyId, profile]));
+    const keyword = search.trim().toLowerCase();
+    const filtered = certifiers
+      .map((c) => ({
       companyId: c.companyId,
       name: c.name,
       country: c.country,
       website: c.website,
       address: c.address,
       logo: c.logo,
-    }));
+      scopeSectors: profileByCompany.get(c.companyId)?.scopeSectors ?? null,
+      eligibleForSpei: profileByCompany.get(c.companyId)?.eligibleForSpei ?? null,
+      eligibleForPtbaePu: profileByCompany.get(c.companyId)?.eligibleForPtbaePu ?? null,
+      publicationStatus: "synthetic_demo",
+    }))
+      .filter((agency) =>
+        !keyword || [agency.name, agency.country, agency.address]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(keyword))
+      )
+      .filter((agency) =>
+        !scheme || (scheme === "certificate" ? agency.eligibleForSpei === true : agency.eligibleForPtbaePu === true)
+      )
+      .sort((left, right) => {
+        const a = String(left[sortBy] ?? "").toLowerCase();
+        const b = String(right[sortBy] ?? "").toLowerCase();
+        return (a.localeCompare(b) || left.companyId - right.companyId) * (sortOrder === "desc" ? -1 : 1);
+      });
+
+    const safePage = Math.max(1, page);
+    const safePageSize = Math.min(50, Math.max(1, pageSize));
+    return {
+      data: filtered.slice((safePage - 1) * safePageSize, safePage * safePageSize),
+      total: filtered.length,
+      page: safePage,
+      pageSize: safePageSize,
+    };
   }
 
   // Public, unauthenticated single-agency detail for the VVA detail page.
@@ -1456,6 +1484,8 @@ export class CompanyService {
     appliesToLcam: boolean | null;
     eligibleForSpei: boolean | null;
     eligibleForPtbaePu: boolean | null;
+    publicationStatus: string;
+    certificateDocumentUrl: string | null;
   } | null> {
     const company = await this.companyRepo.findOne({
       where: {
@@ -1485,6 +1515,8 @@ export class CompanyService {
       appliesToLcam: profile?.appliesToLcam ?? null,
       eligibleForSpei: profile?.eligibleForSpei ?? null,
       eligibleForPtbaePu: profile?.eligibleForPtbaePu ?? null,
+      publicationStatus: "synthetic_demo",
+      certificateDocumentUrl: null,
     };
   }
 }

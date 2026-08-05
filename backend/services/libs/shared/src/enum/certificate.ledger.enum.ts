@@ -1,0 +1,28 @@
+export enum CertificatePortionState {
+  AVAILABLE = "AVAILABLE",
+  ASSIGNED_TO_EXCHANGE = "ASSIGNED_TO_EXCHANGE",
+  WITHHELD = "WITHHELD",
+  RETIRED = "RETIRED",
+  CANCELLED = "CANCELLED",
+  BUFFER = "BUFFER",
+}
+
+export enum CertificateLedgerEventType {
+  ISSUED = "ISSUED",
+  TRANSFERRED = "TRANSFERRED",
+  RETIRED = "RETIRED",
+  CANCELLED = "CANCELLED",
+  ASSIGNED_TO_EXCHANGE = "ASSIGNED_TO_EXCHANGE",
+  UNASSIGNED_FROM_EXCHANGE = "UNASSIGNED_FROM_EXCHANGE",
+  WITHHELD = "WITHHELD",
+  RELEASED = "RELEASED",
+  REVERSED = "REVERSED",
+}
+
+export enum PublicAvailability {
+  AVAILABLE = "available",
+  WITHHELD = "withheld",
+  NOT_AVAILABLE = "not_available",
+  NOT_APPLICABLE = "not_applicable",
+  NOT_CONFIGURED = "not_configured",
+}

@@ -192,6 +192,10 @@ export const API_PATHS = {
     `national/programme/public/certificates?q=${encodeURIComponent(
       q
     )}&page=${page}&pageSize=${pageSize}`,
+  PUBLIC_CERTIFICATE_REGISTRY: (q: string, page = 1, pageSize = 10) =>
+    `national/programme/public/certificate-registry?q=${encodeURIComponent(
+      q
+    )}&page=${page}&pageSize=${pageSize}`,
   // METHODOLOGY DIRECTORY
   METHODOLOGY_PUBLIC_LIST: "national/methodology/public",
   METHODOLOGY_CREATE: "national/methodology",

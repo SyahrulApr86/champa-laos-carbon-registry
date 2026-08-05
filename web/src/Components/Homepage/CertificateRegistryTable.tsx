@@ -25,6 +25,20 @@ interface CertificateRow {
   availability?: Availability;
 }
 
+type CanonicalCertificateRow = {
+  certificate_id: string;
+  account_holder: string | null;
+  activity: string | null;
+  sector: string | null;
+  registry_number: string | null;
+  registry_scheme: string | null;
+  vintage?: { start?: string | null; end?: string | null };
+  balances?: Record<string, number | null>;
+  issued_quantity: number | null;
+  issued_at: string | null;
+  availability?: Availability;
+};
+
 interface CertificateResult {
   rows: CertificateRow[];
   total: number;
@@ -39,7 +53,32 @@ const parseResult = (response: unknown): CertificateResult => {
   const raw = connection.response?.data ?? connection.data ?? response;
   const envelope = raw as { data?: unknown; meta?: AnalyticsMeta; total?: number };
   if (Array.isArray(envelope.data)) {
-    return { rows: envelope.data as CertificateRow[], total: envelope.meta?.pagination?.total_items ?? envelope.total ?? 0, meta: envelope.meta };
+    const rows = (envelope.data as Array<CertificateRow | CanonicalCertificateRow>).map((row) => {
+      if ("certificate_id" in row) {
+        const balances = row.balances ?? {};
+        const state = Object.entries(balances).find(([, value]) => Number(value) > 0)?.[0] ?? "available";
+        return {
+          certificateId: row.certificate_id,
+          accountHolder: row.account_holder,
+          activity: row.activity ?? "Not available",
+          sector: row.sector,
+          registryNo: row.registry_number ?? "Not available",
+          scheme: row.registry_scheme,
+          startVintage: row.vintage?.start ? Number(row.vintage.start.slice(0, 4)) : null,
+          endVintage: row.vintage?.end ? Number(row.vintage.end.slice(0, 4)) : null,
+          status: state.replaceAll("_", " "),
+          issuedUnits: row.issued_quantity,
+          availableUnits: balances.available ?? null,
+          retiredUnits: balances.retired ?? null,
+          cancelledUnits: balances.cancelled ?? null,
+          assignedToExchangeUnits: balances.exchange_assigned ?? null,
+          issuedDate: row.issued_at,
+          availability: row.availability,
+        };
+      }
+      return row;
+    });
+    return { rows, total: envelope.meta?.pagination?.total_items ?? envelope.total ?? 0, meta: envelope.meta };
   }
   return { rows: [], total: 0, meta: envelope.meta };
 };
@@ -59,7 +98,7 @@ const CertificateRegistryTable = () => {
     setLoading(true);
     setError(null);
     try {
-      const path = `${API_PATHS.PUBLIC_CERTIFICATES(query, page, PAGE_SIZE)}${status ? `&status=${encodeURIComponent(status)}` : ""}`;
+      const path = `${API_PATHS.PUBLIC_CERTIFICATE_REGISTRY(query, page, PAGE_SIZE)}${status ? `&state=${encodeURIComponent(status)}` : ""}`;
       const result = parseResult(await get(path));
       setRows(result.rows);
       setTotal(result.total);
@@ -99,7 +138,7 @@ const CertificateRegistryTable = () => {
       <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable — provenance cannot be verified."}</p>
       <div className="analytics-filter-bar">
         <Input.Search allowClear size="large" placeholder="Search account holder, registry number, or activity" onSearch={(value) => { setPage(1); setQuery(value.trim()); }} className="registry-table-search" />
-        <Select value={status} onChange={(value) => { setPage(1); setStatus(value); }} options={[{ value: "", label: "All states" }, ...Object.keys(statusColor).map((value) => ({ value, label: value }))]} />
+        <Select value={status} onChange={(value) => { setPage(1); setStatus(value); }} options={[{ value: "", label: "All states" }, { value: "AVAILABLE", label: "Available" }, { value: "RETIRED", label: "Retired" }, { value: "CANCELLED", label: "Cancelled" }, { value: "ASSIGNED_TO_EXCHANGE", label: "Assigned to exchange" }, { value: "WITHHELD", label: "Withheld" }]} />
       </div>
       {error && <Alert type="error" showIcon message={error} />}
       <Table className="registry-table" rowKey={(row) => row.certificateId ?? row.registryNo} columns={columns} dataSource={rows} loading={loading} scroll={{ x: true }} locale={{ emptyText: error ? "Certificate data unavailable." : query || status ? "No certificates match the selected filters." : "No certificate records are available." }} pagination={{ current: page, pageSize: PAGE_SIZE, total, showSizeChanger: false, onChange: (nextPage) => setPage(nextPage) }} />

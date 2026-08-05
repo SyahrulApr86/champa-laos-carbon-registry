@@ -36,4 +36,59 @@ describe("ClimateFinanceService public contract", () => {
     });
     expect(response.data.byChannelUSD).toEqual({});
   });
+
+  it("recomputes public totals after update and archive writes", async () => {
+    const records: any[] = [];
+    const repo: any = {
+      create: jest.fn((dto) => ({
+        ...dto,
+        id: 7,
+        createdAt: 1,
+        archivedAt: null,
+      })),
+      save: jest.fn(async (record) => {
+        const index = records.findIndex((item) => item.id === record.id);
+        if (index === -1) records.push(record);
+        else records[index] = record;
+        return record;
+      }),
+      find: jest.fn(async () => records),
+      findOneBy: jest.fn(async ({ id }) =>
+        records.find((record) => record.id === id)
+      ),
+      delete: jest.fn(async () => undefined),
+    };
+    const service = new ClimateFinanceService(repo);
+
+    await service.create({
+      title: "Write-through grant",
+      description: "A test record",
+      channel: "Bilateral",
+      recipientEntity: "Recipient",
+      implementingEntity: "Implementer",
+      dateSigned: 1,
+      amountLAK: 100,
+      amountUSD: 25,
+      sector: "Energy",
+      financialInstrument: "Grant",
+      status: "Ongoing",
+      type: "Mitigation",
+    } as any);
+    expect((await service.publicSummary()).data).toMatchObject({
+      totalAmountLAK: 100,
+      totalAmountUSD: 25,
+    });
+
+    await service.update(7, { amountLAK: 275, amountUSD: 40 } as any);
+    expect((await service.publicSummary()).data).toMatchObject({
+      totalAmountLAK: 275,
+      totalAmountUSD: 40,
+    });
+
+    await service.archive(7, "Superseded source record");
+    expect((await service.publicSummary()).data).toMatchObject({
+      totalAmountLAK: null,
+      totalAmountUSD: null,
+    });
+  });
 });

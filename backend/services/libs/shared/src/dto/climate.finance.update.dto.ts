@@ -1,7 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -15,40 +14,40 @@ import { FinancialInstrument } from "../enum/finance.instrument.enum";
 import { FinanceStatus } from "../enum/finance.status.enum";
 import { ClimateActionType } from "../enum/climate.action.type.enum";
 
-export class ClimateFinanceCreateDto {
-  @ApiProperty()
-  @IsNotEmpty()
+export class ClimateFinanceUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(200)
-  title: string;
+  title?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(5000)
-  description: string;
+  description?: string;
 
   @ApiPropertyOptional({ enum: FinanceChannel })
   @IsOptional()
   @IsEnum(FinanceChannel)
   channel?: FinanceChannel;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(200)
-  recipientEntity: string;
+  recipientEntity?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(200)
-  implementingEntity: string;
+  implementingEntity?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber()
-  dateSigned: number;
+  dateSigned?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -69,10 +68,10 @@ export class ClimateFinanceCreateDto {
   @Max(9999999999999999)
   amountUSD?: number;
 
-  @ApiProperty({ enum: Sector })
-  @IsNotEmpty()
+  @ApiPropertyOptional({ enum: Sector })
+  @IsOptional()
   @IsEnum(Sector)
-  sector: Sector;
+  sector?: Sector;
 
   @ApiPropertyOptional({ enum: FinancialInstrument })
   @IsOptional()
@@ -84,8 +83,8 @@ export class ClimateFinanceCreateDto {
   @IsEnum(FinanceStatus)
   status?: FinanceStatus;
 
-  @ApiProperty({ enum: ClimateActionType })
-  @IsNotEmpty()
+  @ApiPropertyOptional({ enum: ClimateActionType })
+  @IsOptional()
   @IsEnum(ClimateActionType)
-  type: ClimateActionType;
+  type?: ClimateActionType;
 }

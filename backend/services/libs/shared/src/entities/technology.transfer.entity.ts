@@ -1,9 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { EntitySubject } from "./entity.subject";
 import { ClimateActionType } from "../enum/climate.action.type.enum";
 import { SupportStatus } from "../enum/support.status.enum";
@@ -67,6 +62,12 @@ export class TechnologyTransferEntity implements EntitySubject {
 
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   updatedAt: number;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  archivedAt: number;
+
+  @Column({ type: "text", nullable: true })
+  archiveReason: string;
 
   @BeforeInsert()
   setCreatedAt() {

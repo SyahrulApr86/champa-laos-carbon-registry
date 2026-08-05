@@ -190,7 +190,9 @@ const MapTab = ({ showLegend = false }: { showLegend?: boolean }) => {
           `<strong>${escapeHtml(provinceName)}</strong><br/>${features.length} plotted activity feature(s)`
         );
     });
-    return () => map.remove();
+    return () => {
+      map.remove();
+    };
   }, [payload.features]);
 
   const tableData = useMemo(

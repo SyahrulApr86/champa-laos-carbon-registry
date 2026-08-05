@@ -1,5 +1,6 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   PrimaryGeneratedColumn,
@@ -53,10 +54,29 @@ export class MethodologyEntity implements EntitySubject {
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   updatedAt: number;
 
+  // Actor references are intentionally nullable so existing and synthetic
+  // seed records remain valid. Admin mutations populate them for auditability.
+  @Column({ nullable: true })
+  createdBy: number;
+
+  @Column({ nullable: true })
+  updatedBy: number;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  archivedAt: number;
+
+  @Column({ nullable: true })
+  archivedBy: number;
+
   @BeforeInsert()
   setCreatedAt() {
     const timestamp = new Date().getTime();
     this.createdAt = timestamp;
     this.updatedAt = timestamp;
+  }
+
+  @BeforeUpdate()
+  setUpdatedAt() {
+    this.updatedAt = new Date().getTime();
   }
 }

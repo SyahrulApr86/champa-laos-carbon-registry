@@ -23,8 +23,9 @@ NODE_ENV=development RUN_MODULE=demo-seeder yarn start
 
 The command refuses `NODE_ENV=production`, a missing demo marker, or a missing
 confirmation. Its default `plan` mode does **not** write a database; it prints
-the deterministic coverage report. To replace just the canonical certificate
-scenario, add `CHAMPA_DEMO_SEED_MODE=replace`:
+the deterministic coverage report. `replace` loads both the canonical
+certificate ledger and the synthetic public data for the dashboard, public
+directories, NDC, adaptation, community, and configurable trading views:
 
 ```sh
 CHAMPA_DEMO_DATABASE=true \
@@ -33,3 +34,18 @@ CHAMPA_DEMO_SEED_MODE=replace NODE_ENV=development RUN_MODULE=demo-seeder yarn s
 ```
 
 Only `plan` and `replace` are accepted. Legacy additive mode is rejected.
+
+## Deployment order
+
+For every server environment, run explicit migrations before starting the API
+and keep automatic schema synchronization disabled:
+
+```sh
+cd backend/services
+TYPEORM_SYNCHRONIZE=false yarn migration:run
+TYPEORM_SYNCHRONIZE=false RUN_MODULE=national-api yarn start:prod
+```
+
+Run the `replace` command above only for a disposable demonstration deployment;
+it is intentionally rejected in production and never belongs in normal server
+startup.

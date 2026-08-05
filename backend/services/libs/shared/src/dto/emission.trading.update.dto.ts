@@ -1,8 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsIn,
   IsInt,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -11,24 +10,24 @@ import {
   MaxLength,
 } from "class-validator";
 
-export class EmissionTradingCreateDto {
-  @ApiProperty()
-  @IsNotEmpty()
+export class EmissionTradingUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @IsPositive()
-  sellerCompanyId: number;
+  sellerCompanyId?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @IsPositive()
-  buyerCompanyId: number;
+  buyerCompanyId?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
-  units: number;
+  units?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -36,16 +35,16 @@ export class EmissionTradingCreateDto {
   @Max(9999999999999999)
   valueLAK?: number;
 
-  @ApiPropertyOptional({ enum: ["LAK"], default: "LAK" })
+  @ApiPropertyOptional({ enum: ["LAK"] })
   @IsOptional()
   @IsIn(["LAK"])
   currency?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @IsPositive()
-  tradeDate: number;
+  tradeDate?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -64,20 +63,14 @@ export class EmissionTradingCreateDto {
   @IsIn(["synthetic_demo", "configured", "not_configured"])
   venueStatus?: string;
 
-  @ApiPropertyOptional({ enum: ["not_applicable", "configured", "not_configured"] })
+  @ApiPropertyOptional({ enum: ["not_applicable", "configured", "not_configured", "pending", "settled", "completed", "finalized"] })
   @IsOptional()
   @IsIn(["not_applicable", "configured", "not_configured", "pending", "settled", "completed", "finalized"])
   settlementStatus?: string;
 
-  @ApiPropertyOptional({ description: "Opaque W2-approved certificate bridge reference only" })
+  @ApiPropertyOptional({ description: "Why the administrative correction was made." })
   @IsOptional()
   @IsString()
-  @MaxLength(160)
-  certificateBridgeEventId?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(160)
-  idempotencyKey?: string;
+  @MaxLength(500)
+  reason?: string;
 }

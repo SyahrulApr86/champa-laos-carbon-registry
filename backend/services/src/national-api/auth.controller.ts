@@ -8,6 +8,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "@app/shared/auth/auth.service";
@@ -18,6 +19,7 @@ import { PasswordResetDto } from "@app/shared/dto/passwordReset.dto";
 import { HelperService } from "@app/shared/util/helpers.service";
 import { PasswordResetService } from "@app/shared/util/passwordReset.service";
 import { RefreshLoginDto } from "@app/shared/dto/refreshLogin.dto";
+import { AuthRateLimiterGuard } from "@app/shared/auth/guards/auth-rate-limiter.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -30,11 +32,13 @@ export class AuthController {
   ) {}
 
   @Get("captcha")
+  @UseGuards(AuthRateLimiterGuard)
   async getCaptcha() {
     return this.captchaService.generate();
   }
 
   @Post("login")
+  @UseGuards(AuthRateLimiterGuard)
   async login(@Body() login: LoginDto, @Request() req) {
     global.baseUrl = `${req.protocol}://${req.get("Host")}`;
     return this.authService.login(login);
@@ -47,6 +51,7 @@ export class AuthController {
   }
 
   @Post("forgotPassword")
+  @UseGuards(AuthRateLimiterGuard)
   async forgotPassword(
     @Body() forgotPassword: ForgotPasswordDto,
     @Request() req

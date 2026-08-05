@@ -3,6 +3,7 @@ import {
   UseGuards,
   Request,
   Post,
+  Get,
   Body,
   Param,
   ParseEnumPipe,
@@ -19,6 +20,11 @@ import { DataListResponseDto } from "@app/shared/dto/data.list.response";
 @Controller("location")
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
+
+  @Get("registration-provinces")
+  async getRegistrationProvinces() {
+    return this.locationService.getRegistrationProvinces();
+  }
 
   // @ApiBearerAuth()
   // @UseGuards(JwtAuthGuard)

@@ -148,7 +148,7 @@ export class OrganisationUpdateDto {
   @ApiPropertyOptional()
   @IsArray()
   @MaxLength(100, { each: true })
-  @IsValidProvince()
+  @IsValidProvince("LA")
   @IsNotEmpty({ each: true })
   @IsOptional()
   provinces: string[];

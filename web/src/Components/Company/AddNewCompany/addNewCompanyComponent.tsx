@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
   Button,
+  Alert,
+  Checkbox,
   Col,
   Form,
   Input,
@@ -19,6 +21,7 @@ import PhoneInput, {
   formatPhoneNumberIntl,
   isPossiblePhoneNumber,
 } from 'react-phone-number-input';
+import { CountryCode } from 'libphonenumber-js/core';
 import {
   BankOutlined,
   ExperimentOutlined,
@@ -54,18 +57,22 @@ export const AddNewCompanyComponent = (props: any) => {
   } = props;
   const [formOne] = Form.useForm();
   const [formTwo] = Form.useForm();
+  const [formThree] = Form.useForm();
   const [stepOneData, setStepOneData] = useState<any>();
+  const [stepTwoData, setStepTwoData] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const [contactNoInput] = useState<any>();
   const [current, setCurrent] = useState<number>(0);
   const [isUpdate, setIsUpdate] = useState(false);
-  const { post, put } = useConnection();
+  const { get, post, put } = useConnection();
   const { setUserInfo, userInfoState } = useUserContext();
   const { state } = useLocation();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [countries] = useState<[]>([]);
+  const laoPhoneCountries: CountryCode[] = ['LA'];
   const [loadingList] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<any[]>([]);
+  const [locationError, setLocationError] = useState<string>();
+  const [registrationSubmitted, setRegistrationSubmitted] = useState(false);
   const [companyRole, setCompanyRole] = useState<any>(state?.record?.companyRole);
   // const [selectedMinistry, setSelectedMinistry] = useState<string>('');
   // const [existgovDep, setexistGovdep] = useState<string[]>([]);
@@ -81,13 +88,20 @@ export const AddNewCompanyComponent = (props: any) => {
 
 
   const getRegionList = async () => {
-    // setLoadingList(true);
     try {
-      const { data } = await post(API_PATHS.PROVINCES);
-      const tempProvinces = data.map((provinceData: any) => provinceData.provinceName);
-      setRegionsList(tempProvinces);
-    } catch (error) {
-      console.log(error);
+      const response = await get('national/location/registration-provinces');
+      const provinces = response.data?.data ?? [];
+      setRegionsList(provinces);
+      setLocationError(
+        provinces.length === 0
+          ? 'Lao PDR province choices are not configured for registration yet.'
+          : undefined
+      );
+    } catch {
+      setRegionsList([]);
+      setLocationError(
+        'Lao PDR province choices could not be loaded. Please retry before registering.'
+      );
     }
   };
 
@@ -117,27 +131,33 @@ export const AddNewCompanyComponent = (props: any) => {
   };
 
   const nextOne = (val: any) => {
-    setCurrent(current + 1);
+    setCurrent((step) => step + 1);
     setStepOneData(val);
   };
 
   const prevOne = () => {
-    setCurrent(current - 1);
+    setCurrent((step) => step - 1);
   };
 
   const onFinishStepOne = (values: any) => {
     nextOne(values);
   };
 
-  const onChangeRegion = (values: any[]) => {
-    if (values.includes(t('national'))) {
-      const buyerCountryValues = regionsList;
-      const newBuyerValues = buyerCountryValues?.filter((item: any) => item !== t('national'));
-      formOne.setFieldValue('provinces', [...newBuyerValues]);
-    }
+  const onFinishStepTwo = (values: any) => {
+    setStepTwoData(values);
+    setCurrent(2);
   };
 
-  const onFinishStepTwo = async (values: any) => {
+  const onFinishStepThree = async () => {
+    if (!stepOneData || !stepTwoData) {
+      setCurrent(0);
+      return;
+    }
+
+    await submitRegistration(stepTwoData);
+  };
+
+  const submitRegistration = async (values: any) => {
     const requestData = {
       ...values,
       role: 'Admin',
@@ -172,11 +192,11 @@ export const AddNewCompanyComponent = (props: any) => {
         if (response.status === 200 || response.status === 201) {
           message.open({
             type: 'success',
-            content: response.message, //t('companyRegisteredSuccess'),
+            content: 'Registration request received.',
             duration: 3,
             style: { textAlign: 'right', marginRight: 15, marginTop: 10 },
           });
-          onNavigateToHome();
+          setRegistrationSubmitted(true);
           setLoading(false);
         }
       } else {
@@ -727,10 +747,10 @@ export const AddNewCompanyComponent = (props: any) => {
                       placeholder={t('addCompany:phoneNo')}
                       international
                       value={formatPhoneNumberIntl(contactNoInput)}
-                      defaultCountry="LK"
+                      defaultCountry="LA"
                       countryCallingCodeEditable={false}
                       onChange={(v) => {}}
-                      countries={countries}
+                      countries={laoPhoneCountries}
                     />
                   </Form.Item>
                   <Form.Item
@@ -769,41 +789,54 @@ export const AddNewCompanyComponent = (props: any) => {
                       placeholder={t('addCompany:faxNo')}
                       international
                       value={formatPhoneNumberIntl(faxNumber)}
-                      defaultCountry="LK"
+                      defaultCountry="LA"
                       countryCallingCodeEditable={false}
                       onChange={(v) => {
                         if (v === undefined) {
                           setFaxNumber(undefined);
                         }
                       }}
-                      countries={countries}
+                      countries={laoPhoneCountries}
                     />
                   </Form.Item>
                   {regionField && (
-                    <Form.Item
-                      label={t('addCompany:province')}
-                      name="provinces"
-                      initialValue={state?.record?.provinces ?? []}
-                      rules={[
-                        {
-                          required: false,
-                          message: `${t('addCompany:province')} ${t('isRequired')}`,
-                        },
-                      ]}
-                    >
-                      <Select
-                        mode="multiple"
-                        size="large"
-                        maxTagCount={2}
-                        onChange={onChangeRegion}
-                        loading={loadingList}
-                        allowClear
+                    <>
+                      <Alert
+                        type={locationError ? 'warning' : 'info'}
+                        showIcon
+                        message={
+                          locationError ||
+                          'Registration uses the configured Lao PDR province list. District, city, and postal-code choices are not configured.'
+                        }
+                        style={{ marginBottom: 16 }}
+                      />
+                      <Form.Item
+                        label={t('addCompany:province')}
+                        name="provinces"
+                        initialValue={state?.record?.provinces ?? []}
+                        rules={[
+                          {
+                            required: isGuest,
+                            message: `${t('addCompany:province')} ${t('isRequired')}`,
+                          },
+                        ]}
                       >
-                        {regionsList.map((region: any) => (
-                          <Select.Option value={region}>{region}</Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
+                        <Select
+                          mode="multiple"
+                          size="large"
+                          maxTagCount={2}
+                          loading={loadingList}
+                          disabled={Boolean(locationError)}
+                          allowClear
+                        >
+                          {regionsList.map((region: any) => (
+                            <Select.Option key={region.id} value={region.name}>
+                              {region.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </>
                   )}
 
                   {
@@ -929,9 +962,10 @@ export const AddNewCompanyComponent = (props: any) => {
                       placeholder={t('addCompany:phoneNo')}
                       international
                       value={formatPhoneNumberIntl(contactNoInput)}
-                      defaultCountry="LK"
+                      defaultCountry="LA"
                       countryCallingCodeEditable={false}
                       onChange={(v) => {}}
+                      countries={laoPhoneCountries}
                     />
                   </Form.Item>
                 </div>
@@ -1000,6 +1034,51 @@ export const AddNewCompanyComponent = (props: any) => {
     );
   };
 
+  const AccountConfirmationForm = () => (
+    <div className="company-details-form-container">
+      <Form
+        name="registration-confirmation"
+        className="company-details-form"
+        layout="vertical"
+        requiredMark={true}
+        form={formThree}
+        onFinish={onFinishStepThree}
+      >
+        <Alert
+          type="info"
+          showIcon
+          message="Review and send registration request"
+          description="This request creates a pending organisation record only. It does not grant official authorisation, certification, or market participation."
+          style={{ marginBottom: 20 }}
+        />
+        <Form.Item
+          name="privacyAcknowledgement"
+          valuePropName="checked"
+          rules={[
+            {
+              validator: (_, value) =>
+                value
+                  ? Promise.resolve()
+                  : Promise.reject(new Error('Please acknowledge the registration privacy notice.')),
+            },
+          ]}
+        >
+          <Checkbox>
+            I understand that this demo registration uses submitted organisation and contact details only to process this request. No public approval or market status is created.
+          </Checkbox>
+        </Form.Item>
+        <div className="steps-actions">
+          <Button onClick={() => prevOne()} loading={loading}>
+            {t('addCompany:back')}
+          </Button>
+          <Button className="mg-left-1" type="primary" htmlType="submit" loading={loading}>
+            Send registration request
+          </Button>
+        </div>
+      </Form>
+    </div>
+  );
+
   return (
     <div className="add-company-main-container">
       <div className="title-container">
@@ -1011,7 +1090,15 @@ export const AddNewCompanyComponent = (props: any) => {
         </div>
       </div>
       <div className="adding-section">
-        {isUpdate ? (
+        {registrationSubmitted ? (
+          <Alert
+            type="success"
+            showIcon
+            message="Registration request received"
+            description="The organisation remains pending review. This does not create official authorisation, certification, or market participation. Account activation is not available until a configured review process completes."
+            action={<Button onClick={onNavigateToHome}>Return home</Button>}
+          />
+        ) : isUpdate ? (
           <>
             <div className="step-title-container">
               <div className="title">{t('addCompany:companyDetailsTitle')}</div>
@@ -1042,6 +1129,15 @@ export const AddNewCompanyComponent = (props: any) => {
                     </div>
                   ),
                   description: current === 1 && <CompanyAdminDetailsForm />,
+                },
+                {
+                  title: (
+                    <div className="step-title-container">
+                      <div className="step-count">03</div>
+                      <div className="title">Account & privacy</div>
+                    </div>
+                  ),
+                  description: current === 2 && <AccountConfirmationForm />,
                 },
               ]}
             />

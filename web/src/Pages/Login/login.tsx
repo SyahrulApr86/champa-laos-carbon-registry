@@ -346,6 +346,17 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                             </div>
                           )}
                       </Form>
+                      <div
+                        aria-live="polite"
+                        style={{ marginTop: 12, color: "#5b6475", fontSize: 13 }}
+                      >
+                        <Button block disabled>
+                          OAuth sign-in — Not configured
+                        </Button>
+                        <div style={{ marginTop: 6 }}>
+                          External identity providers are unavailable until credentials and policy approval are configured.
+                        </div>
+                      </div>
                       {enableRegistration === "true" && (
                         <div className="login-register-new-container">
                           <span className="login-register-new-txt">

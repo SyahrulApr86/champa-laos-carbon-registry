@@ -19,21 +19,31 @@ export class EmissionTradingController {
 
   // Public, unauthenticated - prototype-grade aggregate summary.
   @Get("public/summary")
-  async publicSummary(@Query("year") year?: string) {
-    return await this.emissionTradingService.publicSummary(
-      year ? parseInt(year, 10) : undefined
-    );
+  async publicSummary(
+    @Query("year") year?: string,
+    @Query("series") series?: string,
+    @Query("venueStatus") venueStatus?: string
+  ) {
+    return this.emissionTradingService.publicSummary({
+      year: year ? parseInt(year, 10) : undefined,
+      series,
+      venueStatus: venueStatus as any,
+    });
   }
 
   // Public, unauthenticated - PTBAE-PU "Series" tab equivalent.
   @Get("public/series")
   async publicSeries(
     @Query("page") page?: string,
-    @Query("pageSize") pageSize?: string
+    @Query("pageSize") pageSize?: string,
+    @Query("year") year?: string,
+    @Query("series") series?: string,
+    @Query("venueStatus") venueStatus?: string
   ) {
-    return await this.emissionTradingService.publicSeries(
+    return this.emissionTradingService.publicSeries(
       page ? parseInt(page, 10) : undefined,
-      pageSize ? parseInt(pageSize, 10) : undefined
+      pageSize ? parseInt(pageSize, 10) : undefined,
+      { year: year ? parseInt(year, 10) : undefined, series, venueStatus: venueStatus as any }
     );
   }
 
@@ -42,11 +52,16 @@ export class EmissionTradingController {
   @Get("public/transactions")
   async publicTransactions(
     @Query("page") page?: string,
-    @Query("pageSize") pageSize?: string
+    @Query("pageSize") pageSize?: string,
+    @Query("year") year?: string,
+    @Query("series") series?: string,
+    @Query("venueStatus") venueStatus?: string,
+    @Query("search") search?: string
   ) {
-    return await this.emissionTradingService.publicTransactions(
+    return this.emissionTradingService.publicTransactions(
       page ? parseInt(page, 10) : undefined,
-      pageSize ? parseInt(pageSize, 10) : undefined
+      pageSize ? parseInt(pageSize, 10) : undefined,
+      { year: year ? parseInt(year, 10) : undefined, series, venueStatus: venueStatus as any, search }
     );
   }
 
@@ -54,11 +69,15 @@ export class EmissionTradingController {
   @Get("public/participants")
   async publicParticipants(
     @Query("page") page?: string,
-    @Query("pageSize") pageSize?: string
+    @Query("pageSize") pageSize?: string,
+    @Query("year") year?: string,
+    @Query("series") series?: string,
+    @Query("search") search?: string
   ) {
-    return await this.emissionTradingService.publicParticipants(
+    return this.emissionTradingService.publicParticipants(
       page ? parseInt(page, 10) : undefined,
-      pageSize ? parseInt(pageSize, 10) : undefined
+      pageSize ? parseInt(pageSize, 10) : undefined,
+      { year: year ? parseInt(year, 10) : undefined, series, search }
     );
   }
 

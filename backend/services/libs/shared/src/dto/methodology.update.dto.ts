@@ -1,22 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from "class-validator";
 import { Sector } from "../enum/sector.enum";
 import { MethodologyStatus } from "../enum/methodology.status.enum";
 
 export class MethodologyUpdateDto {
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @MaxLength(80)
   methodologyNumber?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @MaxLength(240)
   name?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @MaxLength(240)
   source?: string;
 
   @ApiPropertyOptional({ enum: Sector })
@@ -32,5 +44,6 @@ export class MethodologyUpdateDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(4000)
   description?: string;
 }

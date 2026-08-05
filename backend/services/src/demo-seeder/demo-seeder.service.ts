@@ -53,6 +53,8 @@ import { GuidanceDocumentCreateDto } from "@app/shared/dto/guidance.document.cre
 import { RecognizedMitigationService } from "@app/shared/recognized-mitigation/recognized.mitigation.service";
 import { RecognizedMitigationCreateDto } from "@app/shared/dto/recognized.mitigation.create.dto";
 import { RecognizedMitigationStatus } from "@app/shared/enum/recognized.mitigation.status.enum";
+import { buildDemoSeedScenario, renderSeedCoverageReport } from "./scenario";
+import { assertSafeDemoSeedEnvironment } from "./safety";
 
 // Deterministic small PRNG so re-runs (and different operators) produce the
 // same demo dataset shape - not cryptographic, just reproducible seeding.
@@ -181,7 +183,28 @@ export class DemoSeederService {
   }
 
   async run(): Promise<void> {
-    this.logger.log("Demo seeder starting");
+    assertSafeDemoSeedEnvironment(process.env);
+    const scenario = buildDemoSeedScenario();
+    this.logger.log(
+      `Demo seeder starting: ${scenario.version}; ${scenario.records.length} fixture records; sha256=${scenario.hash}`
+    );
+
+    // W1 intentionally defaults to a non-mutating scenario check. The final
+    // database writer is W2SeedLoader because W2 owns the lot/portion/ledger
+    // schema. This prevents the former additive seeder from being mistaken
+    // for an idempotent production-scale loader.
+    if (process.env.CHAMPA_DEMO_SEED_MODE !== "legacy") {
+      this.logger.log(`Demo scenario ready; no database writes performed.\n${renderSeedCoverageReport(scenario)}`);
+      return;
+    }
+    if (process.env.CHAMPA_ALLOW_LEGACY_ADDITIVE !== "true") {
+      throw new Error(
+        "Legacy additive seed is disabled. Implement W2SeedLoader and use loadScenarioIdempotently instead."
+      );
+    }
+    this.logger.warn(
+      "Running the legacy additive seed by explicit operator override; it is not the W1 production-scale scenario loader."
+    );
 
     const guard = await this.programmeRepo.count();
     if (guard > 3) {

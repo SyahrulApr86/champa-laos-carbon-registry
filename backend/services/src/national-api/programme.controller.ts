@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Param,
+  Patch,
   Put,
   Query,
   UseGuards,
@@ -51,7 +52,14 @@ import { ProgrammeService } from "@app/shared/programme/programme.service";
 import { CreditCancelDto } from "@app/shared/dto/credit.cancel.dto";
 import { CreditAssignDto } from "@app/shared/dto/credit.assign.dto";
 import { CertificateRegistryService } from "@app/shared/certificate-registry/certificate.registry.service";
-import { CertificatePortionState } from "@app/shared/enum/certificate.ledger.enum";
+import { CertificateLedgerEventType, CertificatePortionState } from "@app/shared/enum/certificate.ledger.enum";
+import { RecordCertificateLedgerEventDto } from "@app/shared/dto/certificate.ledger.dto";
+import {
+  ArchiveCertificateLotDto,
+  CertificateLifecycleCommandDto,
+  CreateCertificateLotDto,
+  UpdateCertificateLotDto,
+} from "@app/shared/dto/certificate.registry.management.dto";
 
 @ApiTags("Programme")
 @ApiBearerAuth()
@@ -120,6 +128,144 @@ export class ProgrammeController {
   @Get("public/mitigation-detail/:programmeId")
   async publicMitigationDetail(@Param("programmeId") programmeId: string) {
     return this.certificateRegistryService.getPublicMitigationDetail(programmeId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Get("certificate-registry/management")
+  async certificateRegistryManagementList(
+    @Query("q") q?: string,
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("includeArchived") includeArchived?: string,
+  ) {
+    return this.certificateRegistryService.getManagementLots({
+      q,
+      page: page ? parseInt(page, 10) : 1,
+      pageSize: pageSize ? parseInt(pageSize, 10) : 25,
+      includeArchived: includeArchived === "true",
+    });
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Get("certificate-registry/management/:certificateLotId")
+  async certificateRegistryManagementDetail(@Param("certificateLotId") certificateLotId: string) {
+    return this.certificateRegistryService.getManagementLotDetail(certificateLotId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Create, Programme))
+  @Post("certificate-registry/management/lots")
+  async createCertificateRegistryLot(@Body() body: CreateCertificateLotDto, @Request() req) {
+    return this.certificateRegistryService.createManagementLot(body, this.managementActor(req));
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Patch("certificate-registry/management/lots/:certificateLotId")
+  async updateCertificateRegistryLot(
+    @Param("certificateLotId") certificateLotId: string,
+    @Body() body: UpdateCertificateLotDto,
+    @Request() req,
+  ) {
+    return this.certificateRegistryService.updateManagementLot(certificateLotId, body, this.managementActor(req));
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/archive")
+  async archiveCertificateRegistryLot(
+    @Param("certificateLotId") certificateLotId: string,
+    @Body() body: ArchiveCertificateLotDto,
+    @Request() req,
+  ) {
+    return this.certificateRegistryService.archiveManagementLot(certificateLotId, body, this.managementActor(req));
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/events")
+  async recordCertificateRegistryEvent(@Body() body: RecordCertificateLedgerEventDto, @Request() req) {
+    return this.certificateRegistryService.recordManagementEvent(body, this.managementActor(req));
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/issue")
+  async issueCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.ISSUED, body, req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/transfer")
+  async transferCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.TRANSFERRED, body, req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/retire")
+  async retireCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.RETIRED, body, req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/cancel")
+  async cancelCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.CANCELLED, body, req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/assign")
+  async assignCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.ASSIGNED_TO_EXCHANGE, body, req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/release")
+  async releaseCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.RELEASED, body, req);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Update, Programme))
+  @Post("certificate-registry/management/lots/:certificateLotId/reverse")
+  async reverseCertificateRegistryLot(@Param("certificateLotId") certificateLotId: string, @Body() body: CertificateLifecycleCommandDto, @Request() req) {
+    return this.recordCertificateLifecycleEvent(certificateLotId, CertificateLedgerEventType.REVERSED, body, req);
+  }
+
+  private recordCertificateLifecycleEvent(
+    certificateLotId: string,
+    eventType: CertificateLedgerEventType,
+    body: CertificateLifecycleCommandDto,
+    req: any,
+  ) {
+    return this.certificateRegistryService.recordManagementEvent(
+      { ...body, certificateLotId, eventType },
+      this.managementActor(req),
+    );
+  }
+
+  private managementActor(req: any): string {
+    return req?.user?.id ? `user:${req.user.id}` : "authenticated-user";
   }
 
   @ApiBearerAuth()

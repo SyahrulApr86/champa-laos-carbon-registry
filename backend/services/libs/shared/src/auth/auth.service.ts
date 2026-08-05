@@ -213,7 +213,6 @@ export class AuthService {
     const hostAddress = this.configService.get("host");
     const userDetails = await this.userService.findOne(email);
     if (userDetails && !userDetails.isPending) {
-      console.table(userDetails);
       const requestId = this.helperService.generateRandomPassword();
       const date = Date.now();
       const expireDate = date + 3600 * 1000; // 1 hout expire time
@@ -256,14 +255,14 @@ export class AuthService {
         HttpStatus.OK,
         this.helperService.formatReqMessagesString("user.resetEmailSent", [])
       );
-    } else {
-      throw new HttpException(
-        this.helperService.formatReqMessagesString(
-          "user.forgotPwdUserNotFound",
-          []
-        ),
-        HttpStatus.NOT_FOUND
-      );
     }
+
+    // Do not reveal whether an address has an active account. The UI can
+    // consistently tell a visitor to check their email, while no reset token
+    // or outbound message is created for unknown/pending accounts.
+    return new BasicResponseDto(
+      HttpStatus.OK,
+      this.helperService.formatReqMessagesString("user.resetEmailSent", [])
+    );
   }
 }

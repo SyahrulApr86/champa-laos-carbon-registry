@@ -14,7 +14,7 @@ export class IsValidProvinceConstraint implements ValidatorConstraintInterface {
   constructor(protected readonly provinceService: ProvinceService) {}
 
   validate(provinces: any, args: ValidationArguments) {
-    return this.provinceService.isValidProvince(provinces);
+    return this.provinceService.isValidProvince(provinces, args.constraints[0]);
   }
 
   defaultMessage(): string {
@@ -22,13 +22,16 @@ export class IsValidProvinceConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsValidProvince(validationOptions?: ValidationOptions) {
+export function IsValidProvince(
+  countryAlpha2?: string,
+  validationOptions?: ValidationOptions
+) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      constraints: [],
+      constraints: [countryAlpha2],
       validator: IsValidProvinceConstraint,
     });
   };

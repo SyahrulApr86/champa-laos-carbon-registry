@@ -79,7 +79,7 @@ export class OrganisationDto {
   @MaxLength(100, { each: true })
   @IsNotEmpty({ each: true })
   @IsOptional()
-  @IsValidProvince()
+  @IsValidProvince("LA")
   provinces: string[];
 
   @ValidateIf(

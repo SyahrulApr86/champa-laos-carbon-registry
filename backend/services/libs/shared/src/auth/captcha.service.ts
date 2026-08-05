@@ -7,6 +7,12 @@ interface CaptchaChallenge {
   expiresAt: number;
 }
 
+export interface CaptchaResponse {
+  challengeId: string;
+  svg: string;
+  expiresAt: string;
+}
+
 /**
  * Self-hosted, no-external-API image CAPTCHA for the login form.
  * Generates a distorted-text SVG challenge (mirrors SRN's own approach at
@@ -20,8 +26,12 @@ export class CaptchaService {
   private readonly challenges = new Map<string, CaptchaChallenge>();
   private readonly ttlMs = 5 * 60 * 1000; // 5 minutes
 
-  generate(): { challengeId: string; svg: string } {
+  generate(): CaptchaResponse {
     this.evictExpired();
+
+    const testAdapterEnabled =
+      process.env.NODE_ENV === "test" &&
+      process.env.CHAMPA_CAPTCHA_TEST_MODE === "true";
 
     const captcha = svgCaptcha.create({
       size: 6,
@@ -33,12 +43,24 @@ export class CaptchaService {
     });
 
     const challengeId = randomUUID();
+    const expiresAt = Date.now() + this.ttlMs;
+    const text = testAdapterEnabled ? "demo42" : captcha.text.trim().toLowerCase();
+
     this.challenges.set(challengeId, {
-      text: captcha.text.trim().toLowerCase(),
-      expiresAt: Date.now() + this.ttlMs,
+      text,
+      expiresAt,
     });
 
-    return { challengeId, svg: captcha.data };
+    return {
+      challengeId,
+      // The fixed answer is deliberately reachable only under NODE_ENV=test;
+      // it is useful for deterministic browser/API tests and never a runtime
+      // credential or a seeded account secret.
+      svg: testAdapterEnabled
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="80" role="img" aria-label="Test security code"><rect width="100%" height="100%" fill="#f0f2f5"/><text x="24" y="50" font-size="28" font-family="sans-serif">DEMO42</text></svg>'
+        : captcha.data,
+      expiresAt: new Date(expiresAt).toISOString(),
+    };
   }
 
   /**

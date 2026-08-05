@@ -64,6 +64,32 @@ export class LocationService {
     );
   }
 
+  /**
+   * Registration intentionally offers only province-level Lao PDR geography.
+   * District/city/postal selections remain unavailable until their hierarchy
+   * has an approved source; callers receive an explicit empty state rather
+   * than an invented lower-level list.
+   */
+  async getRegistrationProvinces() {
+    const provinces = await this.provinceRepo.find({
+      where: { countryAlpha2: "LA" },
+      order: { provinceName: "ASC" },
+    });
+
+    return {
+      data: provinces.map((province) => ({
+        id: province.key,
+        name: province.provinceName,
+      })),
+      meta: {
+        geography: "Lao PDR province",
+        source: "configured_location_dataset",
+        availability: provinces.length ? "available" : "not_configured",
+        lower_level_geography: "not_configured",
+      },
+    };
+  }
+
   private getLocationTypeRepo(locationDataType: LocationDataType) {
     switch (locationDataType) {
       case LocationDataType.REGION:

@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "antd/dist/antd.css";
 import "./Styles/app.scss";
@@ -67,6 +67,20 @@ import ReddPlusSubmit from "./Pages/ReddPlus/reddPlusSubmit";
 import ExpertSubmit from "./Pages/Expert/expertSubmit";
 import GuidanceDocumentSubmit from "./Pages/GuidanceDocument/guidanceDocumentSubmit";
 import RecognizedMitigationSubmit from "./Pages/RecognizedMitigation/recognizedMitigationSubmit";
+import CertificateRegistryManagementPage from "./Pages/CertificateRegistryManagement/CertificateRegistryManagementPage";
+import EmissionTradingManagement from "./Pages/EmissionTradingManagement/EmissionTradingManagement";
+import AdaptationCrudManagement from "./Pages/AdaptationManagement/adaptationManagement";
+import ClimateFinanceManagement from "./Pages/ClimateFinanceManagement";
+import TechnologyTransferManagement from "./Pages/TechnologyTransferManagement";
+import CapacityBuildingManagement from "./Pages/CapacityBuildingManagement";
+import CommunityProgramManagement from "./Pages/CommunityProgramManagement/communityProgramManagement";
+import NdcTargetManagement from "./Pages/NdcTargetManagement/ndcTargetManagement";
+import ReddPlusManagement from "./Pages/ReddPlusManagement/reddPlusManagement";
+import RecognizedMitigationManagement from "./Pages/RecognizedMitigationManagement/recognizedMitigationManagement";
+import ExpertManagement from "./Pages/ExpertManagement";
+import GuidanceDocumentManagement from "./Pages/GuidanceDocumentManagement";
+import MethodologyManagement from "./Pages/MethodologyManagement";
+import { ROUTES } from "./Config/uiRoutingConfig";
 
 const App = () => {
   const { t } = useTranslation(["common"]);
@@ -235,6 +249,136 @@ const App = () => {
                     element={<CustomLayout selectedKey="reports" />}
                   >
                     <Route path="" element={<Reports />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_CERTIFICATE_REGISTRY}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_CERTIFICATE_REGISTRY.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<CertificateRegistryManagementPage />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_EMISSION_TRADING}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_EMISSION_TRADING.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<EmissionTradingManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_ADAPTATION}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_ADAPTATION.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<AdaptationCrudManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_CLIMATE_FINANCE}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_CLIMATE_FINANCE.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<ClimateFinanceManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_TECHNOLOGY_TRANSFER}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_TECHNOLOGY_TRANSFER.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<TechnologyTransferManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_CAPACITY_BUILDING}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_CAPACITY_BUILDING.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<CapacityBuildingManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_COMMUNITY_PROGRAM}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_COMMUNITY_PROGRAM.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<CommunityProgramManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_NDC_TARGET}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_NDC_TARGET.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<NdcTargetManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_REDD_PLUS}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_REDD_PLUS.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<ReddPlusManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_RECOGNIZED_MITIGATION}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_RECOGNIZED_MITIGATION.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<RecognizedMitigationManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_EXPERT}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_EXPERT.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<ExpertManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_GUIDANCE_DOCUMENT}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_GUIDANCE_DOCUMENT.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<GuidanceDocumentManagement />} />
+                  </Route>
+                  <Route
+                    path={ROUTES.MANAGEMENT_METHODOLOGY}
+                    element={
+                      <CustomLayout
+                        selectedKey={ROUTES.MANAGEMENT_METHODOLOGY.slice(1)}
+                      />
+                    }
+                  >
+                    <Route index element={<MethodologyManagement />} />
                   </Route>
                   <Route
                     path="/companyProfile"

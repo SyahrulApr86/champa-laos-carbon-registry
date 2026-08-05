@@ -198,8 +198,14 @@ export const API_PATHS = {
     )}&page=${page}&pageSize=${pageSize}`,
   // METHODOLOGY DIRECTORY
   METHODOLOGY_PUBLIC_LIST: "national/methodology/public",
+  METHODOLOGY_ADMIN_LIST: "national/methodology",
+  METHODOLOGY_ADMIN_DETAIL: (id: string | number) =>
+    `national/methodology/${id}`,
   METHODOLOGY_CREATE: "national/methodology",
   METHODOLOGY_UPDATE: (id: string | number) => `national/methodology/${id}`,
+  METHODOLOGY_LIFECYCLE: (id: string | number) =>
+    `national/methodology/${id}/lifecycle`,
+  METHODOLOGY_ARCHIVE: (id: string | number) => `national/methodology/${id}`,
   //ADAPTATION
   ADAPTATION_PUBLIC_SEARCH: (q: string, page = 1, size = 10) =>
     `national/adaptation/public/search?q=${encodeURIComponent(

@@ -7,9 +7,7 @@ import * as Icon from "react-bootstrap-icons";
 import {
   AppstoreOutlined,
   DashboardOutlined,
-  SettingOutlined,
   ShopOutlined,
-  SplitCellsOutlined,
   UnorderedListOutlined,
   UserOutlined,
   SwapOutlined,
@@ -22,7 +20,6 @@ import { Role } from "../../Definitions/Enums/role.enum";
 import { ROUTES } from "../../Config/uiRoutingConfig";
 
 const { Sider } = Layout;
-const { SubMenu } = Menu;
 
 type MenuItem = {
   key: React.Key;
@@ -51,8 +48,8 @@ const LayoutSider = (props: LayoutSiderProps) => {
   const { userInfoState } = useUserContext();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
-  const [selectKey, setSelectKey] = useState<any>(selectedKey);
-  const { i18n, t } = useTranslation(["nav"]);
+  const [selectKey, setSelectKey] = useState<string | undefined>(selectedKey);
+  const { t } = useTranslation(["nav"]);
 
   const currentPage = location.pathname.replace(/^\/|\/$/g, "");
 
@@ -156,6 +153,84 @@ const LayoutSider = (props: LayoutSiderProps) => {
           t("nav:recordRecognizedMitigation"),
           "recognizedMitigation/submit",
           <Icon.Award />
+        ),
+      ])
+    );
+  }
+
+  const isManagementAdmin =
+    userInfoState?.userRole === Role.Root ||
+    (userInfoState?.userRole === Role.Admin &&
+      (userInfoState?.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY ||
+        userInfoState?.companyRole === CompanyRole.MINISTRY));
+
+  if (isManagementAdmin) {
+    items.push(
+      getItem(t("nav:management", { defaultValue: "Management" }), "management", <AppstoreOutlined />, [
+        getItem(
+          t("nav:manageCertificateRegistry", { defaultValue: "Certificate registry" }),
+          ROUTES.MANAGEMENT_CERTIFICATE_REGISTRY.slice(1),
+          <Icon.JournalText />
+        ),
+        getItem(
+          t("nav:manageEmissionTrading", { defaultValue: "Emission ceiling and trading" }),
+          ROUTES.MANAGEMENT_EMISSION_TRADING.slice(1),
+          <Icon.ArrowLeftRight />
+        ),
+        getItem(
+          t("nav:manageAdaptation", { defaultValue: "Adaptation projects" }),
+          ROUTES.MANAGEMENT_ADAPTATION.slice(1),
+          <Icon.CloudSun />
+        ),
+        getItem(
+          t("nav:manageClimateFinance", { defaultValue: "Climate finance" }),
+          ROUTES.MANAGEMENT_CLIMATE_FINANCE.slice(1),
+          <Icon.CashCoin />
+        ),
+        getItem(
+          t("nav:manageTechnologyTransfer", { defaultValue: "Technology transfer" }),
+          ROUTES.MANAGEMENT_TECHNOLOGY_TRANSFER.slice(1),
+          <Icon.Cpu />
+        ),
+        getItem(
+          t("nav:manageCapacityBuilding", { defaultValue: "Capacity building" }),
+          ROUTES.MANAGEMENT_CAPACITY_BUILDING.slice(1),
+          <Icon.MortarboardFill />
+        ),
+        getItem(
+          t("nav:manageCommunityProgram", { defaultValue: "Community programs" }),
+          ROUTES.MANAGEMENT_COMMUNITY_PROGRAM.slice(1),
+          <Icon.People />
+        ),
+        getItem(
+          t("nav:manageNdcTarget", { defaultValue: "NDC targets" }),
+          ROUTES.MANAGEMENT_NDC_TARGET.slice(1),
+          <Icon.BarChartLine />
+        ),
+        getItem(
+          t("nav:manageReddPlus", { defaultValue: "REDD+" }),
+          ROUTES.MANAGEMENT_REDD_PLUS.slice(1),
+          <Icon.TreeFill />
+        ),
+        getItem(
+          t("nav:manageRecognizedMitigation", { defaultValue: "Recognized mitigation" }),
+          ROUTES.MANAGEMENT_RECOGNIZED_MITIGATION.slice(1),
+          <Icon.Award />
+        ),
+        getItem(
+          t("nav:manageExpert", { defaultValue: "Expert roster" }),
+          ROUTES.MANAGEMENT_EXPERT.slice(1),
+          <Icon.PersonBadgeFill />
+        ),
+        getItem(
+          t("nav:manageGuidanceDocument", { defaultValue: "Guidance documents" }),
+          ROUTES.MANAGEMENT_GUIDANCE_DOCUMENT.slice(1),
+          <Icon.FileEarmarkPdf />
+        ),
+        getItem(
+          t("nav:manageMethodology", { defaultValue: "Methodologies" }),
+          ROUTES.MANAGEMENT_METHODOLOGY.slice(1),
+          <Icon.Book />
         ),
       ])
     );

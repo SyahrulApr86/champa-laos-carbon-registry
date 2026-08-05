@@ -1,8 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsIn,
   IsInt,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -12,25 +11,25 @@ import {
   Min,
 } from "class-validator";
 
-export class EmissionCeilingCreateDto {
-  @ApiProperty()
-  @IsNotEmpty()
+export class EmissionCeilingUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @IsPositive()
-  companyId: number;
+  companyId?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @Min(2000)
   @Max(2100)
-  year: number;
+  year?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
-  units: number;
+  units?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -44,7 +43,7 @@ export class EmissionCeilingCreateDto {
   @MaxLength(160)
   sector?: string;
 
-  @ApiPropertyOptional({ default: "tCO2e" })
+  @ApiPropertyOptional({ enum: ["tCO2e"] })
   @IsOptional()
   @IsIn(["tCO2e"])
   unit?: string;
@@ -58,4 +57,10 @@ export class EmissionCeilingCreateDto {
   @IsOptional()
   @IsIn(["available", "not_available", "not_configured"])
   availability?: string;
+
+  @ApiPropertyOptional({ description: "Why the administrative correction was made." })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  reason?: string;
 }

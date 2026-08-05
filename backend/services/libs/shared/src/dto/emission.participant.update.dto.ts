@@ -1,10 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsIn,
   IsInt,
-  IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
@@ -13,31 +10,31 @@ import {
   Min,
 } from "class-validator";
 
-export class EmissionParticipantCreateDto {
-  @ApiProperty()
-  @IsNotEmpty()
+export class EmissionParticipantUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @IsPositive()
-  companyId: number;
+  companyId?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(200)
-  facilityName: string;
+  facilityName?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(200)
-  capacityDescription: string;
+  capacityDescription?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   @Min(2000)
   @Max(2100)
-  year: number;
+  year?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -55,4 +52,10 @@ export class EmissionParticipantCreateDto {
   @IsOptional()
   @IsIn(["active", "unallocated", "withheld"])
   participantStatus?: string;
+
+  @ApiPropertyOptional({ description: "Why the administrative correction was made." })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  reason?: string;
 }

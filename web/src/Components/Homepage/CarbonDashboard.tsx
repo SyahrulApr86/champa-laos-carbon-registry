@@ -106,6 +106,8 @@ interface PublicAnalyticsSummary {
     issued: number;
     transferred: number;
     retired: number;
+    cancelled: number;
+    assignedToExchange: number;
     available: number;
   };
   projectsBySector: Record<string, number>;
@@ -118,7 +120,15 @@ const emptySummary: PublicAnalyticsSummary = {
   totalProjects: 0,
   stageCounts: {},
   projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
-  credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
+  credits: {
+    authorised: 0,
+    issued: 0,
+    transferred: 0,
+    retired: 0,
+    cancelled: 0,
+    assignedToExchange: 0,
+    available: 0,
+  },
   projectsBySector: {},
   proponentsByRole: {},
   creditsBySector: {},
@@ -140,7 +150,7 @@ const emptyTradingSummary: EmissionTradingSummary = {
 };
 
 const CarbonDashboard = () => {
-  const { i18n, t } = useTranslation(["common", "homepage", "companyRoles"]);
+  const { t } = useTranslation(["common", "homepage", "companyRoles"]);
   const { get } = useConnection();
   const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
   const [tradingSummary, setTradingSummary] = useState<EmissionTradingSummary>(
@@ -155,7 +165,9 @@ const CarbonDashboard = () => {
   useEffect(() => {
     const fetchPublicSummary = async () => {
       try {
-        const response: any = await get(API_PATHS.PUBLIC_ANALYTICS_SUMMARY);
+        const response = await get<PublicAnalyticsSummary>(
+          API_PATHS.PUBLIC_ANALYTICS_SUMMARY
+        );
         if (response?.data) {
           const data = response.data;
           setSummary({
@@ -171,6 +183,8 @@ const CarbonDashboard = () => {
               issued: data.credits?.issued ?? 0,
               transferred: data.credits?.transferred ?? 0,
               retired: data.credits?.retired ?? 0,
+              cancelled: data.credits?.cancelled ?? 0,
+              assignedToExchange: data.credits?.assignedToExchange ?? 0,
               available: data.credits?.available ?? 0,
             },
             projectsBySector: data.projectsBySector ?? {},
@@ -297,6 +311,11 @@ const CarbonDashboard = () => {
     { value: summary.credits.issued, title: t("homepage:issued") },
     { value: summary.credits.transferred, title: t("homepage:transferred") },
     { value: summary.credits.retired, title: t("homepage:retired") },
+    { value: summary.credits.cancelled, title: "Cancelled" },
+    {
+      value: summary.credits.assignedToExchange,
+      title: "Assigned to Exchange",
+    },
   ];
 
   const sectorData = Object.entries(summary.projectsBySector)

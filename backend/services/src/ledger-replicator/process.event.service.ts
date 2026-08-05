@@ -101,6 +101,8 @@ export class ProcessEventService {
                 TxType.AUTH,
                 TxType.FREEZE,
                 TxType.UNFREEZE,
+                TxType.CANCEL,
+                TxType.ASSIGN_TO_EXCHANGE,
               ].includes(programme.txType)
             ) {
               programme.creditUpdateTime = programme.txTime;
@@ -238,6 +240,8 @@ export class ProcessEventService {
               TxType.RETIRE,
               TxType.FREEZE,
               TxType.UNFREEZE,
+              TxType.CANCEL,
+              TxType.ASSIGN_TO_EXCHANGE,
               TxType.TRANSFER_SL,
               TxType.RETIRE_SL,
             ].includes(overall.txType)

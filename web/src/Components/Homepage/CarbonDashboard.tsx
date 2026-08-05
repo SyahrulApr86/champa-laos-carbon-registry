@@ -109,8 +109,6 @@ interface PublicAnalyticsSummary {
     cancelled: number;
     assignedToExchange: number;
     available: number;
-    cancelled: number;
-    assignedToExchange: number;
   };
   projectsBySector: Record<string, number>;
   proponentsByRole: Record<string, number>;
@@ -190,8 +188,6 @@ const CarbonDashboard = () => {
               cancelled: data.credits?.cancelled ?? 0,
               assignedToExchange: data.credits?.assignedToExchange ?? 0,
               available: data.credits?.available ?? 0,
-              cancelled: data.credits?.cancelled ?? 0,
-              assignedToExchange: data.credits?.assignedToExchange ?? 0,
             },
             projectsBySector: data.projectsBySector ?? {},
             proponentsByRole: data.proponentsByRole ?? {},

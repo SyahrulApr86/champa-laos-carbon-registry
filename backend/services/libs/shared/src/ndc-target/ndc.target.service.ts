@@ -1,8 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { NdcTargetEntity } from "../entities/ndc.target.entity";
 import { NdcTargetCreateDto } from "../dto/ndc.target.create.dto";
+import { NdcTargetUpdateDto } from "../dto/ndc.target.update.dto";
 import { NdcSector } from "../enum/ndc.sector.enum";
 
 interface NdcTargetSummary {
@@ -84,22 +85,117 @@ export class NdcTargetService {
     private ndcTargetRepo: Repository<NdcTargetEntity>
   ) {}
 
-  async create(dto: NdcTargetCreateDto): Promise<NdcTargetEntity> {
+  async create(dto: NdcTargetCreateDto, actorId?: number): Promise<NdcTargetEntity> {
     this.logger.verbose(
       "NDC target record create received",
       dto.year,
       dto.sector
     );
-    const record = this.ndcTargetRepo.create(dto);
+    const record = this.ndcTargetRepo.create({
+      ...dto,
+      version: 1,
+      published: true,
+      createdBy: actorId ?? null,
+      updatedBy: actorId ?? null,
+    });
     return await this.ndcTargetRepo.save(record);
+  }
+
+  async listManagement(includeArchived = false, sector?: string, year?: number, page = 1, size = 50) {
+    const records = await this.ndcTargetRepo.find({
+      where: includeArchived ? {} : { archivedAt: IsNull() },
+      order: { year: "DESC", sector: "ASC", version: "DESC" },
+    });
+    const filtered = records.filter((record) =>
+      (includeArchived || this.isActive(record)) &&
+      (!sector || record.sector === sector) &&
+      (year === undefined || record.year === year)
+    );
+    const safePage = Math.max(1, page);
+    const safeSize = Math.min(100, Math.max(1, size));
+    const start = (safePage - 1) * safeSize;
+    return { data: filtered.slice(start, start + safeSize), total: filtered.length, page: safePage, pageSize: safeSize };
+  }
+
+  async getManagementDetail(id: number) {
+    const record = await this.findManagementOne(id);
+    const groupId = record.versionGroupId ?? record.id;
+    const versions = await this.ndcTargetRepo.find({
+      where: [{ id: groupId }, { versionGroupId: groupId }],
+      order: { version: "ASC" },
+    });
+    return { ...record, versions };
+  }
+
+  async update(id: number, dto: NdcTargetUpdateDto, actorId?: number): Promise<NdcTargetEntity> {
+    const current = await this.findManagementOne(id);
+    this.assertEditable(current);
+    if (!Object.keys(dto).length) throw new BadRequestException("At least one NDC field is required");
+    return await this.createVersion(current, dto, actorId);
+  }
+
+  async version(id: number, dto: NdcTargetUpdateDto, actorId?: number): Promise<NdcTargetEntity> {
+    const current = await this.findManagementOne(id);
+    this.assertEditable(current);
+    return await this.createVersion(current, dto, actorId);
+  }
+
+  async archive(id: number, actorId?: number): Promise<NdcTargetEntity> {
+    const record = await this.findManagementOne(id);
+    if (!this.isActive(record)) return record;
+    const archivedAt = Date.now();
+    Object.assign(record, { archivedAt, archivedBy: actorId ?? null, updatedAt: archivedAt, updatedBy: actorId ?? null, published: false });
+    return await this.ndcTargetRepo.save(record);
+  }
+
+  private async findManagementOne(id: number): Promise<NdcTargetEntity> {
+    const record = await this.ndcTargetRepo.findOne({ where: { id } });
+    if (!record) throw new NotFoundException("NDC target record not found");
+    return record;
+  }
+
+  private assertEditable(record: NdcTargetEntity): void {
+    if (record.archivedAt !== null && record.archivedAt !== undefined) {
+      throw new ConflictException("Archived NDC observations cannot be edited or versioned");
+    }
+  }
+
+  private async createVersion(current: NdcTargetEntity, dto: NdcTargetUpdateDto, actorId?: number): Promise<NdcTargetEntity> {
+    const now = Date.now();
+    const next = this.ndcTargetRepo.create({
+      year: dto.year ?? current.year,
+      sector: dto.sector ?? current.sector,
+      baselineEmissions: dto.baselineEmissions ?? current.baselineEmissions,
+      targetEmissions2030: dto.targetEmissions2030 ?? current.targetEmissions2030,
+      achievedEmissions: dto.achievedEmissions ?? current.achievedEmissions,
+      claimedEmissions: dto.claimedEmissions ?? current.claimedEmissions,
+      notes: dto.notes ?? current.notes,
+      version: (current.version ?? 1) + 1,
+      versionGroupId: current.versionGroupId ?? current.id,
+      supersedesId: current.id,
+      published: true,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: actorId ?? current.createdBy ?? null,
+      updatedBy: actorId ?? null,
+    });
+    const saved = await this.ndcTargetRepo.save(next);
+    Object.assign(current, { archivedAt: now, archivedBy: actorId ?? null, updatedAt: now, updatedBy: actorId ?? null, published: false, supersedesId: saved.id });
+    await this.ndcTargetRepo.save(current);
+    return saved;
+  }
+
+  private isActive(record: NdcTargetEntity): boolean {
+    return record.published !== false && record.archivedAt == null;
   }
 
   // Public, unauthenticated list ordered oldest to newest - raw export of
   // every recorded sector/year figure.
   async publicList(): Promise<{ data: NdcTargetEntity[]; meta: PublicMeta }> {
-    const data = await this.ndcTargetRepo.find({
+    const data = (await this.ndcTargetRepo.find({
+      where: { archivedAt: IsNull(), published: true },
       order: { year: "ASC", sector: "ASC" },
-    });
+    })).filter((record) => this.isActive(record));
     return {
       data,
       meta: buildMeta({}, data.length ? "available" : "not_available"),
@@ -121,9 +217,10 @@ export class NdcTargetService {
   // summary and the 'All' aggregate (summed across each sector's own
   // latest year, matching SRN's "All" tab).
   private async latestPerSector(): Promise<NdcTargetEntity[]> {
-    const records = await this.ndcTargetRepo.find({
+    const records = (await this.ndcTargetRepo.find({
+      where: { archivedAt: IsNull(), published: true },
       order: { year: "DESC" },
-    });
+    })).filter((record) => this.isActive(record));
     const latestBySector = new Map<NdcSector, NdcTargetEntity>();
     for (const record of records) {
       if (!latestBySector.has(record.sector)) {
@@ -166,10 +263,10 @@ export class NdcTargetService {
 
     if (selectedSector) {
       const latest = await this.ndcTargetRepo.findOne({
-        where: { sector: selectedSector },
+        where: { sector: selectedSector, archivedAt: IsNull(), published: true },
         order: { year: "DESC" },
       });
-      if (!latest) {
+      if (!latest || !this.isActive(latest)) {
         return {
           data: EMPTY_SUMMARY,
           meta: buildMeta({ sector: selectedSector }, "not_available"),
@@ -256,10 +353,10 @@ export class NdcTargetService {
   }> {
     const selectedSector = this.resolveSector(sector);
 
-    const records = await this.ndcTargetRepo.find({
-      where: selectedSector ? { sector: selectedSector } : {},
+    const records = (await this.ndcTargetRepo.find({
+      where: selectedSector ? { sector: selectedSector, archivedAt: IsNull(), published: true } : { archivedAt: IsNull(), published: true },
       order: { year: "ASC" },
-    });
+    })).filter((record) => this.isActive(record));
 
     if (selectedSector) {
       return {

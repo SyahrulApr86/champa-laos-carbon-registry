@@ -6,6 +6,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
+  Min,
 } from "class-validator";
 import { Sector } from "../enum/sector.enum";
 import { CompanyRole } from "../enum/company.role.enum";
@@ -15,16 +17,19 @@ export class RecognizedMitigationCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(255)
   title: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(10000)
   description: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(255)
   proponentName: string;
 
   @ApiProperty({ enum: CompanyRole })
@@ -50,6 +55,7 @@ export class RecognizedMitigationCreateDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
+  @Min(0)
   estimatedReductionTco2e?: number;
 
   @ApiPropertyOptional({ enum: RecognizedMitigationStatus })

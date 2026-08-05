@@ -16,7 +16,10 @@ export default () => ({
     username: process.env.DB_USER || "hquser",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "carbondev",
-    synchronize: process.env.NODE_ENV == "prod" ? true : true,
+    // Production-like and E2E environments must use the reviewed TypeORM
+    // migrations. Local development retains the historical auto-sync default
+    // unless it is explicitly disabled.
+    synchronize: process.env.TYPEORM_SYNCHRONIZE !== "false",
     autoLoadEntities: true,
     logging: ["error"],
   },

@@ -12,7 +12,7 @@ export class AddAdaptationCommunityManagementFields1786000002002
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TYPE "public"."adaptation_project_entity_currentStage_enum" ADD VALUE IF NOT EXISTS 'Archived'`
+      `ALTER TYPE "public"."adaptation_project_entity_currentstage_enum" ADD VALUE IF NOT EXISTS 'Archived'`
     );
     await queryRunner.query(
       `ALTER TYPE "public"."community_program_entity_status_enum" ADD VALUE IF NOT EXISTS 'Archived'`

@@ -82,10 +82,36 @@ export class RecognizedMitigationEntity implements EntitySubject {
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   updatedAt: number;
 
+  @Column({ type: "int", default: 1 })
+  version: number;
+
+  @Column({ type: "int", nullable: true })
+  versionGroupId: number | null;
+
+  @Column({ type: "int", nullable: true })
+  supersedesId: number | null;
+
+  @Column({ type: "boolean", default: true })
+  published: boolean;
+
+  @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
+  archivedAt: number | null;
+
+  @Column({ type: "int", nullable: true })
+  createdBy: number | null;
+
+  @Column({ type: "int", nullable: true })
+  updatedBy: number | null;
+
+  @Column({ type: "int", nullable: true })
+  archivedBy: number | null;
+
   @BeforeInsert()
   setCreatedAt() {
     const timestamp = new Date().getTime();
     this.createdAt = timestamp;
     this.updatedAt = timestamp;
+    this.version ??= 1;
+    this.published ??= true;
   }
 }

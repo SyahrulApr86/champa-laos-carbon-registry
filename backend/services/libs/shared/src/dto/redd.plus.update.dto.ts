@@ -1,29 +1,19 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-} from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { ReddPlusStatus } from "../enum/redd.plus.status.enum";
 
-export class ReddPlusCreateDto {
-  @ApiProperty()
-  @IsNotEmpty()
+export class ReddPlusUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(255)
-  province: string;
+  province?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(255)
-  title: string;
+  title?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -33,21 +23,21 @@ export class ReddPlusCreateDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   forestAreaHectares?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   estimatedEmissionReductionTco2e?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(255)
-  implementingEntity: string;
+  implementingEntity?: string;
 
   @ApiPropertyOptional({ enum: ReddPlusStatus })
   @IsOptional()

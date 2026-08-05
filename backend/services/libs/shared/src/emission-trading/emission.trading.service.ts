@@ -71,6 +71,7 @@ export class EmissionTradingService {
     year: number | null;
     ceiling: { totalUnits: number; companies: number };
     trading: { totalUnits: number; totalValueLAK: number; companies: number };
+    today: { totalUnits: number; totalValueLAK: number };
   }> {
     const ceilings = await this.emissionCeilingRepo.find();
     const scopedCeilings = year
@@ -101,6 +102,22 @@ export class EmissionTradingService {
       tradingCompanies.add(t.buyerCompanyId);
     }
 
+    // Real "today" slice of the same trading rows - matches SRN's own
+    // "Daily Trading" widget, which honestly shows 0/0 on a day with no
+    // trades rather than fabricating activity. No separate data source;
+    // just a date-scoped sum over the trading rows already fetched above.
+    const startOfToday = new Date();
+    startOfToday.setUTCHours(0, 0, 0, 0);
+    const todayMs = startOfToday.getTime();
+    let todayTotalUnits = 0;
+    let todayTotalValueLAK = 0;
+    for (const t of tradings) {
+      if (Number(t.tradeDate) >= todayMs) {
+        todayTotalUnits += Number(t.units) || 0;
+        todayTotalValueLAK += Number(t.valueLAK) || 0;
+      }
+    }
+
     return {
       year: year ?? null,
       ceiling: {
@@ -111,6 +128,10 @@ export class EmissionTradingService {
         totalUnits: tradingTotalUnits,
         totalValueLAK: tradingTotalValueLAK,
         companies: tradingCompanies.size,
+      },
+      today: {
+        totalUnits: todayTotalUnits,
+        totalValueLAK: todayTotalValueLAK,
       },
     };
   }

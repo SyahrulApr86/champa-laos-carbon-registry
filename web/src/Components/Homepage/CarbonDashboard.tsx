@@ -129,12 +129,14 @@ interface EmissionTradingSummary {
   year: number | null;
   ceiling: { totalUnits: number; companies: number };
   trading: { totalUnits: number; totalValueLAK: number; companies: number };
+  today: { totalUnits: number; totalValueLAK: number };
 }
 
 const emptyTradingSummary: EmissionTradingSummary = {
   year: null,
   ceiling: { totalUnits: 0, companies: 0 },
   trading: { totalUnits: 0, totalValueLAK: 0, companies: 0 },
+  today: { totalUnits: 0, totalValueLAK: 0 },
 };
 
 const CarbonDashboard = () => {
@@ -188,11 +190,27 @@ const CarbonDashboard = () => {
   useEffect(() => {
     const fetchTradingSummary = async () => {
       try {
-        const tradingResponse = await get<EmissionTradingSummary>(
+        const tradingResponse = await get<Partial<EmissionTradingSummary>>(
           API_PATHS.EMISSION_TRADING_PUBLIC_SUMMARY()
         );
         if (tradingResponse?.data) {
-          setTradingSummary(tradingResponse.data);
+          const data = tradingResponse.data;
+          setTradingSummary({
+            year: data.year ?? null,
+            ceiling: {
+              totalUnits: data.ceiling?.totalUnits ?? 0,
+              companies: data.ceiling?.companies ?? 0,
+            },
+            trading: {
+              totalUnits: data.trading?.totalUnits ?? 0,
+              totalValueLAK: data.trading?.totalValueLAK ?? 0,
+              companies: data.trading?.companies ?? 0,
+            },
+            today: {
+              totalUnits: data.today?.totalUnits ?? 0,
+              totalValueLAK: data.today?.totalValueLAK ?? 0,
+            },
+          });
         }
       } catch (error) {
         console.log("Error fetching emission trading summary", error);
@@ -529,6 +547,26 @@ const CarbonDashboard = () => {
                   {tradingSummary.trading.totalUnits.toLocaleString()}
                 </div>
                 <div className="statistic-title">Total Units Traded</div>
+              </div>
+            </div>
+            <div className="donut-card">
+              <div className="main-statistic">
+                <div className="statistic-value">
+                  {tradingSummary.today.totalUnits.toLocaleString()}
+                </div>
+                <div className="statistic-title">
+                  Daily Trading Volume (tCO2e)
+                </div>
+              </div>
+            </div>
+            <div className="donut-card">
+              <div className="main-statistic">
+                <div className="statistic-value">
+                  {tradingSummary.today.totalValueLAK
+                    ? `LAK ${tradingSummary.today.totalValueLAK.toLocaleString()}`
+                    : "LAK 0"}
+                </div>
+                <div className="statistic-title">Daily Trading Value</div>
               </div>
             </div>
           </div>

@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useMemo, useState } from "react";
 import Chart from "react-apexcharts";
-import { Trans, useTranslation } from "react-i18next";
+import { Alert, Button, Select, Spin } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { COLOR_CONFIGS } from "../../Config/colorConfigs";
+import {
+  adaptDashboardAnalytics,
+  AnalyticsChart,
+  Availability,
+  DashboardAnalyticsView,
+  humanMetricValue,
+  metricTotal,
+} from "./dashboardAnalytics";
 import "./Dashboard.scss";
-import EmissionCeilingTradingTabs from "./EmissionCeilingTradingTabs";
+import "./DashboardAnalytics.scss";
 
 export const DONUT_PALETTE = [
   COLOR_CONFIGS.PRIMARY_THEME_COLOR,
@@ -17,28 +24,25 @@ export const DONUT_PALETTE = [
   "#7C9CBF",
 ];
 
+type DonutDatum = { title: string; value: number };
+
 export const DonutBreakdown = ({
   data,
   totalLabel,
+  totalOverride,
 }: {
-  data: { title: string; value: number }[];
+  data: DonutDatum[];
   totalLabel: string;
+  totalOverride?: number | null;
 }) => {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
-  const formatCompact = (n: number) =>
-    new Intl.NumberFormat("en-US", {
-      notation: "compact",
-      maximumFractionDigits: 1,
-    }).format(n);
-
-  if (data.length === 0 || total <= 0) {
-    return <div className="donut-empty">No Data</div>;
+  const total = totalOverride ?? data.reduce((sum, item) => sum + item.value, 0);
+  if (data.length === 0 || total === null || total <= 0) {
+    return <div className="donut-empty">Not available</div>;
   }
 
   return (
     <div className="donut-breakdown">
       <Chart
-        key={`${totalLabel}-${total}`}
         type="donut"
         width="220"
         options={{
@@ -47,28 +51,19 @@ export const DonutBreakdown = ({
           legend: { show: false },
           dataLabels: { enabled: false },
           stroke: { width: 2 },
-          tooltip: {
-            y: {
-              formatter: (value: number) => value.toLocaleString(),
-            },
-          },
+          tooltip: { y: { formatter: (value: number) => value.toLocaleString() } },
           plotOptions: {
             pie: {
               donut: {
                 size: "72%",
                 labels: {
                   show: true,
-                  value: {
-                    fontSize: "20px",
-                    fontWeight: 700,
-                    offsetY: -4,
-                    formatter: (val: string) => formatCompact(Number(val)),
-                  },
+                  value: { fontSize: "20px", fontWeight: 700, offsetY: -4 },
                   total: {
                     show: true,
                     label: totalLabel,
                     fontSize: "13px",
-                    formatter: () => formatCompact(total),
+                    formatter: () => total.toLocaleString(),
                   },
                 },
               },
@@ -82,14 +77,10 @@ export const DonutBreakdown = ({
           <li key={item.title}>
             <span
               className="donut-legend-dot"
-              style={{
-                backgroundColor: DONUT_PALETTE[index % DONUT_PALETTE.length],
-              }}
+              style={{ backgroundColor: DONUT_PALETTE[index % DONUT_PALETTE.length] }}
             />
             <span className="donut-legend-label">{item.title}</span>
-            <span className="donut-legend-value">
-              {item.value.toLocaleString()}
-            </span>
+            <span className="donut-legend-value">{item.value.toLocaleString()}</span>
           </li>
         ))}
       </ul>
@@ -97,645 +88,200 @@ export const DonutBreakdown = ({
   );
 };
 
-interface PublicAnalyticsSummary {
-  totalProjects: number;
-  totalProponents: number;
-  stageCounts: Record<string, number>;
-  projectsByStatus: {
-    authorised: number;
-    pending: number;
-    rejected: number;
-  };
-  credits: {
-    authorised: number;
-    issued: number;
-    transferred: number;
-    retired: number;
-    cancelled: number;
-    assignedToExchange: number;
-    available: number;
-  };
-  projectsBySector: Record<string, number>;
-  proponentsByRole: Record<string, number>;
-  proponentsByCategory: Record<string, number>;
-  creditsBySector: Record<string, number>;
-  speBySector: Record<string, number>;
-  verifiedEmissionReductionBySector: Record<string, number>;
-  creditsByProponentRole: Record<string, number>;
-  creditsByProponentCategory: Record<string, number>;
-  verifiedEmissionReductionByProponentCategory: Record<string, number>;
-}
-
-const emptySummary: PublicAnalyticsSummary = {
-  totalProjects: 0,
-  totalProponents: 0,
-  stageCounts: {},
-  projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
-  credits: {
-    authorised: 0,
-    issued: 0,
-    transferred: 0,
-    retired: 0,
-    available: 0,
-    cancelled: 0,
-    assignedToExchange: 0,
-  },
-  projectsBySector: {},
-  proponentsByRole: {},
-  proponentsByCategory: {},
-  creditsBySector: {},
-  speBySector: {},
-  verifiedEmissionReductionBySector: {},
-  creditsByProponentRole: {},
-  creditsByProponentCategory: {},
-  verifiedEmissionReductionByProponentCategory: {},
+const EMPTY_VIEW: DashboardAnalyticsView = {
+  overview: { programme_count: null, stage_counts: {}, certificate_metrics: {} },
+  charts: [],
+  meta: { availability: "not_available" },
+  isCanonical: false,
 };
 
-interface EmissionTradingSummary {
-  year: number | null;
-  ceiling: { totalUnits: number; companies: number };
-  trading: { totalUnits: number; totalValueLAK: number; companies: number };
-  today: { totalUnits: number; totalValueLAK: number };
-}
+const stageLabels: Array<{ key: string; label: string }> = [
+  { key: "New", label: "Submitted" },
+  { key: "AwaitingAuthorization", label: "Under review" },
+  { key: "Authorised", label: "Authorised" },
+  { key: "Approved", label: "Approved / active" },
+  { key: "Rejected", label: "Rejected" },
+];
 
-const emptyTradingSummary: EmissionTradingSummary = {
-  year: null,
-  ceiling: { totalUnits: 0, companies: 0 },
-  trading: { totalUnits: 0, totalValueLAK: 0, companies: 0 },
-  today: { totalUnits: 0, totalValueLAK: 0 },
+const certificateCards = [
+  ["issued", "Issued"],
+  ["available", "Available"],
+  ["transferred", "Transferred event volume"],
+  ["retired", "Retired"],
+  ["cancelled", "Cancelled"],
+  ["assigned_to_exchange", "Assigned to exchange"],
+] as const;
+
+const years = ["", "2021", "2022", "2023", "2024", "2025", "2026"];
+
+const filterPath = (year: string, sector: string, scheme: string) => {
+  const query = new URLSearchParams();
+  if (year) query.set("year", year);
+  if (sector) query.set("sector", sector);
+  if (scheme) query.set("scheme", scheme);
+  const suffix = query.toString();
+  return `${API_PATHS.PUBLIC_ANALYTICS_SUMMARY}${suffix ? `?${suffix}` : ""}`;
 };
 
-const CarbonDashboard = () => {
-  const { t } = useTranslation(["common", "homepage", "companyRoles"]);
-  const { get } = useConnection();
-  const [summary, setSummary] = useState<PublicAnalyticsSummary>(emptySummary);
-  const [tradingSummary, setTradingSummary] = useState<EmissionTradingSummary>(
-    emptyTradingSummary
-  );
-  const [projectCount, setProjectCount] = useState(0);
-  const [creditCount, setCreditCount] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const statsRef = useRef(null);
-
-  useEffect(() => {
-    const fetchPublicSummary = async () => {
-      try {
-        const response = await get<PublicAnalyticsSummary>(
-          API_PATHS.PUBLIC_ANALYTICS_SUMMARY
-        );
-        if (response?.data) {
-          const data = response.data;
-          setSummary({
-            totalProjects: data.totalProjects ?? 0,
-            totalProponents:
-              data.totalProponents ??
-              Object.values(data.proponentsByCategory ?? {}).reduce(
-                (sum: number, value: unknown) => sum + (Number(value) || 0),
-                0
-              ),
-            stageCounts: data.stageCounts ?? {},
-            projectsByStatus: {
-              authorised: data.projectsByStatus?.authorised ?? 0,
-              pending: data.projectsByStatus?.pending ?? 0,
-              rejected: data.projectsByStatus?.rejected ?? 0,
-            },
-            credits: {
-              authorised: data.credits?.authorised ?? 0,
-              issued: data.credits?.issued ?? 0,
-              transferred: data.credits?.transferred ?? 0,
-              retired: data.credits?.retired ?? 0,
-              cancelled: data.credits?.cancelled ?? 0,
-              assignedToExchange: data.credits?.assignedToExchange ?? 0,
-              available: data.credits?.available ?? 0,
-            },
-            projectsBySector: data.projectsBySector ?? {},
-            proponentsByRole: data.proponentsByRole ?? {},
-            proponentsByCategory: data.proponentsByCategory ?? {},
-            creditsBySector: data.creditsBySector ?? {},
-            speBySector: data.speBySector ?? data.creditsBySector ?? {},
-            verifiedEmissionReductionBySector:
-              data.verifiedEmissionReductionBySector ??
-              data.creditsBySector ??
-              {},
-            creditsByProponentRole: data.creditsByProponentRole ?? {},
-            creditsByProponentCategory: data.creditsByProponentCategory ?? {},
-            verifiedEmissionReductionByProponentCategory:
-              data.verifiedEmissionReductionByProponentCategory ??
-              data.creditsByProponentCategory ??
-              {},
-          });
-        }
-      } catch (error) {
-        console.log("Error fetching public analytics summary", error);
-      }
-    };
-
-    fetchPublicSummary();
-  }, [get]);
-
-  useEffect(() => {
-    const fetchTradingSummary = async () => {
-      try {
-        const tradingResponse = await get<Partial<EmissionTradingSummary>>(
-          API_PATHS.EMISSION_TRADING_PUBLIC_SUMMARY()
-        );
-        if (tradingResponse?.data) {
-          const data = tradingResponse.data;
-          setTradingSummary({
-            year: data.year ?? null,
-            ceiling: {
-              totalUnits: data.ceiling?.totalUnits ?? 0,
-              companies: data.ceiling?.companies ?? 0,
-            },
-            trading: {
-              totalUnits: data.trading?.totalUnits ?? 0,
-              totalValueLAK: data.trading?.totalValueLAK ?? 0,
-              companies: data.trading?.companies ?? 0,
-            },
-            today: {
-              totalUnits: data.today?.totalUnits ?? 0,
-              totalValueLAK: data.today?.totalValueLAK ?? 0,
-            },
-          });
-        }
-      } catch (error) {
-        console.log("Error fetching emission trading summary", error);
-      }
-    };
-
-    fetchTradingSummary();
-  }, [get]);
-
-  const animateCounters = useCallback(() => {
-    const targetProjectCount = summary.totalProjects;
-    const targetCreditCount = summary.credits.authorised;
-    const startingCreditCount = 0;
-    const duration = 1500;
-    const startTime = Date.now();
-
-    const updateCounters = () => {
-      const now = Date.now();
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-
-      // Update project count
-      const currentProjectCount = Math.floor(easeOutQuart * targetProjectCount);
-      setProjectCount(currentProjectCount);
-
-      // Update credit count
-      const creditDifference = targetCreditCount - startingCreditCount;
-      const currentCreditCount = Math.floor(
-        startingCreditCount + easeOutQuart * creditDifference
-      );
-      setCreditCount(currentCreditCount);
-
-      setIsAnimating(progress < 1);
-
-      if (progress < 1) {
-        requestAnimationFrame(updateCounters);
-      } else {
-        setProjectCount(targetProjectCount);
-        setCreditCount(targetCreditCount);
-        setIsAnimating(false);
-      }
-    };
-
-    requestAnimationFrame(updateCounters);
-  }, [summary]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated) {
-            setHasAnimated(true);
-            animateCounters();
-          }
-        });
-      },
-      {
-        threshold: 0.5,
-        rootMargin: "0px 0px -50px 0px",
-      }
-    );
-
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
-    }
-
-    return () => {
-      if (statsRef.current) {
-        observer.unobserve(statsRef.current);
-      }
-    };
-  }, [animateCounters, hasAnimated]);
-
-  const projectData = [
-    { value: summary.projectsByStatus.authorised, title: t("homepage:authorised") },
-    { value: summary.projectsByStatus.pending, title: t("homepage:pending") },
-    { value: summary.projectsByStatus.rejected, title: t("homepage:rejected") },
-  ];
-
-  const creditData = [
-    { value: summary.credits.authorised, title: t("homepage:authorised") },
-    { value: summary.credits.issued, title: t("homepage:issued") },
-    { value: summary.credits.transferred, title: t("homepage:transferred") },
-    { value: summary.credits.retired, title: t("homepage:retired") },
-    {
-      value: summary.credits.cancelled,
-      title: t("homepage:cancelled", { defaultValue: "Cancelled" }),
-    },
-    {
-      value: summary.credits.assignedToExchange,
-      title: t("homepage:assignedToExchange", {
-        defaultValue: "Assigned to Exchange",
-      }),
-    },
-  ];
-
-  const sectorData = Object.entries(summary.projectsBySector)
-    .filter(([, value]) => value > 0)
-    .map(([sector, value]) => ({ value, title: sector }));
-
-  const proponentData = Object.entries(summary.proponentsByRole).map(
-    ([role, value]) => ({
-      value,
-      title: t(`companyRoles:${role}`, { defaultValue: role }),
-    })
-  );
-
-  // Institutional-type breakdown of Project Developers only (Government/
-  // Private Sector/NGO/Academia/CBO/International Organisation) - filtered
-  // to non-zero buckets since most categories will honestly be empty until
-  // more proponents self-classify at registration.
-  const proponentCategoryData = Object.entries(summary.proponentsByCategory)
-    .filter(([, value]) => value > 0)
-    .map(([category, value]) => ({ value, title: category }));
-
-  // Champa is a single-scheme national registry (no JCM/Gold Standard/
-  // Verra co-registration exists), so these are honestly single-bucket
-  // charts - not fabricated, this mirrors SRN Indonesia's own live data,
-  // which is also ~100% one scheme (SPEI) with every other scheme at 0.
-  const registrySchemeProponentsData = [
-    { value: summary.totalProponents, title: "Champa National Registry" },
-    { value: 0, title: "JCM" },
-    { value: 0, title: "Gold Standard" },
-    { value: 0, title: "Verra/VCS" },
-    { value: 0, title: "Others" },
-  ];
-
-  const registrySchemeCreditsData = [
-    { value: summary.credits.issued, title: "Champa National Registry" },
-    { value: 0, title: "JCM" },
-    { value: 0, title: "Gold Standard" },
-    { value: 0, title: "Verra/VCS" },
-    { value: 0, title: "Others" },
-  ];
-
-  const speBySectorData = Object.entries(summary.speBySector)
-    .filter(([, value]) => value > 0)
-    .map(([sector, value]) => ({ value, title: sector }));
-
-  const creditsBySectorData = Object.entries(
-    summary.verifiedEmissionReductionBySector
-  )
-    .filter(([, value]) => value > 0)
-    .map(([sector, value]) => ({ value, title: sector }));
-
-  const creditsByProponentData = Object.entries(
-    summary.verifiedEmissionReductionByProponentCategory
-  )
-    .filter(([, value]) => value > 0)
-    .map(([category, value]) => ({
-      value,
-      title: category,
-    }));
-
-  // Real ProgrammeStage values, in workflow order - not a fabricated
-  // sub-stage breakdown, just Champa's actual tracked states presented
-  // with the same visual density as SRN's Mitigation NEK stage sidebar.
-  const stageLabels: { key: string; label: string }[] = [
-    { key: "New", label: "New Submissions" },
-    { key: "AwaitingAuthorization", label: "Awaiting Authorisation" },
-    { key: "Authorised", label: "Authorised" },
-    { key: "Approved", label: "Approved" },
-    { key: "Rejected", label: "Rejected" },
-  ];
+const ChartCard = ({ chart }: { chart: AnalyticsChart }) => {
+  const availablePoints = chart.points.filter(
+    (point) => point.value !== null && point.availability !== "withheld"
+  ) as Array<{ key: string; label: string; value: number }>;
+  const total = metricTotal(chart);
+  const state = chart.metric.availability;
 
   return (
-    <div className="carbon-dashboard">
+    <article className="donut-card analytics-chart-card" data-chart-id={chart.id}>
+      <h3 className="section-title">{chart.title}</h3>
+      {state === "available" ? (
+        <DonutBreakdown
+          data={availablePoints.map(({ label, value }) => ({ title: label, value }))}
+          totalLabel={chart.metric.unit ?? "records"}
+          totalOverride={total}
+        />
+      ) : (
+        <div className="analytics-unavailable">
+          {humanMetricValue(null, state)}
+        </div>
+      )}
+      <dl className="analytics-metric-meta">
+        <div><dt>Unit</dt><dd>{chart.metric.unit ?? "Not available"}</dd></div>
+        <div><dt>Formula</dt><dd>{chart.metric.formula_id ?? "Not available"}</dd></div>
+        <div><dt>Source</dt><dd>{chart.metric.source_label ?? "Not available"}</dd></div>
+        <div><dt>Methodology</dt><dd>{chart.metric.methodology_version ?? "Not available"}</dd></div>
+        <div><dt>Semantics</dt><dd>{chart.metric.additive === null ? "Not available" : chart.metric.additive ? "Additive" : "Non-additive"}</dd></div>
+      </dl>
+    </article>
+  );
+};
+
+const dashboardAvailability = (view: DashboardAnalyticsView): Availability =>
+  view.meta.availability ?? (view.isCanonical ? "available" : "not_available");
+
+const CarbonDashboard = () => {
+  const { get } = useConnection();
+  const [year, setYear] = useState("");
+  const [sector, setSector] = useState("");
+  const [scheme, setScheme] = useState("");
+  const [view, setView] = useState<DashboardAnalyticsView>(EMPTY_VIEW);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+    get(filterPath(year, sector, scheme))
+      .then((response) => {
+        if (active) setView(adaptDashboardAnalytics(response));
+      })
+      .catch(() => {
+        if (active) {
+          setView(EMPTY_VIEW);
+          setError("Dashboard data could not be loaded. Please try again.");
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [get, reloadToken, scheme, sector, year]);
+
+  const sectorOptions = useMemo(() => {
+    const chart = view.charts.find((item) => item.id === "issued_units_by_sector");
+    return chart?.points.map((point) => point.label) ?? [];
+  }, [view.charts]);
+  const schemeOptions = useMemo(() => {
+    const chart = view.charts.find(
+      (item) => item.id === "proponents_by_registry_scheme"
+    );
+    return chart?.points.map((point) => point.label) ?? [];
+  }, [view.charts]);
+  const availability = dashboardAvailability(view);
+
+  return (
+    <section className="carbon-dashboard" aria-busy={loading}>
       <div className="dashboard-container">
-        {/* Header */}
-        <div className="dashboard-header">
-          <h2 className="header-title">{t("homepage:dashboardtitle")}</h2>
-        </div>
-
-        {/* Main Card with Title and Statistics */}
-        <div className="main-card">
-          <div className="main-card-content">
-            <div className="main-title-container">
-              <h1 className="main-title">{t("homepage:allinoneplatform")}</h1>
-            </div>
-            <div className="stats-container" ref={statsRef}>
-              <div className="stats-wrapper">
-                <div className="main-statistic procount">
-                  <div
-                    className={`statistic-value ${
-                      isAnimating ? "counting" : ""
-                    }`}
-                  >
-                    {projectCount.toLocaleString()}
-                  </div>
-                  <div className="statistic-title">
-                    {t("homepage:totprojects")}
-                  </div>
-                </div>
-                <div className="main-statistic">
-                  <div
-                    className={`statistic-value ${
-                      isAnimating ? "counting" : ""
-                    }`}
-                  >
-                    {creditCount.toLocaleString()}
-                  </div>
-                  <div className="statistic-title">
-                    {t("homepage:totcredits")}
-                  </div>
-                </div>
-              </div>
-            </div>
+        <header className="analytics-dashboard-header">
+          <div>
+            <p className="analytics-eyebrow">Mitigation Registry</p>
+            <h2 className="header-title">Registry analytics</h2>
           </div>
-        </div>
+          <a className="analytics-drill-link" href="#registry-table">Browse registry records</a>
+        </header>
 
-        {/* Registry Overview: stage sidebar + Emission Reduction Certificate panel */}
-        <div className="registry-overview-grid">
-          <div className="registry-overview-sidebar">
-            <h3 className="registry-overview-sidebar-title">Mitigation Registry</h3>
-            <div className="registry-overview-sidebar-total">
-              <div className="registry-overview-sidebar-total-value">
-                {summary.totalProjects.toLocaleString()}
-              </div>
-              <div className="registry-overview-sidebar-total-label">
-                Total Projects
-              </div>
-            </div>
-            <div className="registry-overview-sidebar-stages">
-              {stageLabels.map((stage) => (
-                <div key={stage.key} className="registry-overview-sidebar-stage">
-                  <span className="registry-overview-sidebar-stage-label">
-                    {stage.label}
-                  </span>
-                  <span className="registry-overview-sidebar-stage-value">
-                    {(summary.stageCounts[stage.key] ?? 0).toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="registry-overview-certificate">
-            <h3 className="registry-overview-certificate-title">
-              Emission Reduction Certificate
-            </h3>
-            <div className="registry-overview-certificate-grid">
-              <div className="registry-overview-certificate-card highlight">
-                <div className="registry-overview-certificate-value">
-                  {summary.credits.issued.toLocaleString()}
-                </div>
-                <div className="registry-overview-certificate-label">Issued</div>
-              </div>
-              <div className="registry-overview-certificate-card">
-                <div className="registry-overview-certificate-value">
-                  {summary.credits.available.toLocaleString()}
-                </div>
-                <div className="registry-overview-certificate-label">Available</div>
-              </div>
-              <div className="registry-overview-certificate-card">
-                <div className="registry-overview-certificate-value">
-                  {summary.credits.transferred.toLocaleString()}
-                </div>
-                <div className="registry-overview-certificate-label">
-                  Transferred
-                </div>
-              </div>
-              <div className="registry-overview-certificate-card">
-                <div className="registry-overview-certificate-value">
-                  {summary.credits.retired.toLocaleString()}
-                </div>
-                <div className="registry-overview-certificate-label">Retired</div>
-              </div>
-              <div className="registry-overview-certificate-card">
-                <div className="registry-overview-certificate-value">
-                  {(summary.credits.cancelled ?? 0).toLocaleString()}
-                </div>
-                <div className="registry-overview-certificate-label">Cancelled</div>
-              </div>
-              <div className="registry-overview-certificate-card">
-                <div className="registry-overview-certificate-value">
-                  {(summary.credits.assignedToExchange ?? 0).toLocaleString()}
-                </div>
-                <div className="registry-overview-certificate-label">
-                  Assigned to Exchange
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Chart Grid: Project Status / Credit Status / Sector / Proponent */}
-        <motion.div
-          className="donut-grid"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          viewport={{ once: true }}
-        >
-          <div className="donut-card">
-            <h3 className="section-title">
-              {t("homepage:projectdistribution")}
-            </h3>
-            <DonutBreakdown
-              data={projectData}
-              totalLabel={t("homepage:totprojects")}
-            />
-          </div>
-
-          <div className="donut-card">
-            <h3 className="section-title">
-              {t("homepage:distributionbystatus")}
-            </h3>
-            <DonutBreakdown
-              data={creditData}
-              totalLabel={t("homepage:totcredits")}
-            />
-          </div>
-
-          {sectorData.length > 0 && (
-            <div className="donut-card">
-              <h3 className="section-title">
-                {t("homepage:sectordistribution")}
-              </h3>
-              <DonutBreakdown
-                data={sectorData}
-                totalLabel={t("homepage:totprojects")}
-              />
-            </div>
+        <div className="analytics-disclosure" role="status">
+          {view.meta.disclosure ?? "Data metadata unavailable — provenance cannot be verified."}
+          {view.meta.as_of && <span> As of: {view.meta.as_of}.</span>}
+          {view.meta.period?.start && view.meta.period.end && (
+            <span> Coverage: {view.meta.period.start}–{view.meta.period.end}.</span>
           )}
-
-          <div className="donut-card">
-            <h3 className="section-title">
-              Number of Proponents by Registry Scheme
-            </h3>
-            <DonutBreakdown
-              data={registrySchemeProponentsData}
-              totalLabel={t("homepage:totalOrganisations")}
-            />
-          </div>
-
-          <div className="donut-card">
-            <h3 className="section-title">
-              {t("homepage:proponentdistribution")}
-            </h3>
-            <DonutBreakdown
-              data={proponentData}
-              totalLabel={t("homepage:totalOrganisations")}
-            />
-          </div>
-
-          {proponentCategoryData.length > 0 && (
-            <div className="donut-card">
-              <h3 className="section-title">
-                {t("homepage:proponentCategoryDistribution", {
-                  defaultValue: "Number of Proponents by Category",
-                })}
-              </h3>
-              <DonutBreakdown
-                data={proponentCategoryData}
-                totalLabel={t("homepage:totalOrganisations")}
-              />
-            </div>
-          )}
-
-          <div className="donut-card">
-            <h3 className="section-title">
-              Number of SPE by Registry Scheme
-            </h3>
-            <DonutBreakdown
-              data={registrySchemeCreditsData}
-              totalLabel={t("homepage:totcredits")}
-            />
-          </div>
-
-          <div className="donut-card">
-            <h3 className="section-title">
-              Verified Emission Reduction by Proponent Type (ton CO2e)
-            </h3>
-            <DonutBreakdown
-              data={creditsByProponentData}
-              totalLabel={t("homepage:totcredits")}
-            />
-          </div>
-
-          <div className="donut-card">
-            <h3 className="section-title">Number of SPE by Sectors</h3>
-            <DonutBreakdown
-              data={speBySectorData}
-              totalLabel={t("homepage:totcredits")}
-            />
-          </div>
-
-          <div className="donut-card">
-            <h3 className="section-title">
-              Verified Emission Reduction by Sector (ton CO2e)
-            </h3>
-            <DonutBreakdown
-              data={creditsBySectorData}
-              totalLabel={t("homepage:totcredits")}
-            />
-          </div>
-        </motion.div>
-
-        {/* Emission Ceiling & Trading (SRN's PTBAE-PU equivalent) */}
-        <section className="section">
-          <h3 className="section-title">Emission Ceiling &amp; Trading</h3>
-          <p className="registry-table-subtitle">
-            Technical approval for upper emission limits, and carbon
-            exchange trading, for business actors registered with Champa.
-          </p>
-          <div className="donut-grid">
-            <div className="donut-card">
-              <div className="main-statistic">
-                <div className="statistic-value">
-                  {tradingSummary.ceiling.totalUnits.toLocaleString()}
-                </div>
-                <div className="statistic-title">Total Ceiling Units</div>
-              </div>
-            </div>
-            <div className="donut-card">
-              <div className="main-statistic">
-                <div className="statistic-value">
-                  {tradingSummary.ceiling.companies}
-                </div>
-                <div className="statistic-title">
-                  Companies with Allocated Ceiling
-                </div>
-              </div>
-            </div>
-            <div className="donut-card">
-              <div className="main-statistic">
-                <div className="statistic-value">
-                  {tradingSummary.trading.totalUnits.toLocaleString()}
-                </div>
-                <div className="statistic-title">Total Units Traded</div>
-              </div>
-            </div>
-            <div className="donut-card">
-              <div className="main-statistic">
-                <div className="statistic-value">
-                  {tradingSummary.today.totalUnits.toLocaleString()}
-                </div>
-                <div className="statistic-title">
-                  Daily Trading Volume (tCO2e)
-                </div>
-              </div>
-            </div>
-            <div className="donut-card">
-              <div className="main-statistic">
-                <div className="statistic-value">
-                  {tradingSummary.today.totalValueLAK
-                    ? `LAK ${tradingSummary.today.totalValueLAK.toLocaleString()}`
-                    : "LAK 0"}
-                </div>
-                <div className="statistic-title">Daily Trading Value</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="registry-table-section">
-            <EmissionCeilingTradingTabs />
-          </div>
-        </section>
-
-        {/* Footer Text */}
-        <div className="footer-section">
-          <p className="footer-text">
-            {/* {t("homepage:policyContextBody")} */}
-            <Trans
-              i18nKey={"homepage:policyContextBody"}
-              components={{
-                br: <br />,
-                ul: <ul />,
-                li: <li />,
-                b: <strong />,
-              }}
-            />
-          </p>
         </div>
+
+        <div className="analytics-filter-bar" aria-label="Registry analytics filters">
+          <Select value={year} onChange={setYear} options={years.map((value) => ({ value, label: value || "All years" }))} />
+          <Select
+            value={sector}
+            onChange={setSector}
+            options={[{ value: "", label: "All sectors" }, ...sectorOptions.map((value) => ({ value, label: value }))]}
+          />
+          <Select
+            value={scheme}
+            onChange={setScheme}
+            options={[{ value: "", label: "All configured schemes" }, ...schemeOptions.map((value) => ({ value, label: value }))]}
+          />
+          <Button onClick={() => setReloadToken((current) => current + 1)}>Refresh</Button>
+        </div>
+
+        {error && <Alert type="error" showIcon message={error} action={<Button size="small" onClick={() => setReloadToken((current) => current + 1)}>Retry</Button>} />}
+        {loading ? (
+          <div className="analytics-loading"><Spin /> Loading registry analytics…</div>
+        ) : (
+          <>
+            <div className="registry-overview-grid">
+              <article className="registry-overview-sidebar">
+                <h3 className="registry-overview-sidebar-title">Mitigation Registry</h3>
+                <div className="registry-overview-sidebar-total">
+                  <div className="registry-overview-sidebar-total-value">
+                    {humanMetricValue(view.overview.programme_count, availability)}
+                  </div>
+                  <div className="registry-overview-sidebar-total-label">Programmes</div>
+                </div>
+                <div className="registry-overview-sidebar-stages">
+                  {stageLabels.map((stage) => (
+                    <div key={stage.key} className="registry-overview-sidebar-stage">
+                      <span className="registry-overview-sidebar-stage-label">{stage.label}</span>
+                      <span className="registry-overview-sidebar-stage-value">
+                        {humanMetricValue(view.overview.stage_counts[stage.key] ?? null, availability)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="registry-overview-certificate">
+                <h3 className="registry-overview-certificate-title">Champa Certificate Registry</h3>
+                <div className="registry-overview-certificate-grid">
+                  {certificateCards.map(([key, label], index) => (
+                    <div className={`registry-overview-certificate-card ${index === 0 ? "highlight" : ""}`} key={key}>
+                      <div className="registry-overview-certificate-value">
+                        {humanMetricValue(view.overview.certificate_metrics[key] ?? null, availability)}
+                      </div>
+                      <div className="registry-overview-certificate-label">{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </div>
+            <div className="donut-grid analytics-chart-grid">
+              {view.charts.map((chart) => <ChartCard chart={chart} key={chart.id} />)}
+            </div>
+          </>
+        )}
       </div>
-    </div>
+    </section>
   );
 };
 

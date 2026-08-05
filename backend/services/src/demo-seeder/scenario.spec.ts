@@ -1,4 +1,4 @@
-import { buildDemoSeedScenario, DEMO_MINIMUMS } from "./scenario";
+import { buildDemoSeedScenario, DEMO_MINIMUMS, loadScenarioIdempotently, renderSeedCoverageReport } from "./scenario";
 import { assertSafeDemoSeedEnvironment, DEMO_SEED_CONFIRMATION } from "./safety";
 
 describe("W1 deterministic demo scenario", () => {
@@ -18,5 +18,19 @@ describe("W1 deterministic demo scenario", () => {
     expect(() => assertSafeDemoSeedEnvironment({})).toThrow("CHAMPA_DEMO_DATABASE");
     expect(() => assertSafeDemoSeedEnvironment({ CHAMPA_DEMO_DATABASE: "true", CHAMPA_DEMO_SEED_CONFIRMATION: DEMO_SEED_CONFIRMATION, NODE_ENV: "production" })).toThrow("production");
     expect(() => assertSafeDemoSeedEnvironment({ CHAMPA_DEMO_DATABASE: "true", CHAMPA_DEMO_SEED_CONFIRMATION: DEMO_SEED_CONFIRMATION, NODE_ENV: "test" })).not.toThrow();
+  });
+
+  it("makes the future W2 loader retry-safe and reports every feature", async () => {
+    let appliedHash: string | null = null;
+    const loader = {
+      getAppliedScenarioHash: jest.fn(async () => appliedHash),
+      replaceSyntheticScenario: jest.fn(async (scenario) => {
+        appliedHash = scenario.hash;
+      }),
+    };
+    expect((await loadScenarioIdempotently(loader)).status).toBe("loaded");
+    expect((await loadScenarioIdempotently(loader)).status).toBe("unchanged");
+    expect(loader.replaceSyntheticScenario).toHaveBeenCalledTimes(1);
+    expect(renderSeedCoverageReport()).toContain("F25:");
   });
 });

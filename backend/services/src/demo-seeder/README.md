@@ -6,9 +6,12 @@ statistics, certificates, market activity, people, organisations, or policy.
 
 The scenario generator is deliberately schema-neutral. W2 must implement the
 `W2SeedLoader` interface in `scenario.ts` for the final certificate-lot,
-portion, and ledger tables. It receives stable records, IDs, provenance and
-coverage map; it must preserve the W0 conservation rules and never substitute
-live data. This avoids W1 pre-empting W2 migrations.
+portion, and ledger tables. Its required `getAppliedScenarioHash` and
+`replaceSyntheticScenario` operations are wrapped by `loadScenarioIdempotently`:
+the same scenario hash is a no-op and a partial load is rejected. It receives
+stable records, IDs, provenance and a F01–F25 coverage map; it must preserve
+the W0 conservation rules and never substitute live data. This avoids W1
+pre-empting W2 migrations.
 
 Run only against a disposable database explicitly marked as demo:
 

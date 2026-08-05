@@ -66,8 +66,9 @@ export interface DemoSeedRecord extends DemoProvenance {
 }
 
 export interface W2SeedLoader {
-  /** W2 implements this against its final entity/ledger schema. */
-  load(records: readonly DemoSeedRecord[]): Promise<void>;
+  /** W2 implements these operations against its final entity/ledger schema. */
+  getAppliedScenarioHash(scenarioId: string): Promise<string | null>;
+  replaceSyntheticScenario(scenario: DemoSeedScenario): Promise<void>;
 }
 
 export interface DemoSeedScenario {
@@ -76,6 +77,11 @@ export interface DemoSeedScenario {
   records: readonly DemoSeedRecord[];
   counts: Record<DemoRecordKind, number>;
   featureCoverage: Record<string, string[]>;
+  hash: string;
+}
+
+export interface DemoSeedLoadResult {
+  status: "loaded" | "unchanged";
   hash: string;
 }
 
@@ -177,4 +183,42 @@ export function buildDemoSeedScenario(): DemoSeedScenario {
     featureCoverage,
     hash: createHash("sha256").update(canonical).digest("hex"),
   };
+}
+
+/**
+ * The W2 adapter must use this operation rather than an additive insert. It
+ * makes the scenario retry-safe and detects a loader that only partially
+ * applied a supposedly deterministic dataset.
+ */
+export async function loadScenarioIdempotently(
+  loader: W2SeedLoader,
+  scenario = buildDemoSeedScenario()
+): Promise<DemoSeedLoadResult> {
+  const existing = await loader.getAppliedScenarioHash(scenario.version);
+  if (existing === scenario.hash) return { status: "unchanged", hash: scenario.hash };
+  await loader.replaceSyntheticScenario(scenario);
+  const applied = await loader.getAppliedScenarioHash(scenario.version);
+  if (applied !== scenario.hash) {
+    throw new Error(`Demo scenario load did not converge for ${scenario.version}`);
+  }
+  return { status: "loaded", hash: scenario.hash };
+}
+
+export function renderSeedCoverageReport(scenario = buildDemoSeedScenario()): string {
+  const featureRows = Object.keys(scenario.featureCoverage)
+    .map((feature) => `- ${feature}: ${scenario.featureCoverage[feature].join(", ")}`)
+    .join("\n");
+  const countRows = Object.keys(scenario.counts)
+    .sort()
+    .map((kind) => `- ${kind}: ${scenario.counts[kind as DemoRecordKind]}`)
+    .join("\n");
+  return [
+    `scenario: ${scenario.version}`,
+    `sha256: ${scenario.hash}`,
+    `as_of: ${DEMO_SCENARIO.asOf}`,
+    "counts:",
+    countRows,
+    "feature_coverage:",
+    featureRows,
+  ].join("\n");
 }

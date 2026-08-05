@@ -23,5 +23,12 @@ NODE_ENV=development RUN_MODULE=demo-seeder yarn start
 ```
 
 The command refuses `NODE_ENV=production`, a missing demo marker, or a missing
-confirmation. It is not a normal application startup command. Before a final
-load, run the scenario test twice and compare the reported SHA-256 hash.
+confirmation. Its default `plan` mode does **not** write a database; it prints
+the deterministic coverage report that W2 must load. It is not a normal
+application startup command. Before a final load, run the scenario test twice
+and compare the reported SHA-256 hash.
+
+The old narrow seed remains behind both `CHAMPA_DEMO_SEED_MODE=legacy` and
+`CHAMPA_ALLOW_LEGACY_ADDITIVE=true` solely for temporary local compatibility.
+It is not idempotent or production-scale and must not be used for parity demo
+evidence.

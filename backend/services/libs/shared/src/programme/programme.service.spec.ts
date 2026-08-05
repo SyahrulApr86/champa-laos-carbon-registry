@@ -89,3 +89,95 @@ describe("ProgrammeService credit state transitions", () => {
     expect((service as any).programmeLedger.applyProgrammeCreditStatus).not.toHaveBeenCalled();
   });
 });
+
+describe("ProgrammeService canonical public analytics", () => {
+  it("reconciles issued chart totals and current certificate state from canonical lots", async () => {
+    const service = Object.create(ProgrammeService.prototype) as ProgrammeService;
+    (service as any).getPublicSummary = jest.fn().mockResolvedValue({
+      stageCounts: { NEW: 1, AUTHORISED: 1 },
+    });
+    (service as any).programmeRepo = {
+      find: jest.fn().mockResolvedValue([
+        {
+          programmeId: "P-ENERGY",
+          sector: "Energy",
+          companyId: [10],
+          proponentPercentage: [100],
+          emissionReductionAchieved: 80,
+        },
+        {
+          programmeId: "P-WASTE",
+          sector: "Waste",
+          companyId: [11],
+          proponentPercentage: [100],
+          emissionReductionAchieved: 20,
+        },
+      ]),
+    };
+    (service as any).companyRepo = {
+      find: jest.fn().mockResolvedValue([
+        { companyId: 10, companyRole: CompanyRole.PROJECT_DEVELOPER, proponentCategory: "Private" },
+        { companyId: 11, companyRole: CompanyRole.PROJECT_DEVELOPER, proponentCategory: "Public" },
+      ]),
+    };
+    (service as any).certificateLotRepo = {
+      find: jest.fn().mockResolvedValue([
+        {
+          certificateLotId: "lot-1",
+          programmeId: "P-ENERGY",
+          registryScheme: "Champa Registry",
+          issuedQuantity: "100",
+          vintageStart: "2024-01-01",
+          vintageEnd: "2024-12-31",
+          asOf: new Date("2026-08-05T00:00:00Z"),
+          provenance: { dataset_kind: "demo_synthetic", source_type: "synthetic_demo" },
+        },
+        {
+          certificateLotId: "lot-2",
+          programmeId: "P-WASTE",
+          registryScheme: "Champa Registry",
+          issuedQuantity: "50",
+          vintageStart: "2025-01-01",
+          vintageEnd: "2025-12-31",
+          asOf: new Date("2026-08-05T00:00:00Z"),
+          provenance: { dataset_kind: "demo_synthetic", source_type: "synthetic_demo" },
+        },
+      ]),
+    };
+    (service as any).certificatePortionRepo = {
+      find: jest.fn().mockResolvedValue([
+        { certificateLotId: "lot-1", state: "AVAILABLE", quantity: "60" },
+        { certificateLotId: "lot-1", state: "RETIRED", quantity: "40" },
+        { certificateLotId: "lot-2", state: "ASSIGNED_TO_EXCHANGE", quantity: "50" },
+      ]),
+    };
+
+    const response = await service.getPublicAnalyticsSummary();
+    const issuedByScheme = response.data.charts.issued_units_by_registry_scheme.points;
+    const issuedBySector = response.data.charts.issued_units_by_sector.points;
+
+    expect(response.meta.dataset_kind).toBe("demo_synthetic");
+    expect(response.data.registry_overview.certificate_metrics.issued).toBe(150);
+    expect(response.data.registry_overview.certificate_metrics.available).toBe(60);
+    expect(response.data.registry_overview.certificate_metrics.retired).toBe(40);
+    expect(response.data.registry_overview.certificate_metrics.assigned_to_exchange).toBe(50);
+    expect(issuedByScheme.reduce((total, point) => total + point.value, 0)).toBe(150);
+    expect(issuedBySector.reduce((total, point) => total + point.value, 0)).toBe(150);
+    expect(response.data.charts.issued_units_by_sector.metric.availability).toBe("available");
+  });
+
+  it("does not mark a deployment synthetic when it has no synthetic certificate source", async () => {
+    const service = Object.create(ProgrammeService.prototype) as ProgrammeService;
+    (service as any).getPublicSummary = jest.fn().mockResolvedValue({ stageCounts: {} });
+    (service as any).programmeRepo = { find: jest.fn().mockResolvedValue([]) };
+    (service as any).companyRepo = { find: jest.fn().mockResolvedValue([]) };
+    (service as any).certificateLotRepo = { find: jest.fn().mockResolvedValue([]) };
+    (service as any).certificatePortionRepo = { find: jest.fn() };
+
+    const response = await service.getPublicAnalyticsSummary();
+
+    expect(response.meta.dataset_kind).toBe("authoritative");
+    expect(response.meta.source.type).toBe("registry_records");
+    expect(response.data.charts.issued_units_by_registry_scheme.metric.availability).toBe("not_available");
+  });
+});

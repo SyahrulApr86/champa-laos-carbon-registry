@@ -10,16 +10,14 @@ import {
   Statistic,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
 import "./termsofUse.scss";
 import LayoutFooter from "../../Components/Footer/layout.footer";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import { CcCircle } from "react-bootstrap-icons";
 const TermsOfUse = () => {
   const { i18n, t } = useTranslation(["common", "homepage"]);
-  const navigate = useNavigate();
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -32,24 +30,7 @@ const TermsOfUse = () => {
   }, []);
   return (
     <div className="term-container">
-      <Row>
-        <Col span={24}>
-          <div onClick={() => navigate("/")} className="term-header-container">
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CARBON"}</div>
-                <div className="title-sub">{"REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
       <div className="term-body-container">
         <Row>
           <Col md={24} lg={24}>

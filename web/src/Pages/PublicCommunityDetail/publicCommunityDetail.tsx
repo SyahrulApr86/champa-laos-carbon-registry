@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Tag, Spin, Descriptions } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
+import { useParams } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import LayoutFooter from "../../Components/Footer/layout.footer";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import "./publicCommunityDetail.scss";
 
 interface PublicCommunityDetailResult {
@@ -33,7 +33,6 @@ const dateOfMillis = (epochMillis?: number) =>
   epochMillis ? new Date(Number(epochMillis)).toLocaleDateString() : "-";
 
 const PublicCommunityDetail = () => {
-  const navigate = useNavigate();
   const { programId } = useParams<{ programId: string }>();
   const { get } = useConnection();
   const [loading, setLoading] = useState<boolean>(true);
@@ -59,27 +58,7 @@ const PublicCommunityDetail = () => {
       id="publicCommunityDetail"
       className="public-community-detail-container"
     >
-      <Row>
-        <Col span={24}>
-          <div
-            onClick={() => navigate("/")}
-            className="public-community-detail-header-container"
-          >
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CHAMPA"}</div>
-                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "Lao PDR"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
       <div className="public-community-detail-body-container">
         <Row justify="center">
           <Col xs={22} md={16}>

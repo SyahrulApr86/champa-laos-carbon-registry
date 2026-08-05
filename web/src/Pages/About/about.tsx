@@ -1,36 +1,16 @@
 import React from "react";
-import { Row, Col } from "antd";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LayoutFooter from "../../Components/Footer/layout.footer";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import "./about.scss";
 
 // Static, informational "About" page mirroring SRN Indonesia's "About SRN"
 // nav item. No data-driven content here by design - this is background
 // context (what Champa is, who runs it, the legal basis), not a dashboard.
 const About = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="about-page-container">
-      <Row>
-        <Col span={24}>
-          <div onClick={() => navigate("/")} className="about-header-container">
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CHAMPA"}</div>
-                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "Lao PDR"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
 
       <div className="about-body-container">
         <h1 className="about-title">About Champa</h1>

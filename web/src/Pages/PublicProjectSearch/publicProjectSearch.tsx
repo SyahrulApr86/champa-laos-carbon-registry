@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Row, Col, Input, Table, Tag, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import LayoutFooter from "../../Components/Footer/layout.footer";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import "./publicProjectSearch.scss";
 
 interface PublicProjectSearchResult {
@@ -106,27 +106,7 @@ const PublicProjectSearch = () => {
 
   return (
     <div id="publicProjectSearch" className="public-project-search-container">
-      <Row>
-        <Col span={24}>
-          <div
-            onClick={() => navigate("/")}
-            className="public-project-search-header-container"
-          >
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CHAMPA"}</div>
-                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
       <div className="public-project-search-body-container">
         <Row justify="center">
           <Col xs={22} md={16}>

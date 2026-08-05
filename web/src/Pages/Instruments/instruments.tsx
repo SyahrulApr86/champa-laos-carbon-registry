@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { Row, Col } from "antd";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LayoutFooter from "../../Components/Footer/layout.footer";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import VerificationAgencyList from "./VerificationAgencyList";
 import RosterOfExpertList from "./RosterOfExpertList";
 import GuidanceDocumentList from "./GuidanceDocumentList";
@@ -14,8 +13,6 @@ import "./instruments.scss";
 // data-backed items link to their real pages; the rest are described
 // honestly as not yet populated rather than filled with placeholder data.
 const Instruments = () => {
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (window.location.hash) {
       const id = window.location.hash.replace("#", "");
@@ -28,27 +25,7 @@ const Instruments = () => {
 
   return (
     <div className="instruments-page-container">
-      <Row>
-        <Col span={24}>
-          <div
-            onClick={() => navigate("/")}
-            className="instruments-header-container"
-          >
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CHAMPA"}</div>
-                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "Lao PDR"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
 
       <div className="instruments-body-container">
         <h1 className="instruments-title">Instruments</h1>

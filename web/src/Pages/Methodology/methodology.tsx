@@ -1,12 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { Row, Col, Input, Select, Table, Tag, Empty } from "antd";
-import { useNavigate } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { Sector } from "../../Definitions/Enums/sector.enum";
 import { MethodologyStatus } from "../../Definitions/Enums/methodologyStatus.enum";
 import LayoutFooter from "../../Components/Footer/layout.footer";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import "./methodology.scss";
 
 const { Search } = Input;
@@ -29,7 +28,6 @@ const statusTagColor = (status: MethodologyStatus) =>
 // approved GHG accounting methodologies without needing to log in, mirroring
 // GET /national/methodology/public on the backend.
 const MethodologyDirectory = () => {
-  const navigate = useNavigate();
   const { get } = useConnection();
 
   const [data, setData] = useState<MethodologyRecord[]>([]);
@@ -105,27 +103,7 @@ const MethodologyDirectory = () => {
 
   return (
     <div className="methodology-directory-container">
-      <Row>
-        <Col span={24}>
-          <div
-            onClick={() => navigate("/")}
-            className="methodology-header-container"
-          >
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CHAMPA"}</div>
-                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
 
       <div className="methodology-body-container">
         <div className="methodology-title">Methodology Directory</div>

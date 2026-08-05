@@ -1,19 +1,10 @@
-import {
-  Button,
-  Col,
-  Collapse,
-  CollapseProps,
-  Dropdown,
-  MenuProps,
-  Row,
-} from "antd";
+import { Col, Collapse, CollapseProps, Row } from "antd";
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trans, useTranslation } from "react-i18next";
 import i18next from "i18next";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
 import heroImage1 from "../../Assets/Images/homepage_img.png";
 import heroImage2 from "../../Assets/Images/homepage_img2.png"; // Add your second image
 import heroImage3 from "../../Assets/Images/homepage_img3.png"; // Add your third image
@@ -48,10 +39,10 @@ import {
 } from "react-bootstrap-icons";
 import { ImgWithFallback } from "../../Components/ImgwithFallback/imgWithFallback";
 import CollapsePanel from "antd/lib/collapse/CollapsePanel";
-import { ROUTES } from "../../Config/uiRoutingConfig";
 import RegistryTabs from "../../Components/Homepage/RegistryTabs";
 import DigitalPublicGood from "../../Components/Homepage/DigitalPublic";
 import FeatureCards from "../../Components/Homepage/Keyfeatures";
+import AppHeader from "../../Components/AppHeader/appHeader";
 
 const Homepage = () => {
   const { i18n, t } = useTranslation(["common", "homepage"]);
@@ -99,51 +90,6 @@ const Homepage = () => {
     }
   }, []);
 
-  const scrollToSection = useCallback((id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, []);
-
-  const aboutMenuItems: MenuProps["items"] = [
-    {
-      key: "about-champa",
-      label: "About Champa",
-      onClick: () => navigate("/about"),
-    },
-    {
-      key: "faq",
-      label: "FAQ",
-      onClick: () => scrollToSection("faq"),
-    },
-  ];
-
-  const instrumentsMenuItems: MenuProps["items"] = [
-    {
-      key: "methodology-directory",
-      label: "Methodology Directory",
-      onClick: () => navigate("/methodology"),
-    },
-    {
-      key: "instruments-overview",
-      label: "Instruments Overview",
-      onClick: () => navigate("/instruments"),
-    },
-    {
-      key: "vva",
-      label: "Validation/Verification Agencies",
-      onClick: () => navigate("/instruments#vva"),
-    },
-    {
-      key: "module",
-      label: "Module",
-      onClick: () => navigate("/instruments#module"),
-    },
-  ];
 
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
 
@@ -192,70 +138,7 @@ const Homepage = () => {
                 )
             )}
 
-            <Row>
-              <Col md={18} lg={21} xs={17} flex="auto">
-                <div className="homepage-header-container">
-                  <div className="logo">
-                    <img src={sliderLogo} alt="slider-logo" />
-                  </div>
-                  <div>
-                    <div style={{ display: "flex" }}>
-                      <div className="title">
-                        {"CHAMPA - LAO PDR CARBON REGISTRY"}
-                      </div>
-                    </div>
-                    <div className="country-name">
-                      {import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX"}
-                    </div>
-                  </div>
-                  <nav className="homepage-nav-links">
-                    <a onClick={() => navigate("/")}>Home</a>
-                    <a onClick={() => navigate("/map")}>Map</a>
-                    <Dropdown
-                      menu={{ items: aboutMenuItems }}
-                      trigger={["click"]}
-                      overlayClassName="homepage-nav-dropdown"
-                    >
-                      <a onClick={(e) => e.preventDefault()}>About</a>
-                    </Dropdown>
-                    <Dropdown
-                      menu={{ items: instrumentsMenuItems }}
-                      trigger={["click"]}
-                      overlayClassName="homepage-nav-dropdown"
-                    >
-                      <a onClick={(e) => e.preventDefault()}>Instruments</a>
-                    </Dropdown>
-                    <a
-                      onClick={() => {
-                        navigate("/");
-                        window.location.hash = "ndc";
-                        setTimeout(
-                          () =>
-                            document
-                              .querySelector(".registry-tabs-container")
-                              ?.scrollIntoView({ block: "start" }),
-                          50
-                        );
-                      }}
-                    >
-                      NDC Achievement
-                    </a>
-                  </nav>
-                </div>
-              </Col>
-              <Col md={6} lg={3} xs={7} flex="auto">
-                <div className="homepage-button-container">
-                  <div className="button">
-                    <Button
-                      type="primary"
-                      onClick={() => navigate(ROUTES.LOGIN)}
-                    >
-                      SIGN IN
-                    </Button>
-                  </div>
-                </div>
-              </Col>
-            </Row>
+            <AppHeader />
             <Row>
               <div className="text-ctn">
                 <span>

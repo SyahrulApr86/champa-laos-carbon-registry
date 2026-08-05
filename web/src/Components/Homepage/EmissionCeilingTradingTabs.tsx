@@ -3,7 +3,7 @@ import { Table, Tabs } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 
-// PTBAE-PU equivalent sub-tabs: Series / Carbon Exchange Transactions /
+// Emission ceiling/trading sub-tabs: Series / Carbon Exchange Transactions /
 // Participants. Each tab is backed by a real, paginated public endpoint -
 // see EmissionTradingService.publicSeries / publicTransactions /
 // publicParticipants.
@@ -85,7 +85,7 @@ const SeriesTable = () => {
   );
 
   const columns = [
-    { title: "PTBAE-PU Series", dataIndex: "seriesName", key: "seriesName" },
+    { title: "Ceiling Series", dataIndex: "seriesName", key: "seriesName" },
     { title: "Emission Year", dataIndex: "year", key: "year" },
     {
       title: "Amount",
@@ -200,7 +200,7 @@ const EmissionCeilingTradingTabs = () => {
     <Tabs
       defaultActiveKey="series"
       items={[
-        { key: "series", label: "PTBAE-PU Series", children: <SeriesTable /> },
+        { key: "series", label: "Ceiling Series", children: <SeriesTable /> },
         {
           key: "transactions",
           label: "Carbon Exchange Transactions",

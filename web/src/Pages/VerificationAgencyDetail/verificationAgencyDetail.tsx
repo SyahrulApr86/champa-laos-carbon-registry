@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Spin, Descriptions, Tag } from "antd";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import sliderLogo from "../../Assets/Images/logo-slider.png";
+import { useParams, Link } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import LayoutFooter from "../../Components/Footer/layout.footer";
+import AppHeader from "../../Components/AppHeader/appHeader";
 import "./verificationAgencyDetail.scss";
 
 interface CertifierDetail {
@@ -37,13 +37,12 @@ const yesNoUnset = (value: boolean | null | undefined) => {
 
 // Per-agency detail page for a Validation/Verification Agency, mirroring
 // SRN Indonesia's LVV detail page: certificate number, validity period,
-// address/website, scope-by-sector coverage, DRAM/LCAM applicability, and
-// SPEI/PTBAE-PU scheme eligibility. Certificate/scope fields are recorded
-// separately from the core Company record (CertifierProfileEntity) and are
-// honestly empty until a profile has been entered for this agency - most
-// agencies will not have one yet, which is correct, not a bug.
+// address/website, scope-by-sector coverage, mitigation-document
+// applicability, and scheme eligibility. Certificate/scope fields are
+// recorded separately from the core Company record (CertifierProfileEntity)
+// and are honestly empty until a profile has been entered for this agency -
+// most agencies will not have one yet, which is correct, not a bug.
 const VerificationAgencyDetail = () => {
-  const navigate = useNavigate();
   const { companyId } = useParams<{ companyId: string }>();
   const { get } = useConnection();
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,27 +66,7 @@ const VerificationAgencyDetail = () => {
       id="verificationAgencyDetail"
       className="verification-agency-detail-container"
     >
-      <Row>
-        <Col span={24}>
-          <div
-            onClick={() => navigate("/")}
-            className="verification-agency-detail-header-container"
-          >
-            <div className="logo">
-              <img src={sliderLogo} alt="slider-logo" />
-            </div>
-            <div>
-              <div style={{ display: "flex" }}>
-                <div className="title">{"CHAMPA"}</div>
-                <div className="title-sub">{"LAO PDR CARBON REGISTRY"}</div>
-              </div>
-              <div className="country-name">
-                {import.meta.env.VITE_APP_COUNTRY_NAME || "Lao PDR"}
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <AppHeader />
       <div className="verification-agency-detail-body-container">
         <Row justify="center">
           <Col xs={22} md={16}>
@@ -148,16 +127,16 @@ const VerificationAgencyDetail = () => {
                       ? detail.scopeSectors.join(", ")
                       : "Not yet recorded"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Applies to DRAM (Mitigation Action Plan)">
+                  <Descriptions.Item label="Applies to Mitigation Action Design Document">
                     {yesNoUnset(detail.appliesToDram)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Applies to LCAM (Mitigation Achievement Report)">
+                  <Descriptions.Item label="Applies to Mitigation Achievement Report">
                     {yesNoUnset(detail.appliesToLcam)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Eligible for SPEI Scheme">
+                  <Descriptions.Item label="Eligible for Emission Reduction Certificate Scheme">
                     {yesNoUnset(detail.eligibleForSpei)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Eligible for PTBAE-PU Scheme">
+                  <Descriptions.Item label="Eligible for Emission Ceiling &amp; Trading Scheme">
                     {yesNoUnset(detail.eligibleForPtbaePu)}
                   </Descriptions.Item>
                 </Descriptions>

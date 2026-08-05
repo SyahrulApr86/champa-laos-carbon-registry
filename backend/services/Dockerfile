@@ -1,22 +1,33 @@
-# Base image
-FROM node:20-alpine
+FROM node:20-alpine AS dependencies
 
-# Create app directory
 WORKDIR /app/backend/services
-
 COPY ./backend/services/package.json ./backend/services/yarn.lock ./
+RUN yarn install --frozen-lockfile && yarn cache clean
 
-# Install app dependencies
-RUN yarn install --frozen-lockfile
+FROM dependencies AS build
 
-# Bundle app source
 COPY ./backend/services ./
-
 RUN yarn build
 
-ENV NODE_ENV production
+# This target deliberately retains TypeScript tooling and source files so
+# `docker compose run --rm migrate` can execute TypeORM migrations before the
+# application services start. It is never used as the application runtime.
+FROM build AS migration
 
-RUN yarn cache clean
+FROM node:20-alpine AS runtime
 
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+WORKDIR /app/backend/services
+ENV NODE_ENV=production
+
+COPY ./backend/services/package.json ./backend/services/yarn.lock ./
+RUN yarn install --production=true --frozen-lockfile && yarn cache clean
+
+COPY --from=build /app/backend/services/dist ./dist
+COPY --from=build /app/backend/services/public ./public
+COPY --from=build /app/backend/services/*.csv ./
+COPY --from=build /app/backend/services/countries.json ./
+COPY --from=build /app/backend/services/response.json ./
+COPY --from=build /app/backend/services/fonts ./fonts
+COPY --from=build /app/backend/services/images ./images
+
+CMD ["node", "dist/main.js"]

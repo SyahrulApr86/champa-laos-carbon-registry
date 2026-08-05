@@ -1,8 +1,13 @@
-FROM node:20-alpine as build
+FROM node:20-alpine AS dependencies
+
 WORKDIR /app
-COPY ./web .
+COPY ./web/package.json ./web/yarn.lock ./
 RUN apk add python3 make g++ && rm -rf /var/cache/apk/*
-RUN CI=false yarn install
+RUN CI=false yarn install --frozen-lockfile && yarn cache clean
+
+FROM dependencies AS build
+
+COPY ./web .
 
 ARG PORT
 ENV PORT $PORT
@@ -16,8 +21,8 @@ ENV VITE_APP_STAT_URL $VITE_APP_STAT_URL
 ARG VITE_APP_COUNTRY_NAME
 ENV VITE_APP_COUNTRY_NAME $VITE_APP_COUNTRY_NAME
 
-ARG VITE_APP_COUNTRY_NAME
-ENV VITE_APP_COUNTRY_NAME $VITE_APP_COUNTRY_NAME
+ARG VITE_APP_REGISTRY_NAME
+ENV VITE_APP_REGISTRY_NAME $VITE_APP_REGISTRY_NAME
 
 ARG VITE_APP_COUNTRY_FLAG_URL
 ENV VITE_APP_COUNTRY_FLAG_URL $VITE_APP_COUNTRY_FLAG_URL

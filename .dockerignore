@@ -1,1 +1,5 @@
 **/node_modules
+.git
+.worktrees
+.polly
+qa/champa-superset/artifacts

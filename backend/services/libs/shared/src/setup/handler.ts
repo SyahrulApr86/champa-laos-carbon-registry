@@ -127,7 +127,8 @@ export const handler: Handler = async (event) => {
       fields = fields.map((f) => f.trim());
       // Columns: NAME, EMAIL, PHONE, ORGANISATION TAX ID,
       // ORGANISATION TYPE(Developer|Certifier|API|DNA|Ministry), SECTORAL SCOPE
-      // (pipe-separated SectoralScope codes, e.g. "1|4"), MINISTER NAME
+      // (pipe-separated SectoralScope codes, e.g. "1|4"), MINISTER NAME,
+      // INSTITUTION CATEGORY
       const cr =
         fields[4] == "IC"
           ? CompanyRole.INDEPENDENT_CERTIFIER
@@ -145,6 +146,8 @@ export const handler: Handler = async (event) => {
           : undefined;
       const nameOfMinister =
         fields[6] && fields[6].length > 0 ? fields[6] : undefined;
+      const institutionCategory =
+        fields[7] && fields[7].length > 0 ? (fields[7] as any) : undefined;
 
       try {
         const org = await companyService.create({
@@ -168,6 +171,7 @@ export const handler: Handler = async (event) => {
           provinces: [],
           regions: [],
           state: undefined, //double check this
+          institutionCategory: institutionCategory,
         });
       } catch (e) {
         console.log("Fail to create company", fields[1], e);

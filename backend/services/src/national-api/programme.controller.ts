@@ -46,6 +46,8 @@ import { Programme } from "@app/shared/entities/programme.entity";
 import { ProgrammeTransfer } from "@app/shared/entities/programme.transfer";
 import { ApiKeyJwtAuthGuard } from "@app/shared/auth/guards/api-jwt-key.guard";
 import { ProgrammeService } from "@app/shared/programme/programme.service";
+import { CreditCancelDto } from "@app/shared/dto/credit.cancel.dto";
+import { CreditAssignDto } from "@app/shared/dto/credit.assign.dto";
 
 @ApiTags("Programme")
 @ApiBearerAuth()
@@ -511,6 +513,26 @@ export class ProgrammeController {
     return this.programmeService.rejectNdcDetailsAction(
       baseIdDto,
       req.abilityCondition,
+      req.user
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("cancelCredits")
+  cancelCredits(@Body() body: CreditCancelDto, @Request() req) {
+    return this.programmeService.cancelCredits(
+      body.programmeId,
+      body.amount,
+      req.user
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("assignToExchange")
+  assignToExchange(@Body() body: CreditAssignDto, @Request() req) {
+    return this.programmeService.assignToExchange(
+      body.programmeId,
+      body.amount,
       req.user
     );
   }

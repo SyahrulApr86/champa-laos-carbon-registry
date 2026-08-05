@@ -5,6 +5,7 @@ import { EntitySubject } from "./entity.subject";
 import { SectoralScope } from "@undp/serial-number-gen";
 import { Ministry } from "../enum/ministry.enum";
 import { GovDepartment } from "../enum/govDep.enum";
+import { InstitutionCategory } from "../enum/institution.category.enum";
 
 @Entity()
 export class Company implements EntitySubject {
@@ -128,6 +129,13 @@ export class Company implements EntitySubject {
     array: false,
   })
   govDep: GovDepartment;
+
+  @Column({
+    type: "enum",
+    enum: InstitutionCategory,
+    nullable: true,
+  })
+  institutionCategory: InstitutionCategory;
 
   @BeforeInsert()
   setDefaultState() {

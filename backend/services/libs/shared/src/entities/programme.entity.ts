@@ -78,6 +78,12 @@ export class Programme implements EntitySubject {
   creditRetired: number[];
 
   @Column("real", { array: true, nullable: true })
+  creditCancelled: number[];
+
+  @Column("real", { array: true, nullable: true })
+  creditAssigned: number[];
+
+  @Column("real", { array: true, nullable: true })
   creditFrozen: number[];
 
   @Column("real", { array: true, nullable: true })

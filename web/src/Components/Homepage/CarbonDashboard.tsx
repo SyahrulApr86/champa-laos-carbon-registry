@@ -107,9 +107,12 @@ interface PublicAnalyticsSummary {
     transferred: number;
     retired: number;
     available: number;
+    cancelled: number;
+    assignedToExchange: number;
   };
   projectsBySector: Record<string, number>;
   proponentsByRole: Record<string, number>;
+  proponentsByCategory: Record<string, number>;
   creditsBySector: Record<string, number>;
   creditsByProponentRole: Record<string, number>;
 }
@@ -118,9 +121,18 @@ const emptySummary: PublicAnalyticsSummary = {
   totalProjects: 0,
   stageCounts: {},
   projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
-  credits: { authorised: 0, issued: 0, transferred: 0, retired: 0, available: 0 },
+  credits: {
+    authorised: 0,
+    issued: 0,
+    transferred: 0,
+    retired: 0,
+    available: 0,
+    cancelled: 0,
+    assignedToExchange: 0,
+  },
   projectsBySector: {},
   proponentsByRole: {},
+  proponentsByCategory: {},
   creditsBySector: {},
   creditsByProponentRole: {},
 };
@@ -172,9 +184,12 @@ const CarbonDashboard = () => {
               transferred: data.credits?.transferred ?? 0,
               retired: data.credits?.retired ?? 0,
               available: data.credits?.available ?? 0,
+              cancelled: data.credits?.cancelled ?? 0,
+              assignedToExchange: data.credits?.assignedToExchange ?? 0,
             },
             projectsBySector: data.projectsBySector ?? {},
             proponentsByRole: data.proponentsByRole ?? {},
+            proponentsByCategory: data.proponentsByCategory ?? {},
             creditsBySector: data.creditsBySector ?? {},
             creditsByProponentRole: data.creditsByProponentRole ?? {},
           });
@@ -307,6 +322,13 @@ const CarbonDashboard = () => {
     ([role, value]) => ({
       value,
       title: t(`companyRoles:${role}`, { defaultValue: role }),
+    })
+  );
+
+  const categoryData = Object.entries(summary.proponentsByCategory).map(
+    ([category, value]) => ({
+      value,
+      title: category,
     })
   );
 
@@ -456,6 +478,20 @@ const CarbonDashboard = () => {
                 </div>
                 <div className="registry-overview-certificate-label">Retired</div>
               </div>
+              <div className="registry-overview-certificate-card">
+                <div className="registry-overview-certificate-value">
+                  {(summary.credits.cancelled ?? 0).toLocaleString()}
+                </div>
+                <div className="registry-overview-certificate-label">Cancelled</div>
+              </div>
+              <div className="registry-overview-certificate-card">
+                <div className="registry-overview-certificate-value">
+                  {(summary.credits.assignedToExchange ?? 0).toLocaleString()}
+                </div>
+                <div className="registry-overview-certificate-label">
+                  Assigned to Exchange
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -516,6 +552,16 @@ const CarbonDashboard = () => {
             </h3>
             <DonutBreakdown
               data={proponentData}
+              totalLabel={t("homepage:totalOrganisations")}
+            />
+          </div>
+
+          <div className="donut-card">
+            <h3 className="section-title">
+              {t("homepage:proponentCategoryDistribution")}
+            </h3>
+            <DonutBreakdown
+              data={categoryData}
               totalLabel={t("homepage:totalOrganisations")}
             />
           </div>

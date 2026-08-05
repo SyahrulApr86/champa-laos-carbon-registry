@@ -1,10 +1,10 @@
-NAME,EMAIL,PHONE,ORGANISATION TAX ID,ORGANISATION TYPE(Developer|Certifier|API),SECTORAL SCOPE,MINISTER NAME
-Ministry of Agriculture and Environment,mae.dna@carbonregistry.la,,00001LA,DNA,,H.E. Minister of Agriculture and Environment
-Ministry of Energy and Mines,energy.mines@carbonregistry.la,,10001LA,Ministry,1,H.E. Minister of Energy and Mines
-Ministry of Industry and Commerce,industry.commerce@carbonregistry.la,,10002LA,Ministry,4,H.E. Minister of Industry and Commerce
-Ministry of Public Works and Transport,public.works.transport@carbonregistry.la,,10003LA,Ministry,7,H.E. Minister of Public Works and Transport
-Ministry of Health,health@carbonregistry.la,,10004LA,Ministry,,H.E. Minister of Health
-Ministry of Education and Sports,education.sports@carbonregistry.la,,10005LA,Ministry,,H.E. Minister of Education and Sports
-Department of Forestry (MAE),forestry.dept@carbonregistry.la,,10006LA,Ministry,14,H.E. Minister of Agriculture and Environment
-Lao Green Energy Co Ltd,proponent@laogreenenergy.la,,20001LA,Developer,,
-Bureau Veritas Laos,verifier@bureauveritas-la.com,,30001LA,IC,,
+NAME,EMAIL,PHONE,ORGANISATION TAX ID,ORGANISATION TYPE(Developer|Certifier|API),SECTORAL SCOPE,MINISTER NAME,INSTITUTION CATEGORY
+Ministry of Agriculture and Environment,mae.dna@carbonregistry.la,,00001LA,DNA,,H.E. Minister of Agriculture and Environment,Central Government
+Ministry of Energy and Mines,energy.mines@carbonregistry.la,,10001LA,Ministry,1,H.E. Minister of Energy and Mines,Central Government
+Ministry of Industry and Commerce,industry.commerce@carbonregistry.la,,10002LA,Ministry,4,H.E. Minister of Industry and Commerce,Central Government
+Ministry of Public Works and Transport,public.works.transport@carbonregistry.la,,10003LA,Ministry,7,H.E. Minister of Public Works and Transport,Central Government
+Ministry of Health,health@carbonregistry.la,,10004LA,Ministry,,H.E. Minister of Health,Central Government
+Ministry of Education and Sports,education.sports@carbonregistry.la,,10005LA,Ministry,,H.E. Minister of Education and Sports,Central Government
+Department of Forestry (MAE),forestry.dept@carbonregistry.la,,10006LA,Ministry,14,H.E. Minister of Agriculture and Environment,Central Government
+Lao Green Energy Co Ltd,proponent@laogreenenergy.la,,20001LA,Developer,,,Business
+Bureau Veritas Laos,verifier@bureauveritas-la.com,,30001LA,IC,,,Institution/Agency

@@ -19,6 +19,7 @@ import { CompanyState } from "../enum/company.state.enum";
 import { GovDepartment } from "../enum/govDep.enum";
 import { Ministry } from "../enum/ministry.enum";
 import { IsValidProvince } from "../decorators/validProvince.decorator";
+import { InstitutionCategory } from "../enum/institution.category.enum";
 
 export class OrganisationDto {
   companyId: number;
@@ -193,4 +194,13 @@ export class OrganisationDto {
       "Invalid state. Supported following roles:" + Object.values(CompanyState),
   })
   state: CompanyState;
+
+  @IsOptional()
+  @IsEnum(InstitutionCategory, {
+    message:
+      "Invalid institution category. Supported following categories:" +
+      Object.values(InstitutionCategory),
+  })
+  @ApiPropertyOptional({ enum: InstitutionCategory })
+  institutionCategory?: InstitutionCategory;
 }

@@ -26,6 +26,7 @@
   "distributionbystatus": "Carbon Credit Distribution by Status",
   "sectordistribution": "Projects by Sector",
   "proponentdistribution": "Registered Organisations by Category",
+  "proponentCategoryDistribution": "Proponents by Institution Category",
   "totalOrganisations": "Organisations",
   "registryTableTitle": "Browse the Registry",
   "registryTableSubtitle": "Search by registration number or project title, or browse all publicly listed projects below.",

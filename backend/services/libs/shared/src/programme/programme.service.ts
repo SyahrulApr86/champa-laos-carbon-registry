@@ -7743,10 +7743,13 @@ export class ProgrammeService {
       [CompanyRole.MINISTRY]: 0,
       [CompanyRole.DESIGNATED_NATIONAL_AUTHORITY]: 0,
     };
+    const proponentsByCategory: Record<string, number> = {};
     for (const company of companies) {
       if (proponentsByRole[company.companyRole] !== undefined) {
         proponentsByRole[company.companyRole]++;
       }
+      const category = company.institutionCategory ?? "Unspecified";
+      proponentsByCategory[category] = (proponentsByCategory[category] ?? 0) + 1;
     }
 
     let authorisedCount = 0;
@@ -7756,6 +7759,8 @@ export class ProgrammeService {
     let retired = 0;
     let transferred = 0;
     let balance = 0;
+    let cancelled = 0;
+    let assignedToExchange = 0;
 
     const projectsBySector: Record<string, number> = {};
     const creditsBySector: Record<string, number> = {};
@@ -7821,6 +7826,14 @@ export class ProgrammeService {
         (sum, v) => sum + (Number(v) || 0),
         0
       );
+      cancelled += (programme.creditCancelled || []).reduce(
+        (sum, v) => sum + (Number(v) || 0),
+        0
+      );
+      assignedToExchange += (programme.creditAssigned || []).reduce(
+        (sum, v) => sum + (Number(v) || 0),
+        0
+      );
     }
 
     return {
@@ -7833,6 +7846,7 @@ export class ProgrammeService {
       },
       projectsBySector,
       proponentsByRole,
+      proponentsByCategory,
       creditsBySector,
       creditsByProponentRole,
       credits: {
@@ -7841,6 +7855,8 @@ export class ProgrammeService {
         transferred,
         retired,
         available: balance,
+        cancelled,
+        assignedToExchange,
       },
     };
   }
@@ -8012,9 +8028,7 @@ export class ProgrammeService {
   // Public, unauthenticated per-certificate listing for the Mitigation tab's
   // "Emission Reduction Certificates" table (mirrors SRN Indonesia's SPE
   // registry). Projects real Programme credit-issuance fields into the
-  // SRN-equivalent shape instead of a separate manually-entered table -
-  // there is no credit-cancellation flow in this fork yet, so
-  // cancelledUnits is honestly always 0 rather than fabricated.
+  // SRN-equivalent shape instead of a separate manually-entered table.
   async getPublicCertificates(
     q: string,
     page = 1,
@@ -8037,8 +8051,10 @@ export class ProgrammeService {
         (sum, v) => sum + (Number(v) || 0),
         0
       );
-      // No credit-cancellation mechanism exists yet in Champa's ledger.
-      const cancelledUnits = 0;
+      const cancelledUnits = (programme.creditCancelled || []).reduce(
+        (sum, v) => sum + (Number(v) || 0),
+        0
+      );
       const status: "Active" | "Retired" =
         availableUnits <= 0 && retiredUnits > 0 ? "Retired" : "Active";
 
@@ -8077,5 +8093,88 @@ export class ProgrammeService {
     const start = (safePage - 1) * safeSize;
 
     return { data: filtered.slice(start, start + safeSize), total };
+  }
+
+  // Cancels a portion of a programme's free credit balance (permanently
+  // removing it from circulation, distinct from retirement/transfer).
+  // Restricted to the owning project developer or a DNA/Ministry admin.
+  async cancelCredits(
+    programmeId: string,
+    amount: number,
+    user: User
+  ): Promise<Programme> {
+    const programme = await this.programmeRepo.findOneBy({ programmeId });
+    if (!programme) {
+      throw new HttpException("Programme not found", HttpStatus.NOT_FOUND);
+    }
+
+    const isOwner = (programme.companyId || []).includes(user.companyId);
+    const isAdmin =
+      user.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY ||
+      user.companyRole === CompanyRole.MINISTRY;
+    if (!isOwner && !isAdmin) {
+      throw new HttpException(
+        "Not authorised to cancel credits for this programme",
+        HttpStatus.FORBIDDEN
+      );
+    }
+
+    if (!amount || amount <= 0 || amount > (programme.creditBalance || 0)) {
+      throw new HttpException("Invalid cancel amount", HttpStatus.BAD_REQUEST);
+    }
+
+    programme.creditBalance = (programme.creditBalance || 0) - amount;
+    programme.creditCancelled = [...(programme.creditCancelled || []), amount];
+    await this.programmeRepo.save(programme);
+
+    await this.createCreditAuditLogRecord(
+      CreditAuditLogType.CREDIT_CANCELLED,
+      programmeId,
+      amount,
+      user.id
+    );
+
+    return programme;
+  }
+
+  // Assigns a portion of a programme's free credit balance to the exchange.
+  // Administrative action, restricted to DNA/Ministry (unlike cancellation,
+  // never available to the owning project developer directly).
+  async assignToExchange(
+    programmeId: string,
+    amount: number,
+    user: User
+  ): Promise<Programme> {
+    const programme = await this.programmeRepo.findOneBy({ programmeId });
+    if (!programme) {
+      throw new HttpException("Programme not found", HttpStatus.NOT_FOUND);
+    }
+
+    if (
+      user.companyRole !== CompanyRole.DESIGNATED_NATIONAL_AUTHORITY &&
+      user.companyRole !== CompanyRole.MINISTRY
+    ) {
+      throw new HttpException(
+        "Not authorised to assign credits to the exchange",
+        HttpStatus.FORBIDDEN
+      );
+    }
+
+    if (!amount || amount <= 0 || amount > (programme.creditBalance || 0)) {
+      throw new HttpException("Invalid assign amount", HttpStatus.BAD_REQUEST);
+    }
+
+    programme.creditBalance = (programme.creditBalance || 0) - amount;
+    programme.creditAssigned = [...(programme.creditAssigned || []), amount];
+    await this.programmeRepo.save(programme);
+
+    await this.createCreditAuditLogRecord(
+      CreditAuditLogType.CREDIT_ASSIGNED_TO_EXCHANGE,
+      programmeId,
+      amount,
+      user.id
+    );
+
+    return programme;
   }
 }

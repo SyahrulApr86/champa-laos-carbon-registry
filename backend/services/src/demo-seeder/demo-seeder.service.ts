@@ -55,6 +55,7 @@ import { RecognizedMitigationCreateDto } from "@app/shared/dto/recognized.mitiga
 import { RecognizedMitigationStatus } from "@app/shared/enum/recognized.mitigation.status.enum";
 import { buildDemoSeedScenario, renderSeedCoverageReport } from "./scenario";
 import { CanonicalCertificateDemoLoader } from "./canonical-certificate-demo.loader";
+import { NonCertificatePublicDemoLoader } from "./non-certificate-public-demo.loader";
 import { assertSafeDemoSeedEnvironment } from "./safety";
 
 // Deterministic small PRNG so re-runs (and different operators) produce the
@@ -166,6 +167,7 @@ export class DemoSeederService {
     private guidanceDocumentService: GuidanceDocumentService,
     private recognizedMitigationService: RecognizedMitigationService,
     private canonicalCertificateDemoLoader: CanonicalCertificateDemoLoader,
+    private nonCertificatePublicDemoLoader: NonCertificatePublicDemoLoader,
   ) {}
 
   private pick<T>(arr: T[]): T {
@@ -202,6 +204,10 @@ export class DemoSeederService {
       const result = await this.canonicalCertificateDemoLoader.load(scenario);
       this.logger.log(
         `Canonical certificate demo ledger ${result.status}; sha256=${result.hash}`,
+      );
+      const publicResult = await this.nonCertificatePublicDemoLoader.load(scenario);
+      this.logger.log(
+        `Non-certificate public demo data ${publicResult.status}; sha256=${publicResult.hash}`,
       );
       return;
     }

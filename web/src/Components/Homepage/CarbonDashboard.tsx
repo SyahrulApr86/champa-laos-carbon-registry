@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Chart from "react-apexcharts";
 import { Alert, Button, Select, Spin } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";

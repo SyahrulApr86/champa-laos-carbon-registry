@@ -175,14 +175,27 @@ export class AefReportManagementService {
       key: "createdTime",
       order: "DESC",
     };
+    query.filterAnd = [];
+    if (exportDto.startTime !== undefined) {
+      query.filterAnd.push({
+        key: "actionTime",
+        operation: ">",
+        value: exportDto.startTime,
+      });
+    }
+    if (exportDto.endTime !== undefined) {
+      query.filterAnd.push({
+        key: "actionTime",
+        operation: "<",
+        value: exportDto.endTime,
+      });
+    }
     if (exportDto.reportType === AefReportTypeEnum.HOLDINGS) {
-      query.filterAnd = [
-        {
-          key: "actionType",
-          operation: "=",
-          value: "authorization",
-        },
-      ];
+      query.filterAnd.push({
+        key: "actionType",
+        operation: "=",
+        value: "authorization",
+      });
     }
     const resp = await this.queryAefRecords(query, abilityCondition, user);
 

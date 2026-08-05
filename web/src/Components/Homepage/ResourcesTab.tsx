@@ -425,7 +425,7 @@ const ResourcesTab = () => {
           <div className="resources-chart-card">
             <div className="resources-chart-card-header">
               <h4 className="section-title">
-                Amount received (climate-specific) by Category
+                Amount received (climate-specific) by Channel
               </h4>
               <span className="resources-chart-dimension-label">Channel</span>
             </div>

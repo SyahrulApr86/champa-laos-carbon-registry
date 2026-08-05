@@ -44,6 +44,7 @@ import { ProgrammeTransferViewEntityQuery } from "../view-entities/programmeTran
 import { ProgrammeRetire } from "../dto/programme.retire";
 import { ProgrammeTransferCancel } from "../dto/programme.transfer.cancel";
 import { CompanyState } from "../enum/company.state.enum";
+import { InstitutionCategory } from "../enum/institution.category.enum";
 import { ProgrammeReject } from "../dto/programme.reject";
 import { ProgrammeIssue } from "../dto/programme.issue";
 import { RetireType } from "../enum/retire.type.enum";
@@ -7744,6 +7745,9 @@ export class ProgrammeService {
       [CompanyRole.DESIGNATED_NATIONAL_AUTHORITY]: 0,
     };
     const proponentsByCategory: Record<string, number> = {};
+    Object.values(InstitutionCategory).forEach((category) => {
+      proponentsByCategory[category] = 0;
+    });
     for (const company of companies) {
       if (proponentsByRole[company.companyRole] !== undefined) {
         proponentsByRole[company.companyRole]++;
@@ -7764,9 +7768,13 @@ export class ProgrammeService {
 
     const projectsBySector: Record<string, number> = {};
     const creditsBySector: Record<string, number> = {};
+    const speBySector: Record<string, number> = {};
+    const verifiedEmissionReductionBySector: Record<string, number> = {};
     Object.values(Sector).forEach((sector) => {
       projectsBySector[sector] = 0;
       creditsBySector[sector] = 0;
+      speBySector[sector] = 0;
+      verifiedEmissionReductionBySector[sector] = 0;
     });
 
     const creditsByProponentRole: Record<string, number> = {
@@ -7775,8 +7783,20 @@ export class ProgrammeService {
       [CompanyRole.MINISTRY]: 0,
       [CompanyRole.DESIGNATED_NATIONAL_AUTHORITY]: 0,
     };
+    const creditsByProponentCategory: Record<string, number> = {};
+    const verifiedEmissionReductionByProponentCategory: Record<string, number> = {};
+    Object.values(InstitutionCategory).forEach((category) => {
+      creditsByProponentCategory[category] = 0;
+      verifiedEmissionReductionByProponentCategory[category] = 0;
+    });
     const companyRoleById = new Map(
       companies.map((company) => [company.companyId, company.companyRole])
+    );
+    const companyCategoryById = new Map(
+      companies.map((company) => [
+        company.companyId,
+        company.institutionCategory ?? "Unspecified",
+      ])
     );
 
     const stageCounts: Record<string, number> = {
@@ -7801,18 +7821,62 @@ export class ProgrammeService {
       }
 
       const programmeIssued = Number(programme.creditIssued) || 0;
+      const programmeVerifiedReduction =
+        Number(programme.emissionReductionAchieved) || 0;
 
       if (programme.sector) {
         projectsBySector[programme.sector] =
           (projectsBySector[programme.sector] || 0) + 1;
         creditsBySector[programme.sector] =
           (creditsBySector[programme.sector] || 0) + programmeIssued;
+        speBySector[programme.sector] =
+          (speBySector[programme.sector] || 0) + programmeIssued;
+        verifiedEmissionReductionBySector[programme.sector] =
+          (verifiedEmissionReductionBySector[programme.sector] || 0) +
+          programmeVerifiedReduction;
       }
 
-      for (const companyId of programme.companyId || []) {
+      const companyIds = programme.companyId || [];
+      const proponentPercentages = (programme.proponentPercentage || []).map(
+        (percentage) => Number(percentage)
+      );
+      const percentageTotal = proponentPercentages.reduce(
+        (sum, percentage) => sum + percentage,
+        0
+      );
+      const hasValidProponentPercentages =
+        proponentPercentages.length === companyIds.length &&
+        percentageTotal > 0 &&
+        proponentPercentages.every((percentage) => Number.isFinite(percentage));
+
+      for (const [index, rawCompanyId] of companyIds.entries()) {
+        const companyId = Number(rawCompanyId);
         const role = companyRoleById.get(companyId);
+        const category = companyCategoryById.get(companyId);
+        const shareIssued = hasValidProponentPercentages
+          ? (programmeIssued * proponentPercentages[index]) / percentageTotal
+          : index === 0
+            ? programmeIssued
+            : 0;
+        const shareVerifiedReduction = hasValidProponentPercentages
+          ? (programmeVerifiedReduction * proponentPercentages[index]) /
+            percentageTotal
+          : index === 0
+            ? programmeVerifiedReduction
+            : 0;
+
         if (role && creditsByProponentRole[role] !== undefined) {
-          creditsByProponentRole[role] += programmeIssued;
+          // A programme may have several proponents. Allocate issued credits
+          // by the stored ownership percentages so the chart cannot count the
+          // same programme in full for every proponent.
+          creditsByProponentRole[role] += shareIssued;
+        }
+        if (category) {
+          creditsByProponentCategory[category] =
+            (creditsByProponentCategory[category] || 0) + shareIssued;
+          verifiedEmissionReductionByProponentCategory[category] =
+            (verifiedEmissionReductionByProponentCategory[category] || 0) +
+            shareVerifiedReduction;
         }
       }
 
@@ -7838,6 +7902,7 @@ export class ProgrammeService {
 
     return {
       totalProjects: programmes.length,
+      totalProponents: companies.length,
       stageCounts,
       projectsByStatus: {
         authorised: authorisedCount,
@@ -7848,7 +7913,11 @@ export class ProgrammeService {
       proponentsByRole,
       proponentsByCategory,
       creditsBySector,
+      speBySector,
+      verifiedEmissionReductionBySector,
       creditsByProponentRole,
+      creditsByProponentCategory,
+      verifiedEmissionReductionByProponentCategory,
       credits: {
         authorised: issued,
         issued,
@@ -7954,7 +8023,7 @@ export class ProgrammeService {
     }
 
     const regions = await this.regionRepo.find({
-      where: provinceNames.map((name) => ({ regionName: name })),
+      where: provinceNames.map((name) => ({ regionName: name, lang: "en" })),
     });
 
     const result: {

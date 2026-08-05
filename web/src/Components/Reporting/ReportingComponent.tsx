@@ -151,12 +151,18 @@ const ReportingComponent = (props: { translator: i18n }) => {
     return isReportSelected;
   };
 
+  const getSelectedYearDateFilter = () => ({
+    startTime: selectedYear.clone().startOf("year").valueOf(),
+    endTime: selectedYear.clone().endOf("year").valueOf(),
+  });
+
   const downloadActionCSV = async () => {
     try {
       setActionsLoading(true);
       const res = await post(API_PATHS.DOWNLOAD_AEF_RECORDS, {
         reportType: REPORT_TYPES.ACTIONS,
         fileType: FILE_TYPES.csv,
+        ...getSelectedYearDateFilter(),
       });
 
       console.log("--------res--------", res);
@@ -184,6 +190,7 @@ const ReportingComponent = (props: { translator: i18n }) => {
       const res = await post(API_PATHS.DOWNLOAD_AEF_RECORDS, {
         reportType: REPORT_TYPES.ACTIONS,
         fileType: FILE_TYPES.xlsx,
+        ...getSelectedYearDateFilter(),
       });
 
       console.log("--------res--------", res);
@@ -211,6 +218,7 @@ const ReportingComponent = (props: { translator: i18n }) => {
       const res = await post(API_PATHS.DOWNLOAD_AEF_RECORDS, {
         reportType: REPORT_TYPES.HOLDINGS,
         fileType: FILE_TYPES.csv,
+        ...getSelectedYearDateFilter(),
       });
 
       console.log("--------res--------", res);
@@ -238,6 +246,7 @@ const ReportingComponent = (props: { translator: i18n }) => {
       const res = await post(API_PATHS.DOWNLOAD_AEF_RECORDS, {
         reportType: REPORT_TYPES.HOLDINGS,
         fileType: FILE_TYPES.xlsx,
+        ...getSelectedYearDateFilter(),
       });
 
       console.log("--------res--------", res);
@@ -317,7 +326,7 @@ const ReportingComponent = (props: { translator: i18n }) => {
         <ReportCard
           title={"ACTIONS REPORT"}
           reportType={REPORT_TYPES.ACTIONS}
-          host={"Sri Lanka"}
+          host={"Lao PDR"}
           year={String(selectedYear.year())}
           columns={getActionsReportColumns(t)}
           handlePaginationChange={handlePaginationInfoChange}
@@ -337,7 +346,7 @@ const ReportingComponent = (props: { translator: i18n }) => {
         <ReportCard
           title={"HOLDINGS REPORT"}
           reportType={REPORT_TYPES.HOLDINGS}
-          host={"Sri Lanka"}
+          host={"Lao PDR"}
           year={String(selectedYear.year())}
           columns={getHoldingsReportColumns(t)}
           handlePaginationChange={handlePaginationInfoChange}

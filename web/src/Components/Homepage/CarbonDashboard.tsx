@@ -31,6 +31,10 @@ export const DonutBreakdown = ({
       maximumFractionDigits: 1,
     }).format(n);
 
+  if (data.length === 0 || total <= 0) {
+    return <div className="donut-empty">No Data</div>;
+  }
+
   return (
     <div className="donut-breakdown">
       <Chart
@@ -95,6 +99,7 @@ export const DonutBreakdown = ({
 
 interface PublicAnalyticsSummary {
   totalProjects: number;
+  totalProponents: number;
   stageCounts: Record<string, number>;
   projectsByStatus: {
     authorised: number;
@@ -114,11 +119,16 @@ interface PublicAnalyticsSummary {
   proponentsByRole: Record<string, number>;
   proponentsByCategory: Record<string, number>;
   creditsBySector: Record<string, number>;
+  speBySector: Record<string, number>;
+  verifiedEmissionReductionBySector: Record<string, number>;
   creditsByProponentRole: Record<string, number>;
+  creditsByProponentCategory: Record<string, number>;
+  verifiedEmissionReductionByProponentCategory: Record<string, number>;
 }
 
 const emptySummary: PublicAnalyticsSummary = {
   totalProjects: 0,
+  totalProponents: 0,
   stageCounts: {},
   projectsByStatus: { authorised: 0, pending: 0, rejected: 0 },
   credits: {
@@ -134,7 +144,11 @@ const emptySummary: PublicAnalyticsSummary = {
   proponentsByRole: {},
   proponentsByCategory: {},
   creditsBySector: {},
+  speBySector: {},
+  verifiedEmissionReductionBySector: {},
   creditsByProponentRole: {},
+  creditsByProponentCategory: {},
+  verifiedEmissionReductionByProponentCategory: {},
 };
 
 interface EmissionTradingSummary {
@@ -172,6 +186,12 @@ const CarbonDashboard = () => {
           const data = response.data;
           setSummary({
             totalProjects: data.totalProjects ?? 0,
+            totalProponents:
+              data.totalProponents ??
+              Object.values(data.proponentsByCategory ?? {}).reduce(
+                (sum: number, value: unknown) => sum + (Number(value) || 0),
+                0
+              ),
             stageCounts: data.stageCounts ?? {},
             projectsByStatus: {
               authorised: data.projectsByStatus?.authorised ?? 0,
@@ -191,7 +211,17 @@ const CarbonDashboard = () => {
             proponentsByRole: data.proponentsByRole ?? {},
             proponentsByCategory: data.proponentsByCategory ?? {},
             creditsBySector: data.creditsBySector ?? {},
+            speBySector: data.speBySector ?? data.creditsBySector ?? {},
+            verifiedEmissionReductionBySector:
+              data.verifiedEmissionReductionBySector ??
+              data.creditsBySector ??
+              {},
             creditsByProponentRole: data.creditsByProponentRole ?? {},
+            creditsByProponentCategory: data.creditsByProponentCategory ?? {},
+            verifiedEmissionReductionByProponentCategory:
+              data.verifiedEmissionReductionByProponentCategory ??
+              data.creditsByProponentCategory ??
+              {},
           });
         }
       } catch (error) {
@@ -337,7 +367,7 @@ const CarbonDashboard = () => {
   // charts - not fabricated, this mirrors SRN Indonesia's own live data,
   // which is also ~100% one scheme (SPEI) with every other scheme at 0.
   const registrySchemeProponentsData = [
-    { value: summary.totalProjects, title: "Champa National Registry" },
+    { value: summary.totalProponents, title: "Champa National Registry" },
     { value: 0, title: "JCM" },
     { value: 0, title: "Gold Standard" },
     { value: 0, title: "Verra/VCS" },
@@ -352,17 +382,23 @@ const CarbonDashboard = () => {
     { value: 0, title: "Others" },
   ];
 
-  const creditsBySectorData = Object.entries(summary.creditsBySector)
+  const speBySectorData = Object.entries(summary.speBySector)
+    .filter(([, value]) => value > 0)
+    .map(([sector, value]) => ({ value, title: sector }));
+
+  const creditsBySectorData = Object.entries(
+    summary.verifiedEmissionReductionBySector
+  )
     .filter(([, value]) => value > 0)
     .map(([sector, value]) => ({ value, title: sector }));
 
   const creditsByProponentData = Object.entries(
-    summary.creditsByProponentRole
+    summary.verifiedEmissionReductionByProponentCategory
   )
     .filter(([, value]) => value > 0)
-    .map(([role, value]) => ({
+    .map(([category, value]) => ({
       value,
-      title: t(`companyRoles:${role}`, { defaultValue: role }),
+      title: category,
     }));
 
   // Real ProgrammeStage values, in workflow order - not a fabricated
@@ -542,7 +578,7 @@ const CarbonDashboard = () => {
             </h3>
             <DonutBreakdown
               data={registrySchemeProponentsData}
-              totalLabel={t("homepage:totprojects")}
+              totalLabel={t("homepage:totalOrganisations")}
             />
           </div>
 
@@ -576,29 +612,33 @@ const CarbonDashboard = () => {
             />
           </div>
 
-          {creditsBySectorData.length > 0 && (
-            <div className="donut-card">
-              <h3 className="section-title">
-                Verified Emission Reduction by Sector
-              </h3>
-              <DonutBreakdown
-                data={creditsBySectorData}
-                totalLabel={t("homepage:totcredits")}
-              />
-            </div>
-          )}
+          <div className="donut-card">
+            <h3 className="section-title">
+              Verified Emission Reduction by Proponent Type (ton CO2e)
+            </h3>
+            <DonutBreakdown
+              data={creditsByProponentData}
+              totalLabel={t("homepage:totcredits")}
+            />
+          </div>
 
-          {creditsByProponentData.length > 0 && (
-            <div className="donut-card">
-              <h3 className="section-title">
-                Verified Emission Reduction by Proponent Type
-              </h3>
-              <DonutBreakdown
-                data={creditsByProponentData}
-                totalLabel={t("homepage:totcredits")}
-              />
-            </div>
-          )}
+          <div className="donut-card">
+            <h3 className="section-title">Number of SPE by Sectors</h3>
+            <DonutBreakdown
+              data={speBySectorData}
+              totalLabel={t("homepage:totcredits")}
+            />
+          </div>
+
+          <div className="donut-card">
+            <h3 className="section-title">
+              Verified Emission Reduction by Sector (ton CO2e)
+            </h3>
+            <DonutBreakdown
+              data={creditsBySectorData}
+              totalLabel={t("homepage:totcredits")}
+            />
+          </div>
         </motion.div>
 
         {/* Emission Ceiling & Trading (SRN's PTBAE-PU equivalent) */}

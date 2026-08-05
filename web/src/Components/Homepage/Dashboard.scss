@@ -701,6 +701,16 @@
   flex-wrap: wrap;
 }
 
+.donut-empty {
+  align-items: center;
+  color: #4A5568;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  min-height: 220px;
+  text-align: center;
+}
+
 .donut-legend {
   list-style: none;
   margin: 0;

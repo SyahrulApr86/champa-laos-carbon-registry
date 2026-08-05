@@ -20,6 +20,7 @@ import { GovDepartment } from "../enum/govDep.enum";
 import { Ministry } from "../enum/ministry.enum";
 import { IsValidProvince } from "../decorators/validProvince.decorator";
 import { InstitutionCategory } from "../enum/institution.category.enum";
+import { ProponentCategory } from "../enum/proponent.category.enum";
 
 export class OrganisationDto {
   companyId: number;
@@ -184,6 +185,16 @@ export class OrganisationDto {
   })
   sectoralScope: SectoralScope[];
 
+  @ValidateIf((c) => c.companyRole === CompanyRole.PROJECT_DEVELOPER)
+  @IsNotEmpty()
+  @ApiProperty({ enum: ProponentCategory })
+  @IsEnum(ProponentCategory, {
+    message:
+      "Invalid proponent category. Supported following categories:" +
+      Object.values(ProponentCategory).join(", "),
+  })
+  proponentCategory?: ProponentCategory;
+
   createdTime: number;
 
   geographicalLocationCordintes?: any;
@@ -199,7 +210,7 @@ export class OrganisationDto {
   @IsEnum(InstitutionCategory, {
     message:
       "Invalid institution category. Supported following categories:" +
-      Object.values(InstitutionCategory),
+      Object.values(InstitutionCategory).join(", "),
   })
   @ApiPropertyOptional({ enum: InstitutionCategory })
   institutionCategory?: InstitutionCategory;

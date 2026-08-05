@@ -16,6 +16,7 @@ import { CompanyRole } from "../enum/company.role.enum";
 import { GovDepartment } from "../enum/govDep.enum";
 import { Ministry } from "../enum/ministry.enum";
 import { IsValidProvince } from "../decorators/validProvince.decorator";
+import { ProponentCategory } from "../enum/proponent.category.enum";
 
 export class OrganisationUpdateDto {
   @IsNotEmpty()
@@ -151,6 +152,16 @@ export class OrganisationUpdateDto {
   @IsNotEmpty({ each: true })
   @IsOptional()
   provinces: string[];
+
+  @ValidateIf((c) => c.companyRole === CompanyRole.PROJECT_DEVELOPER)
+  @IsNotEmpty()
+  @ApiProperty({ enum: ProponentCategory })
+  @IsEnum(ProponentCategory, {
+    message:
+      "Invalid proponent category. Supported following categories:" +
+      Object.values(ProponentCategory),
+  })
+  proponentCategory?: ProponentCategory;
 
   geographicalLocationCordintes?: any;
 

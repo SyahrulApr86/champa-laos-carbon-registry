@@ -325,12 +325,13 @@ const CarbonDashboard = () => {
     })
   );
 
-  const categoryData = Object.entries(summary.proponentsByCategory).map(
-    ([category, value]) => ({
-      value,
-      title: category,
-    })
-  );
+  // Institutional-type breakdown of Project Developers only (Government/
+  // Private Sector/NGO/Academia/CBO/International Organisation) - filtered
+  // to non-zero buckets since most categories will honestly be empty until
+  // more proponents self-classify at registration.
+  const proponentCategoryData = Object.entries(summary.proponentsByCategory)
+    .filter(([, value]) => value > 0)
+    .map(([category, value]) => ({ value, title: category }));
 
   // Champa is a single-scheme national registry (no JCM/Gold Standard/
   // Verra co-registration exists), so these are honestly single-bucket
@@ -556,15 +557,19 @@ const CarbonDashboard = () => {
             />
           </div>
 
-          <div className="donut-card">
-            <h3 className="section-title">
-              {t("homepage:proponentCategoryDistribution")}
-            </h3>
-            <DonutBreakdown
-              data={categoryData}
-              totalLabel={t("homepage:totalOrganisations")}
-            />
-          </div>
+          {proponentCategoryData.length > 0 && (
+            <div className="donut-card">
+              <h3 className="section-title">
+                {t("homepage:proponentCategoryDistribution", {
+                  defaultValue: "Number of Proponents by Category",
+                })}
+              </h3>
+              <DonutBreakdown
+                data={proponentCategoryData}
+                totalLabel={t("homepage:totalOrganisations")}
+              />
+            </div>
+          )}
 
           <div className="donut-card">
             <h3 className="section-title">

@@ -39,6 +39,7 @@ import { TransferStatus } from "../enum/transform.status.enum";
 import { ProgrammeTransferApprove } from "../dto/programme.transfer.approve";
 import { ProgrammeTransferReject } from "../dto/programme.transfer.reject";
 import { CompanyRole } from "../enum/company.role.enum";
+import { ProponentCategory } from "../enum/proponent.category.enum";
 import { ProgrammeCertify } from "../dto/programme.certify";
 import { ProgrammeTransferViewEntityQuery } from "../view-entities/programmeTransfer.view.entity";
 import { ProgrammeRetire } from "../dto/programme.retire";
@@ -7743,13 +7744,31 @@ export class ProgrammeService {
       [CompanyRole.MINISTRY]: 0,
       [CompanyRole.DESIGNATED_NATIONAL_AUTHORITY]: 0,
     };
-    const proponentsByCategory: Record<string, number> = {};
     for (const company of companies) {
       if (proponentsByRole[company.companyRole] !== undefined) {
         proponentsByRole[company.companyRole]++;
       }
-      const category = company.institutionCategory ?? "Unspecified";
-      proponentsByCategory[category] = (proponentsByCategory[category] ?? 0) + 1;
+    }
+
+    // Institutional-type breakdown of Project Developers only - other
+    // company roles (Ministry/DNA/Certifier) aren't "proponents" in the
+    // CDM/Article 6 sense this taxonomy models. Companies imported before
+    // this field existed (organisations.csv) honestly fall into "Not
+    // Specified" rather than being guessed at.
+    const NOT_SPECIFIED = "Not Specified";
+    const proponentsByCategory: Record<string, number> = {
+      ...Object.fromEntries(
+        Object.values(ProponentCategory).map((category) => [category, 0])
+      ),
+      [NOT_SPECIFIED]: 0,
+    };
+    for (const company of companies) {
+      if (company.companyRole !== CompanyRole.PROJECT_DEVELOPER) {
+        continue;
+      }
+      const category = company.proponentCategory || NOT_SPECIFIED;
+      proponentsByCategory[category] =
+        (proponentsByCategory[category] || 0) + 1;
     }
 
     let authorisedCount = 0;

@@ -11,6 +11,7 @@ export class DataExportCompanyDto extends DataExportDto {
     address;
     country;
     companyRole;
+    proponentCategory;
     state;
     creditBalance;
     secondaryAccountBalanceLocal;

@@ -6,6 +6,7 @@ import { SectoralScope } from "@undp/serial-number-gen";
 import { Ministry } from "../enum/ministry.enum";
 import { GovDepartment } from "../enum/govDep.enum";
 import { InstitutionCategory } from "../enum/institution.category.enum";
+import { ProponentCategory } from "../enum/proponent.category.enum";
 
 @Entity()
 export class Company implements EntitySubject {
@@ -136,6 +137,18 @@ export class Company implements EntitySubject {
     nullable: true,
   })
   institutionCategory: InstitutionCategory;
+
+  // Institutional classification of the proponent (Government/Private
+  // Sector/NGO/Academia/CBO/International Organisation) - nullable since it
+  // is only meaningful for PROJECT_DEVELOPER companies and pre-existing
+  // rows imported from organisations.csv were never asked this question.
+  @Column({
+    nullable: true,
+    type: "enum",
+    enum: ProponentCategory,
+    array: false,
+  })
+  proponentCategory: ProponentCategory;
 
   @BeforeInsert()
   setDefaultState() {

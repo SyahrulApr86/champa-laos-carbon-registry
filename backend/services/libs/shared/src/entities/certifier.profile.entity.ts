@@ -14,8 +14,8 @@ import { NumberTransformer } from "../functions/number.transformer.decorator";
 // agencies will not have this populated yet - the public detail page shows
 // an honest empty state until a profile row exists.
 // Mirrors SRN Indonesia's LVV detail page: certificate number, validity
-// period, scope coverage by sector, DRAM/LCAM applicability, and SPEI/
-// PTBAE-PU scheme eligibility.
+// period, scope coverage by sector, mitigation/reporting applicability, and
+// configurable scheme eligibility.
 @Entity()
 export class CertifierProfileEntity implements EntitySubject {
   @PrimaryGeneratedColumn()

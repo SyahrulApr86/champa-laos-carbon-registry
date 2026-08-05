@@ -31,7 +31,7 @@ export class EmissionTradingController {
     });
   }
 
-  // Public, unauthenticated - PTBAE-PU "Series" tab equivalent.
+  // Public, unauthenticated ceiling-series listing.
   @Get("public/series")
   async publicSeries(
     @Query("page") page?: string,
@@ -47,8 +47,7 @@ export class EmissionTradingController {
     );
   }
 
-  // Public, unauthenticated - PTBAE-PU "Carbon Exchange Transactions" tab
-  // equivalent.
+  // Public, unauthenticated configurable market-transaction listing.
   @Get("public/transactions")
   async publicTransactions(
     @Query("page") page?: string,
@@ -65,7 +64,7 @@ export class EmissionTradingController {
     );
   }
 
-  // Public, unauthenticated - PTBAE-PU "Participants" tab equivalent.
+  // Public, unauthenticated ceiling-participant listing.
   @Get("public/participants")
   async publicParticipants(
     @Query("page") page?: string,

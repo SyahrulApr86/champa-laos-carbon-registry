@@ -1072,7 +1072,7 @@ export class DemoSeederService {
       [
         "Guideline on Carbon Credit Registration Procedures",
         "Registration Guidance",
-        "Step-by-step guidance for project developers submitting mitigation programmes under the Decree on Carbon Credits.",
+        "Step-by-step guidance for project developers submitting mitigation programmes under the configured national framework.",
       ],
       [
         "Module Guidance on NDC Mitigation Action Tracking",

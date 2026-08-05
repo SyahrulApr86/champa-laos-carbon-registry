@@ -16,7 +16,7 @@ export class EmissionCeilingEntity implements EntitySubject {
   @Column({ type: "int" })
   year: number;
 
-  // Free-text PTBAE-PU-style series label, e.g. "Power Generation 2024".
+  // Free-text ceiling-series label, e.g. "Power Generation 2024".
   // Nullable - older rows or minimal submissions may omit it.
   @Column({ type: "varchar", nullable: true })
   seriesName: string;

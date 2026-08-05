@@ -1,10 +1,23 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { Action } from "@app/shared/casl/action.enum";
 import { PoliciesGuardEx } from "@app/shared/casl/policy.guard";
 import { CommunityProgramService } from "@app/shared/community-program/community.program.service";
 import { CommunityProgramCreateDto } from "@app/shared/dto/community.program.create.dto";
+import { CommunityProgramUpdateDto } from "@app/shared/dto/community.program.update.dto";
+import { CommunityProgramArchiveDto } from "@app/shared/dto/community.program.archive.dto";
 import { CommunityProgramEntity } from "@app/shared/entities/community.program.entity";
 
 @ApiTags("CommunityProgram")
@@ -58,7 +71,64 @@ export class CommunityProgramController {
     PoliciesGuardEx(false, Action.Manage, CommunityProgramEntity)
   )
   @Post()
-  async create(@Body() dto: CommunityProgramCreateDto) {
-    return await this.communityProgramService.create(dto);
+  async create(@Body() dto: CommunityProgramCreateDto, @Request() req) {
+    return await this.communityProgramService.create(dto, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, CommunityProgramEntity)
+  )
+  @Get("management")
+  async managementList(
+    @Request() req,
+    @Query("includeArchived") includeArchived?: string
+  ) {
+    return await this.communityProgramService.query(
+      req.user,
+      includeArchived === "true"
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, CommunityProgramEntity)
+  )
+  @Get("management/:id")
+  async managementDetail(
+    @Param("id", ParseIntPipe) id: number,
+    @Request() req
+  ) {
+    return await this.communityProgramService.managementDetail(id, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, CommunityProgramEntity)
+  )
+  @Put(":id")
+  async update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: CommunityProgramUpdateDto,
+    @Request() req
+  ) {
+    return await this.communityProgramService.update(id, dto, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(
+    JwtAuthGuard,
+    PoliciesGuardEx(false, Action.Manage, CommunityProgramEntity)
+  )
+  @Post(":id/archive")
+  async archive(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: CommunityProgramArchiveDto,
+    @Request() req
+  ) {
+    return await this.communityProgramService.archive(id, dto, req.user);
   }
 }

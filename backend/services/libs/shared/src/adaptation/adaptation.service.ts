@@ -1,12 +1,15 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
 import { AdaptationCreateDto } from "../dto/adaptation.create.dto";
 import { AdaptationStageUpdateDto } from "../dto/adaptation.stage.update.dto";
+import { AdaptationUpdateDto } from "../dto/adaptation.update.dto";
+import { AdaptationArchiveDto } from "../dto/adaptation.archive.dto";
 import { AdaptationSector } from "../enum/adaptation.sector.enum";
 import { AdaptationStage } from "../enum/adaptation.stage.enum";
 import { CompanyRole } from "../enum/company.role.enum";
+import { Role } from "../casl/role.enum";
 import { User } from "../entities/user.entity";
 import { Company } from "../entities/company.entity";
 import {
@@ -66,6 +69,7 @@ export class AdaptationService {
     const adaptation = this.adaptationRepo.create({
       ...dto,
       companyId: user.companyId,
+      createdByUserId: user.id ?? null,
     });
 
     const saved = await this.adaptationRepo.save(adaptation);
@@ -74,15 +78,55 @@ export class AdaptationService {
     return await this.adaptationRepo.save(saved);
   }
 
-  // Project developers see only their own submissions; DNA/Ministry see all.
-  async query(user: User): Promise<AdaptationProjectEntity[]> {
+  // Project developers see only their own active submissions; DNA/Ministry
+  // reviewers see all active records. Archived rows remain available through
+  // the authenticated management list when explicitly requested.
+  async query(
+    user: User,
+    includeArchived = false
+  ): Promise<AdaptationProjectEntity[]> {
+    this.assertCanAccessManagement(user);
+
+    const where: Record<string, unknown> = includeArchived
+      ? {}
+      : { archivedAt: IsNull() };
     if (user.companyRole === CompanyRole.PROJECT_DEVELOPER) {
-      return await this.adaptationRepo.find({
-        where: { companyId: user.companyId },
-        order: { createdAt: "DESC" },
-      });
+      where.companyId = user.companyId;
     }
-    return await this.adaptationRepo.find({ order: { createdAt: "DESC" } });
+
+    return await this.adaptationRepo.find({
+      where,
+      order: { createdAt: "DESC" },
+    });
+  }
+
+  async managementDetail(id: number, user: User): Promise<AdaptationProjectEntity> {
+    const adaptation = await this.findOne(id);
+    this.assertCanAccessRecord(adaptation, user);
+    return adaptation;
+  }
+
+  async update(
+    id: number,
+    dto: AdaptationUpdateDto,
+    user: User
+  ): Promise<AdaptationProjectEntity> {
+    const adaptation = await this.findOne(id);
+    this.assertCanAccessRecord(adaptation, user);
+    this.assertEditable(adaptation);
+
+    if (Object.keys(dto).length === 0) {
+      throw new HttpException(
+        "At least one adaptation project field is required",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    Object.assign(adaptation, dto, {
+      updatedAt: new Date().getTime(),
+      updatedByUserId: user.id ?? null,
+    });
+    return await this.adaptationRepo.save(adaptation);
   }
 
   async updateStage(
@@ -90,10 +134,7 @@ export class AdaptationService {
     dto: AdaptationStageUpdateDto,
     user: User
   ): Promise<AdaptationProjectEntity> {
-    if (
-      user.companyRole !== CompanyRole.DESIGNATED_NATIONAL_AUTHORITY &&
-      user.companyRole !== CompanyRole.MINISTRY
-    ) {
+    if (!this.isReviewer(user)) {
       throw new HttpException(
         "Only DNA or Ministry can update adaptation project stage",
         HttpStatus.FORBIDDEN
@@ -108,7 +149,41 @@ export class AdaptationService {
       );
     }
 
+    if (adaptation.currentStage === AdaptationStage.ARCHIVED) {
+      throw new HttpException(
+        "Archived adaptation projects cannot change stage",
+        HttpStatus.CONFLICT
+      );
+    }
+
+    if (dto.stage === AdaptationStage.ARCHIVED) {
+      throw new HttpException(
+        "Use the archive lifecycle action to archive an adaptation project",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     adaptation.currentStage = dto.stage;
+    adaptation.updatedAt = new Date().getTime();
+    adaptation.updatedByUserId = user.id ?? null;
+    return await this.adaptationRepo.save(adaptation);
+  }
+
+  async archive(
+    id: number,
+    dto: AdaptationArchiveDto,
+    user: User
+  ): Promise<AdaptationProjectEntity> {
+    const adaptation = await this.findOne(id);
+    this.assertCanAccessRecord(adaptation, user);
+    this.assertEditable(adaptation);
+
+    adaptation.currentStage = AdaptationStage.ARCHIVED;
+    adaptation.updatedAt = new Date().getTime();
+    adaptation.archivedAt = new Date().getTime();
+    adaptation.archivedByUserId = user.id ?? null;
+    adaptation.archiveReason = dto.reason ?? null;
+    adaptation.updatedByUserId = user.id ?? null;
     return await this.adaptationRepo.save(adaptation);
   }
 
@@ -125,6 +200,7 @@ export class AdaptationService {
 
     let qb = this.adaptationRepo
       .createQueryBuilder("adaptation")
+      .where(`"adaptation"."archivedAt" IS NULL`)
       .orderBy(`"adaptation"."createdAt"`, "DESC")
       .skip((safePage - 1) * safeSize)
       .take(safeSize);
@@ -179,7 +255,9 @@ export class AdaptationService {
     sectorUnit: "records";
     stageUnit: "records";
   }; meta: ReturnType<typeof createPublicMeta> }> {
-    const projects = await this.adaptationRepo.find();
+    const projects = await this.adaptationRepo.find({
+      where: { archivedAt: IsNull() },
+    });
 
     const bySector: Record<string, number> = {};
     for (const sector of Object.values(AdaptationSector)) {
@@ -232,6 +310,7 @@ export class AdaptationService {
 
     const project = await this.adaptationRepo.findOneBy({
       adaptationId: key,
+      archivedAt: IsNull(),
     });
     if (!project) {
       return {
@@ -274,5 +353,63 @@ export class AdaptationService {
       region: record.region ?? null,
       status: record.currentStage,
     };
+  }
+
+  private async findOne(id: number): Promise<AdaptationProjectEntity> {
+    const adaptation = await this.adaptationRepo.findOneBy({ id });
+    if (!adaptation) {
+      throw new HttpException(
+        "Adaptation project not found",
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return adaptation;
+  }
+
+  private assertCanAccessManagement(user: User) {
+    if (
+      this.isReviewer(user) ||
+      user.companyRole === CompanyRole.PROJECT_DEVELOPER
+    ) {
+      return;
+    }
+    throw new HttpException(
+      "Only project developers, DNA, or Ministry can manage adaptation projects",
+      HttpStatus.FORBIDDEN
+    );
+  }
+
+  private assertCanAccessRecord(record: AdaptationProjectEntity, user: User) {
+    const isOwner =
+      user.companyRole === CompanyRole.PROJECT_DEVELOPER &&
+      record.companyId === user.companyId;
+    if (this.isReviewer(user) || isOwner) {
+      return;
+    }
+    throw new HttpException(
+      "You do not have access to this adaptation project",
+      HttpStatus.FORBIDDEN
+    );
+  }
+
+  private assertEditable(record: AdaptationProjectEntity) {
+    if (
+      record.currentStage !== AdaptationStage.SUBMITTED &&
+      record.currentStage !== AdaptationStage.UNDER_REVIEW
+    ) {
+      throw new HttpException(
+        "Only submitted or under-review adaptation projects can be edited or archived",
+        HttpStatus.CONFLICT
+      );
+    }
+  }
+
+  private isReviewer(user: User): boolean {
+    return (
+      user.role === Role.Root ||
+      ((user.companyRole === CompanyRole.DESIGNATED_NATIONAL_AUTHORITY ||
+        user.companyRole === CompanyRole.MINISTRY) &&
+        user.role !== Role.ViewOnly)
+    );
   }
 }

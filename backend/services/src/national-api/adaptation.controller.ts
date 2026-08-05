@@ -15,6 +15,8 @@ import { JwtAuthGuard } from "@app/shared/auth/guards/jwt-auth.guard";
 import { AdaptationService } from "@app/shared/adaptation/adaptation.service";
 import { AdaptationCreateDto } from "@app/shared/dto/adaptation.create.dto";
 import { AdaptationStageUpdateDto } from "@app/shared/dto/adaptation.stage.update.dto";
+import { AdaptationUpdateDto } from "@app/shared/dto/adaptation.update.dto";
+import { AdaptationArchiveDto } from "@app/shared/dto/adaptation.archive.dto";
 
 @ApiTags("Adaptation")
 @Controller("adaptation")
@@ -70,8 +72,45 @@ export class AdaptationController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get("query")
-  async query(@Request() req) {
-    return await this.adaptationService.query(req.user);
+  async query(@Request() req, @Query("includeArchived") includeArchived?: string) {
+    return await this.adaptationService.query(
+      req.user,
+      includeArchived === "true"
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get("management")
+  async managementList(
+    @Request() req,
+    @Query("includeArchived") includeArchived?: string
+  ) {
+    return await this.adaptationService.query(
+      req.user,
+      includeArchived === "true"
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get("management/:id")
+  async managementDetail(
+    @Param("id", ParseIntPipe) id: number,
+    @Request() req
+  ) {
+    return await this.adaptationService.managementDetail(id, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put(":id")
+  async update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: AdaptationUpdateDto,
+    @Request() req
+  ) {
+    return await this.adaptationService.update(id, dto, req.user);
   }
 
   // Role check (DNA/Ministry only) is enforced in AdaptationService.
@@ -84,5 +123,16 @@ export class AdaptationController {
     @Request() req
   ) {
     return await this.adaptationService.updateStage(id, dto, req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post(":id/archive")
+  async archive(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: AdaptationArchiveDto,
+    @Request() req
+  ) {
+    return await this.adaptationService.archive(id, dto, req.user);
   }
 }

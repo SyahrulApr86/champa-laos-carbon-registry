@@ -9,20 +9,20 @@ export class AddEmissionTradingPublicFields1786000001000 implements MigrationInt
   name = "AddEmissionTradingPublicFields1786000001000";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "emission_ceiling_entity" ADD "unit" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_ceiling_entity" ADD "venueStatus" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_ceiling_entity" ADD "availability" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_ceiling_entity" ADD COLUMN IF NOT EXISTS "unit" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_ceiling_entity" ADD COLUMN IF NOT EXISTS "venueStatus" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_ceiling_entity" ADD COLUMN IF NOT EXISTS "availability" varchar`);
 
-    await queryRunner.query(`ALTER TABLE "emission_participant_entity" ADD "seriesName" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_participant_entity" ADD "sector" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_participant_entity" ADD "participantStatus" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_participant_entity" ADD COLUMN IF NOT EXISTS "seriesName" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_participant_entity" ADD COLUMN IF NOT EXISTS "sector" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_participant_entity" ADD COLUMN IF NOT EXISTS "participantStatus" varchar`);
 
-    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD "seriesName" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD "ceilingAllocationId" integer`);
-    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD "venueStatus" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD "settlementStatus" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD "certificateBridgeEventId" varchar`);
-    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD "idempotencyKey" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD COLUMN IF NOT EXISTS "seriesName" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD COLUMN IF NOT EXISTS "ceilingAllocationId" integer`);
+    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD COLUMN IF NOT EXISTS "venueStatus" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD COLUMN IF NOT EXISTS "settlementStatus" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD COLUMN IF NOT EXISTS "certificateBridgeEventId" varchar`);
+    await queryRunner.query(`ALTER TABLE "emission_trading_entity" ADD COLUMN IF NOT EXISTS "idempotencyKey" varchar`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

@@ -53,6 +53,8 @@ import { GuidanceDocumentCreateDto } from "@app/shared/dto/guidance.document.cre
 import { RecognizedMitigationService } from "@app/shared/recognized-mitigation/recognized.mitigation.service";
 import { RecognizedMitigationCreateDto } from "@app/shared/dto/recognized.mitigation.create.dto";
 import { RecognizedMitigationStatus } from "@app/shared/enum/recognized.mitigation.status.enum";
+import { buildDemoSeedScenario } from "./scenario";
+import { assertSafeDemoSeedEnvironment } from "./safety";
 
 // Deterministic small PRNG so re-runs (and different operators) produce the
 // same demo dataset shape - not cryptographic, just reproducible seeding.
@@ -181,7 +183,11 @@ export class DemoSeederService {
   }
 
   async run(): Promise<void> {
-    this.logger.log("Demo seeder starting");
+    assertSafeDemoSeedEnvironment(process.env);
+    const scenario = buildDemoSeedScenario();
+    this.logger.log(
+      `Demo seeder starting: ${scenario.version}; ${scenario.records.length} fixture records; sha256=${scenario.hash}`
+    );
 
     const guard = await this.programmeRepo.count();
     if (guard > 3) {

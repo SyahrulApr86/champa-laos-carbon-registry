@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Card, Divider, Input, InputNumber, Select, Space, Table, Tag, Typography, message } from "antd";
-import { useConnection } from "../../Components/Context/ConnectionContext/connectionContext";
-import { useUserContext } from "../../Components/Context/UserInformationContext/userInformationContext";
+import { useConnection } from "../../Context/ConnectionContext/connectionContext";
+import { useUserContext } from "../../Context/UserInformationContext/userInformationContext";
 import { CompanyRole } from "../../Definitions/Enums/company.role.enum";
 import { Role } from "../../Definitions/Enums/role.enum";
 import CertificateLotEditor from "./CertificateLotEditor";

@@ -16,8 +16,8 @@ import {
   message,
 } from "antd";
 import { Link } from "react-router-dom";
-import { useConnection } from "../../Components/Context/ConnectionContext/connectionContext";
-import { useUserContext } from "../../Components/Context/UserInformationContext/userInformationContext";
+import { useConnection } from "../../Context/ConnectionContext/connectionContext";
+import { useUserContext } from "../../Context/UserInformationContext/userInformationContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { CompanyRole } from "../../Definitions/Enums/company.role.enum";
 import { MethodologyStatus } from "../../Definitions/Enums/methodologyStatus.enum";

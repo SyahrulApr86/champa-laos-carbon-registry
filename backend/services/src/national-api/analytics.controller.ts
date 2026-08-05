@@ -15,12 +15,12 @@ export class AnalyticsController {
   // Public, unauthenticated endpoint for the marketing/homepage dashboard.
   // Intentionally NOT guarded with JwtAuthGuard/PoliciesGuard - only exposes
   // aggregate counts/sums, never per-project or per-proponent detail.
-  // Reads from ProgrammeService (Programme table) rather than the
-  // ProjectEntity/audit-trail based methods below, because ProjectEntity is
-  // never populated by the replicator in this fork.
+  // Reads canonical certificate lots/current portions where available and
+  // programme aggregates for non-certificate metrics. It deliberately never
+  // exposes programme-level records through this endpoint.
   @Get("public/summary")
   async getPublicSummary() {
-    return this.programmeService.getPublicSummary();
+    return this.programmeService.getPublicAnalyticsSummary();
   }
 
   @UseGuards(JwtAuthGuard, PoliciesGuard)

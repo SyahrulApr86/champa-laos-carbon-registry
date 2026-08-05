@@ -140,6 +140,9 @@ import { Region } from "../entities/region.entity";
 import { CreditAuditLog } from "../entities/credit.audit.log.entity";
 import { CreditAuditLogType } from "../enum/credit.audit.log.type.enum";
 import { TxType } from "../enum/txtype.enum";
+import { CertificateLot } from "../entities/certificate.lot.entity";
+import { CertificatePortion } from "../entities/certificate.portion.entity";
+import { CertificatePortionState, PublicAvailability } from "../enum/certificate.ledger.enum";
 
 export interface PublicCertificate {
   accountHolder: string | null;
@@ -266,7 +269,11 @@ export class ProgrammeService {
     @InjectRepository(CommunityProgramEntity)
     private communityProgramRepo: Repository<CommunityProgramEntity>,
     @InjectRepository(ReddPlusEntity)
-    private reddPlusRepo: Repository<ReddPlusEntity>
+    private reddPlusRepo: Repository<ReddPlusEntity>,
+    @InjectRepository(CertificateLot)
+    private certificateLotRepo: Repository<CertificateLot>,
+    @InjectRepository(CertificatePortion)
+    private certificatePortionRepo: Repository<CertificatePortion>
   ) {}
 
   private fileExtensionMap = new Map([
@@ -8213,6 +8220,186 @@ export class ProgrammeService {
         assignedToExchange,
       },
     };
+  }
+
+  /**
+   * Canonical public dashboard contract. Certificate quantities come from
+   * immutable lot supply and current portion state whenever that ledger is
+   * present; legacy programme fields are used only for non-certificate
+   * programme metrics such as verified reductions.
+   */
+  async getPublicAnalyticsSummary(): Promise<any> {
+    const [legacy, programmes, companies, lots] = await Promise.all([
+      this.getPublicSummary(),
+      this.programmeRepo.find(),
+      this.companyRepo.find({ where: { state: CompanyState.ACTIVE } }),
+      this.certificateLotRepo.find(),
+    ]);
+    const portions = lots.length
+      ? await this.certificatePortionRepo.find({
+          where: { certificateLotId: In(lots.map((lot) => lot.certificateLotId)) },
+        })
+      : [];
+    const programmesById = new Map(programmes.map((programme) => [programme.programmeId, programme]));
+    const companiesById = new Map(companies.map((company) => [Number(company.companyId), company]));
+    const amount = (value: unknown) => Number.isFinite(Number(value)) ? Number(value) : 0;
+    const pointList = (values: Map<string, number>) => [...values.entries()]
+      .filter(([, value]) => value > 0)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, value]) => ({ key, label: key, value }));
+    const add = (values: Map<string, number>, key: string, value: number) =>
+      values.set(key, (values.get(key) ?? 0) + value);
+
+    const syntheticLots = lots.filter((lot) => this.isSyntheticCertificateSource(lot.provenance));
+    const allLotsSynthetic = lots.length > 0 && syntheticLots.length === lots.length;
+    const periodStarts = lots.map((lot) => lot.vintageStart).filter(Boolean).sort() as string[];
+    const periodEnds = lots.map((lot) => lot.vintageEnd).filter(Boolean).sort() as string[];
+    const asOfDates = lots.map((lot) => lot.asOf).filter(Boolean).sort((left, right) => right.getTime() - left.getTime());
+    const portionsByLot = new Map<string, CertificatePortion[]>();
+    for (const portion of portions) {
+      const rows = portionsByLot.get(portion.certificateLotId) ?? [];
+      rows.push(portion);
+      portionsByLot.set(portion.certificateLotId, rows);
+    }
+    const hasCompleteLotState = lots.length > 0 && lots.every((lot) => {
+      const stateTotal = (portionsByLot.get(lot.certificateLotId) ?? [])
+        .reduce((total, portion) => total + amount(portion.quantity), 0);
+      return Math.abs(stateTotal - amount(lot.issuedQuantity)) < 0.000001;
+    });
+    const stateBalance = (state: CertificatePortionState) => portions
+      .filter((portion) => portion.state === state)
+      .reduce((total, portion) => total + amount(portion.quantity), 0);
+    const issuedTotal = lots.reduce((total, lot) => total + amount(lot.issuedQuantity), 0);
+    const certificateMetrics = lots.length
+      ? {
+          certificate_lot_count: lots.length,
+          issued: issuedTotal,
+          available: hasCompleteLotState ? stateBalance(CertificatePortionState.AVAILABLE) : null,
+          retired: hasCompleteLotState ? stateBalance(CertificatePortionState.RETIRED) : null,
+          cancelled: hasCompleteLotState ? stateBalance(CertificatePortionState.CANCELLED) : null,
+          assigned_to_exchange: hasCompleteLotState ? stateBalance(CertificatePortionState.ASSIGNED_TO_EXCHANGE) : null,
+          withheld: hasCompleteLotState ? stateBalance(CertificatePortionState.WITHHELD) : null,
+          buffer: hasCompleteLotState ? stateBalance(CertificatePortionState.BUFFER) : null,
+        }
+      : {
+          certificate_lot_count: 0,
+          issued: null,
+          available: null,
+          retired: null,
+          cancelled: null,
+          assigned_to_exchange: null,
+          withheld: null,
+          buffer: null,
+        };
+
+    const proponentsByScheme = new Map<string, Set<number>>();
+    const issuedByScheme = new Map<string, number>();
+    const issuedBySector = new Map<string, number>();
+    for (const lot of lots) {
+      const scheme = lot.registryScheme || "Not specified";
+      add(issuedByScheme, scheme, amount(lot.issuedQuantity));
+      const programme = programmesById.get(lot.programmeId);
+      if (programme?.sector) add(issuedBySector, programme.sector, amount(lot.issuedQuantity));
+      const schemeProponents = proponentsByScheme.get(scheme) ?? new Set<number>();
+      for (const companyId of programme?.companyId ?? []) {
+        const company = companiesById.get(Number(companyId));
+        if (company?.companyRole === CompanyRole.PROJECT_DEVELOPER) schemeProponents.add(Number(companyId));
+      }
+      proponentsByScheme.set(scheme, schemeProponents);
+    }
+    const proponentCategory = new Map<string, number>();
+    for (const company of companies) {
+      if (company.companyRole === CompanyRole.PROJECT_DEVELOPER) {
+        add(proponentCategory, company.proponentCategory || "Not Specified", 1);
+      }
+    }
+    const verifiedByCategory = new Map<string, number>();
+    const verifiedBySector = new Map<string, number>();
+    for (const programme of programmes) {
+      const verified = amount(programme.emissionReductionAchieved);
+      if (programme.sector) add(verifiedBySector, programme.sector, verified);
+      const ownerIds = programme.companyId ?? [];
+      const percentages = (programme.proponentPercentage ?? []).map(amount);
+      const percentageTotal = percentages.reduce((total, value) => total + value, 0);
+      ownerIds.forEach((rawCompanyId, index) => {
+        const company = companiesById.get(Number(rawCompanyId));
+        if (!company || company.companyRole !== CompanyRole.PROJECT_DEVELOPER) return;
+        const share = percentages.length === ownerIds.length && percentageTotal > 0
+          ? (verified * percentages[index]) / percentageTotal
+          : index === 0 ? verified : 0;
+        add(verifiedByCategory, company.proponentCategory || "Not Specified", share);
+      });
+    }
+    const metric = (metricId: string, unit: string, availability: PublicAvailability | "available" | "not_available", formulaId: string | null, sourceLabel: string) => ({
+      metric_id: metricId,
+      unit,
+      formula_id: formulaId,
+      methodology_version: lots[0]?.provenance?.methodology_version ?? null,
+      additive: true,
+      availability,
+      source_label: sourceLabel,
+      period_label: periodStarts.length && periodEnds.length ? `${periodStarts[0]} to ${periodEnds[periodEnds.length - 1]}` : null,
+    });
+    const ledgerAvailability = lots.length ? PublicAvailability.AVAILABLE : PublicAvailability.NOT_AVAILABLE;
+    const charts = {
+      proponents_by_registry_scheme: {
+        points: [...proponentsByScheme.entries()].map(([key, values]) => ({ key, label: key, value: values.size })),
+        metric: metric("proponents_by_registry_scheme", "organisations", ledgerAvailability, lots.length ? "distinct_project_developers_by_certificate_scheme_v1" : null, "Certificate lots and active programme proponents"),
+      },
+      proponent_category_distribution: {
+        points: pointList(proponentCategory),
+        metric: metric("proponent_category_distribution", "organisations", programmes.length ? PublicAvailability.AVAILABLE : PublicAvailability.NOT_AVAILABLE, "active_project_developers_by_category_v1", "Active programme proponents"),
+      },
+      issued_units_by_registry_scheme: {
+        points: pointList(issuedByScheme),
+        metric: metric("issued_units_by_registry_scheme", "tCO2e", ledgerAvailability, lots.length ? "certificate_lot_issued_quantity_by_scheme_v1" : null, "Canonical certificate lot supply"),
+      },
+      verified_reduction_by_proponent_category: {
+        points: pointList(verifiedByCategory),
+        metric: metric("verified_reduction_by_proponent_category", "tCO2e", programmes.length ? PublicAvailability.AVAILABLE : PublicAvailability.NOT_AVAILABLE, "programme_reported_verified_reduction_by_proponent_share_v1", "Programme reported verified reductions"),
+      },
+      issued_units_by_sector: {
+        points: pointList(issuedBySector),
+        metric: metric("issued_units_by_sector", "tCO2e", ledgerAvailability, lots.length ? "certificate_lot_issued_quantity_by_programme_sector_v1" : null, "Canonical certificate lot supply joined to programme sector"),
+      },
+      verified_reduction_by_sector: {
+        points: pointList(verifiedBySector),
+        metric: metric("verified_reduction_by_sector", "tCO2e", programmes.length ? PublicAvailability.AVAILABLE : PublicAvailability.NOT_AVAILABLE, "programme_reported_verified_reduction_by_sector_v1", "Programme reported verified reductions"),
+      },
+    };
+    const source = lots[0]?.provenance ?? {};
+    const datasetKind = allLotsSynthetic ? "demo_synthetic" : syntheticLots.length ? "mixed_explicit" : "authoritative";
+    const disclosure = allLotsSynthetic
+      ? "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records."
+      : "Public registry aggregates reflect the records available in this deployment; availability and provenance are shown with each metric."
+    return {
+      data: {
+        registry_overview: {
+          programme_count: programmes.length,
+          stage_counts: legacy.stageCounts,
+          certificate_metrics: certificateMetrics,
+          certificate_state_availability: hasCompleteLotState ? PublicAvailability.AVAILABLE : ledgerAvailability,
+        },
+        charts,
+      },
+      meta: {
+        dataset_kind: datasetKind,
+        scenario: allLotsSynthetic ? source.scenario ?? "Champa registry demonstration" : null,
+        as_of: asOfDates[0]?.toISOString() ?? null,
+        period: { start: periodStarts[0] ?? null, end: periodEnds[periodEnds.length - 1] ?? null },
+        source: {
+          type: allLotsSynthetic ? source.source_type ?? "synthetic_demo" : source.source_type ?? "registry_records",
+          label: allLotsSynthetic ? source.source_label ?? "Champa parity demo" : source.source_label ?? "Registry records in this deployment",
+        },
+        methodology_version: source.methodology_version ?? null,
+        availability: programmes.length || lots.length ? PublicAvailability.AVAILABLE : PublicAvailability.NOT_AVAILABLE,
+        disclosure,
+      },
+    };
+  }
+
+  private isSyntheticCertificateSource(provenance: Record<string, unknown> | null | undefined): boolean {
+    return provenance?.dataset_kind === "demo_synthetic" || provenance?.source_type === "synthetic_demo";
   }
 
   // Public, unauthenticated map contract. Unlike the original endpoint,

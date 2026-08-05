@@ -32,6 +32,8 @@ import { AdaptationProjectEntity } from "../entities/adaptation.project.entity";
 import { CommunityProgramEntity } from "../entities/community.program.entity";
 import { ReddPlusEntity } from "../entities/redd.plus.entity";
 import { CertificateRegistryModule } from "../certificate-registry/certificate.registry.module";
+import { CertificateLot } from "../entities/certificate.lot.entity";
+import { CertificatePortion } from "../entities/certificate.portion.entity";
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { CertificateRegistryModule } from "../certificate-registry/certificate.r
       AdaptationProjectEntity,
       CommunityProgramEntity,
       ReddPlusEntity,
+      CertificateLot,
+      CertificatePortion,
     ]),
     UtilModule,
     CompanyModule,

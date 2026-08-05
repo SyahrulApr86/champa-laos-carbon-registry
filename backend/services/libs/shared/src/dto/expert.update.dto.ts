@@ -1,34 +1,35 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
-  IsEnum,
   IsInt,
-  Max,
-  MaxLength,
-  Min,
   IsNotEmpty,
   IsOptional,
   IsString,
+  Max,
+  MaxLength,
+  Min,
 } from "class-validator";
-import { ExpertStatus } from "../enum/expert.status.enum";
 
-export class ExpertCreateDto {
-  @ApiProperty()
+export class ExpertUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(200)
-  name: string;
+  name?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)
-  affiliation: string;
+  affiliation?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(4000)
-  expertise: string;
+  expertise?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -43,14 +44,10 @@ export class ExpertCreateDto {
   @Max(80)
   yearsOfExperience?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  province: string;
-
-  @ApiPropertyOptional({ enum: ExpertStatus })
-  @IsOptional()
-  @IsEnum(ExpertStatus)
-  status?: ExpertStatus;
+  province?: string;
 }

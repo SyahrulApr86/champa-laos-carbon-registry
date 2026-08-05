@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class EmissionParticipantCreateDto {
   @ApiProperty()
@@ -21,4 +22,19 @@ export class EmissionParticipantCreateDto {
   @IsNotEmpty()
   @IsNumber()
   year: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  seriesName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  sector?: string;
+
+  @ApiPropertyOptional({ enum: ["active", "unallocated", "withheld"] })
+  @IsOptional()
+  @IsIn(["active", "unallocated", "withheld"])
+  participantStatus?: string;
 }

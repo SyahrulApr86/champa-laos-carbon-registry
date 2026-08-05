@@ -2,11 +2,8 @@ import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { EntitySubject } from "./entity.subject";
 import { NumberTransformer } from "../functions/number.transformer.decorator";
 
-// Emission ceiling & trading tracker (PTBAE-PU style, prototype). Tracks
-// individual power-generation facilities participating in a company's
-// emission ceiling allocation for a given year (SRN's "PTBAE-PU
-// Participants" tab equivalent). Prototype grade - not tied to a specific
-// real-world Lao regulation.
+// A configurable facility/organisation participating in a ceiling series.
+// Public demo rows are synthetic until an approved source is configured.
 @Entity()
 export class EmissionParticipantEntity implements EntitySubject {
   @PrimaryGeneratedColumn()
@@ -24,6 +21,15 @@ export class EmissionParticipantEntity implements EntitySubject {
 
   @Column({ type: "int" })
   year: number;
+
+  @Column({ type: "varchar", nullable: true })
+  seriesName: string;
+
+  @Column({ type: "varchar", nullable: true })
+  sector: string;
+
+  @Column({ type: "varchar", nullable: true })
+  participantStatus: string;
 
   @Column({ type: "bigint", transformer: NumberTransformer })
   createdAt: number;

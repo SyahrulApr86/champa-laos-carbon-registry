@@ -57,8 +57,8 @@ const PublicAdaptationDetail = () => {
     if (!adaptationId) { setDetail(null); setLoading(false); return; }
     setLoading(true);
     setError(false);
-    get(API_PATHS.ADAPTATION_PUBLIC_DETAIL(adaptationId))
-      .then((response: any) => setDetail((response?.data as PublicEnvelope<AdaptationDetail>)?.data ?? null))
+    get<PublicEnvelope<AdaptationDetail>>(API_PATHS.ADAPTATION_PUBLIC_DETAIL(adaptationId))
+      .then((response) => setDetail(response.data?.data ?? null))
       .catch(() => { setDetail(null); setError(true); })
       .finally(() => setLoading(false));
   }, [adaptationId, get]);

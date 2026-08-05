@@ -72,10 +72,9 @@ const CommunityProgramTab = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    get(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_SUMMARY)
-      .then((response: any) => {
-        const envelope = response?.data as PublicEnvelope<CommunityProgramSummary>;
-        setSummary(envelope?.data ?? emptySummary);
+    get<PublicEnvelope<CommunityProgramSummary>>(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_SUMMARY)
+      .then((response) => {
+        setSummary(response.data?.data ?? emptySummary);
       })
       .catch(() => setSummary(emptySummary));
   }, [get]);
@@ -88,10 +87,9 @@ const CommunityProgramTab = () => {
       if (query) params.set("q", query);
       if (category) params.set("category", category);
       if (region) params.set("region", region);
-      const response = await get(`${API_PATHS.COMMUNITY_PROGRAM_PUBLIC_LIST}?${params.toString()}`);
-      const envelope = response?.data as PublicEnvelope<CommunityProgramRow[]>;
-      setRows(envelope?.data ?? []);
-      setTotal(envelope?.meta?.pagination?.total_items ?? 0);
+      const response = await get<PublicEnvelope<CommunityProgramRow[]>>(`${API_PATHS.COMMUNITY_PROGRAM_PUBLIC_LIST}?${params.toString()}`);
+      setRows(response.data?.data ?? []);
+      setTotal(response.data?.meta?.pagination?.total_items ?? 0);
     } catch {
       setRows([]);
       setTotal(0);

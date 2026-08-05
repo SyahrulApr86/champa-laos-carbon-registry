@@ -61,8 +61,8 @@ const PublicCommunityDetail = () => {
     if (!programId) { setDetail(null); setLoading(false); return; }
     setLoading(true);
     setError(false);
-    get(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_DETAIL(programId))
-      .then((response: any) => setDetail((response?.data as PublicEnvelope<CommunityDetail>)?.data ?? null))
+    get<PublicEnvelope<CommunityDetail>>(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_DETAIL(programId))
+      .then((response) => setDetail(response.data?.data ?? null))
       .catch(() => { setDetail(null); setError(true); })
       .finally(() => setLoading(false));
   }, [get, programId]);

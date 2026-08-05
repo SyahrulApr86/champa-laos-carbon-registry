@@ -115,8 +115,8 @@ const ResourcesTab = () => {
   const [selectedSupport, setSelectedSupport] = useState<SupportRow | null>(null);
 
   useEffect(() => {
-    get(API_PATHS.CLIMATE_FINANCE_PUBLIC_SUMMARY)
-      .then((response: any) => setFinanceSummary((response?.data as PublicEnvelope<ClimateFinanceSummary>)?.data ?? emptyFinanceSummary))
+    get<PublicEnvelope<ClimateFinanceSummary>>(API_PATHS.CLIMATE_FINANCE_PUBLIC_SUMMARY)
+      .then((response) => setFinanceSummary(response.data?.data ?? emptyFinanceSummary))
       .catch(() => setFinanceSummary(emptyFinanceSummary));
   }, [get]);
 
@@ -128,10 +128,9 @@ const ResourcesTab = () => {
       if (query) params.set("q", query);
       if (sector) params.set("sector", sector);
       if (channel) params.set("channel", channel);
-      const response = await get(`${API_PATHS.CLIMATE_FINANCE_PUBLIC_SEARCH("", 1, PAGE_SIZE).split("?")[0]}?${params.toString()}`);
-      const envelope = response?.data as PublicEnvelope<ClimateFinanceRow[]>;
-      setFinanceRows(envelope?.data ?? []);
-      setFinanceTotal(envelope?.meta?.pagination?.total_items ?? 0);
+      const response = await get<PublicEnvelope<ClimateFinanceRow[]>>(`${API_PATHS.CLIMATE_FINANCE_PUBLIC_SEARCH("", 1, PAGE_SIZE).split("?")[0]}?${params.toString()}`);
+      setFinanceRows(response.data?.data ?? []);
+      setFinanceTotal(response.data?.meta?.pagination?.total_items ?? 0);
     } catch {
       setFinanceRows([]);
       setFinanceTotal(0);
@@ -148,14 +147,13 @@ const ResourcesTab = () => {
     setLoading(true);
     try {
       const path = kind === "technology" ? API_PATHS.TECHNOLOGY_TRANSFER_PUBLIC_LIST : API_PATHS.CAPACITY_BUILDING_PUBLIC_LIST;
-      const response = await get(`${path}?${pageQuery(page)}`);
-      const envelope = response?.data as PublicEnvelope<SupportRow[]>;
+      const response = await get<PublicEnvelope<SupportRow[]>>(`${path}?${pageQuery(page)}`);
       if (kind === "technology") {
-        setTechnologyRows(envelope?.data ?? []);
-        setTechnologyTotal(envelope?.meta?.pagination?.total_items ?? 0);
+        setTechnologyRows(response.data?.data ?? []);
+        setTechnologyTotal(response.data?.meta?.pagination?.total_items ?? 0);
       } else {
-        setCapacityRows(envelope?.data ?? []);
-        setCapacityTotal(envelope?.meta?.pagination?.total_items ?? 0);
+        setCapacityRows(response.data?.data ?? []);
+        setCapacityTotal(response.data?.meta?.pagination?.total_items ?? 0);
       }
     } catch {
       if (kind === "technology") { setTechnologyRows([]); setTechnologyTotal(0); }

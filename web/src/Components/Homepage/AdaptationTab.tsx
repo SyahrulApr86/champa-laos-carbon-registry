@@ -63,10 +63,9 @@ const AdaptationTab = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    get(API_PATHS.ADAPTATION_PUBLIC_SUMMARY)
-      .then((response: any) => {
-        const envelope = response?.data as PublicEnvelope<AdaptationSummary>;
-        setSummary(envelope?.data ?? emptySummary);
+    get<PublicEnvelope<AdaptationSummary>>(API_PATHS.ADAPTATION_PUBLIC_SUMMARY)
+      .then((response) => {
+        setSummary(response.data?.data ?? emptySummary);
       })
       .catch(() => setSummary(emptySummary));
   }, [get]);
@@ -80,10 +79,9 @@ const AdaptationTab = () => {
       if (sector) params.set("sector", sector);
       if (region) params.set("region", region);
       if (status) params.set("status", status);
-      const response = await get(`${API_PATHS.ADAPTATION_PUBLIC_SEARCH("", 1, PAGE_SIZE).split("?")[0]}?${params.toString()}`);
-      const envelope = response?.data as PublicEnvelope<AdaptationRow[]>;
-      setRows(envelope?.data ?? []);
-      setTotal(envelope?.meta?.pagination?.total_items ?? 0);
+      const response = await get<PublicEnvelope<AdaptationRow[]>>(`${API_PATHS.ADAPTATION_PUBLIC_SEARCH("", 1, PAGE_SIZE).split("?")[0]}?${params.toString()}`);
+      setRows(response.data?.data ?? []);
+      setTotal(response.data?.meta?.pagination?.total_items ?? 0);
     } catch {
       setRows([]);
       setTotal(0);

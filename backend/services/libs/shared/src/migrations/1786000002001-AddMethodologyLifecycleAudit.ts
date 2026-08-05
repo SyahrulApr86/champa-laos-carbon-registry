@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 /** Preserve methodology rows while recording the actors and time of lifecycle changes. */
-export class AddMethodologyLifecycleAudit1786000002000
+export class AddMethodologyLifecycleAudit1786000002001
   implements MigrationInterface
 {
-  name = "AddMethodologyLifecycleAudit1786000002000";
+  name = "AddMethodologyLifecycleAudit1786000002001";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

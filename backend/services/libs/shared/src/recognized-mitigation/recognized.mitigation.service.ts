@@ -7,6 +7,10 @@ import { RecognizedMitigationUpdateDto } from "../dto/recognized.mitigation.upda
 import { RecognizedMitigationStatus } from "../enum/recognized.mitigation.status.enum";
 import { CompanyRole } from "../enum/company.role.enum";
 import { Region } from "../entities/region.entity";
+import {
+  createPublicMeta,
+  PublicListResponse,
+} from "../public-data/public.data.contract";
 
 interface RecognizedMitigationPublicRow {
   referenceId: string;
@@ -169,7 +173,7 @@ export class RecognizedMitigationService {
     q: string,
     page = 1,
     size = 10
-  ): Promise<{ data: RecognizedMitigationPublicRow[]; total: number }> {
+  ): Promise<PublicListResponse<RecognizedMitigationPublicRow> & { total: number }> {
     const keyword = (q || "").trim();
     const safePage = Math.max(1, page);
     const safeSize = Math.min(50, Math.max(1, size));
@@ -190,8 +194,7 @@ export class RecognizedMitigationService {
 
     const [results, total] = await qb.getManyAndCount();
 
-    return {
-      data: results.map((r) => ({
+    const data = results.map((r) => ({
         referenceId: r.referenceId,
         title: r.title,
         proponentName: r.proponentName,
@@ -205,8 +208,22 @@ export class RecognizedMitigationService {
             : Number(r.estimatedReductionTco2e),
         status: r.status,
         createdAt: r.createdAt,
-      })),
+      }));
+
+    return {
+      data,
       total,
+      meta: createPublicMeta(
+        { q: keyword || null },
+        {
+          unit: "records",
+          pagination: {
+            page: safePage,
+            page_size: safeSize,
+            total_items: total,
+          },
+        }
+      ),
     };
   }
 
@@ -214,6 +231,8 @@ export class RecognizedMitigationService {
     totalActions: number;
     byStatus: Record<string, number>;
     byProponentType: Record<string, number>;
+    estimatedReductionTco2e: number | null;
+    meta: ReturnType<typeof createPublicMeta>;
   }> {
     const records = (await this.recognizedMitigationRepo.find({ where: { archivedAt: IsNull(), published: true } })).filter((record) => this.isActive(record));
 
@@ -227,16 +246,33 @@ export class RecognizedMitigationService {
       byProponentType[role] = 0;
     }
 
+    let estimatedReductionTco2e = 0;
+    let hasEstimatedReduction = false;
     for (const record of records) {
       byStatus[record.status] = (byStatus[record.status] || 0) + 1;
       byProponentType[record.proponentType] =
         (byProponentType[record.proponentType] || 0) + 1;
+      if (record.estimatedReductionTco2e != null) {
+        estimatedReductionTco2e += Number(record.estimatedReductionTco2e);
+        hasEstimatedReduction = true;
+      }
     }
 
     return {
       totalActions: records.length,
       byStatus,
       byProponentType,
+      estimatedReductionTco2e: hasEstimatedReduction
+        ? estimatedReductionTco2e
+        : null,
+      meta: createPublicMeta(
+        {},
+        {
+          unit: "records",
+          pagination: { total_items: records.length },
+          quality_status: "derived",
+        }
+      ),
     };
   }
 }

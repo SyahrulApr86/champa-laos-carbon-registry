@@ -72,6 +72,12 @@ export const AddNewCompanyComponent = (props: any) => {
   const [loadingList, setLoadingList] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<any[]>([]);
   const [locationError, setLocationError] = useState<string>();
+  const [locationLoaded, setLocationLoaded] = useState(false);
+  const [locationAvailability, setLocationAvailability] = useState({
+    districts: false,
+    cities: false,
+    postalCodes: false,
+  });
   const [registrationSubmitted, setRegistrationSubmitted] = useState(false);
   const [companyRole, setCompanyRole] = useState<any>(state?.record?.companyRole);
   // const [selectedMinistry, setSelectedMinistry] = useState<string>('');
@@ -90,22 +96,47 @@ export const AddNewCompanyComponent = (props: any) => {
   const getRegionList = async () => {
     setLoadingList(true);
     try {
-      const response = await get(API_PATHS.REGISTRATION_PROVINCES);
-      const provinces = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data ?? [];
+      const [provinceResult, districtResult, cityResult, postalResult] =
+        await Promise.allSettled([
+          get(API_PATHS.REGISTRATION_PROVINCES),
+          post(API_PATHS.DISTRICTS),
+          post(API_PATHS.CITIES),
+          post(API_PATHS.POSTALCODE),
+        ]);
+      const getList = (result: PromiseSettledResult<any>) => {
+        if (result.status !== 'fulfilled') return [];
+        const data = result.value?.data;
+        return Array.isArray(data) ? data : data?.data ?? [];
+      };
+      const provinces = getList(provinceResult);
+      const districts = getList(districtResult);
+      const cities = getList(cityResult);
+      const postalCodes = getList(postalResult);
       setRegionsList(provinces);
+      setLocationAvailability({
+        districts: districts.some((location: any) => location.countryAlpha2 === 'LA'),
+        cities: cities.some((location: any) => location.countryAlpha2 === 'LA'),
+        postalCodes: postalCodes.some((location: any) => location.countryAlpha2 === 'LA'),
+      });
+      const requestFailed = [
+        provinceResult,
+        districtResult,
+        cityResult,
+        postalResult,
+      ].some((result) => result.status === 'rejected');
       setLocationError(
-        provinces.length === 0
-          ? 'Lao PDR province choices are not configured for registration yet.'
+        requestFailed
+          ? 'Some location choices could not be loaded. Please refresh and try again.'
+          : provinces.length === 0
+          ? 'Province choices are temporarily unavailable. Please refresh and try again.'
           : undefined
       );
     } catch {
       setRegionsList([]);
-      setLocationError(
-        'Lao PDR province choices could not be loaded. Please retry before registering.'
-      );
+      setLocationAvailability({ districts: false, cities: false, postalCodes: false });
+      setLocationError('Location choices could not be loaded. Please refresh and try again.');
     } finally {
+      setLocationLoaded(true);
       setLoadingList(false);
     }
   };
@@ -806,15 +837,30 @@ export const AddNewCompanyComponent = (props: any) => {
                   </Form.Item>
                   {regionField && (
                     <>
-                      <Alert
-                        type={locationError ? 'warning' : 'info'}
-                        showIcon
-                        message={
-                          locationError ||
-                          'Registration uses the configured Lao PDR province list. District, city, and postal-code choices are not configured.'
-                        }
-                        style={{ marginBottom: 16 }}
-                      />
+                      {locationError ? (
+                        <Alert
+                          type="warning"
+                          showIcon
+                          message={locationError}
+                          style={{ marginBottom: 16 }}
+                        />
+                      ) : locationLoaded &&
+                        (!locationAvailability.districts ||
+                          !locationAvailability.cities ||
+                          !locationAvailability.postalCodes) ? (
+                        <Alert
+                          type="info"
+                          showIcon
+                          message={`Registration uses the configured Lao PDR province list. ${[
+                            !locationAvailability.districts && 'District',
+                            !locationAvailability.cities && 'city',
+                            !locationAvailability.postalCodes && 'postal-code',
+                          ]
+                            .filter(Boolean)
+                            .join(', ')} choices are not configured.`}
+                          style={{ marginBottom: 16 }}
+                        />
+                      ) : null}
                       <Form.Item
                         label={t('addCompany:province')}
                         name="provinces"

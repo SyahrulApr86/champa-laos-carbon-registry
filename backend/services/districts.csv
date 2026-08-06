@@ -1,26 +1,149 @@
 Name,Country,Province,Latitude,Longitude,Language
-Ampara,LK,Eastern,7.291418,81.636696,en
-Anuradhapura,LK,North Central,8.311351,80.403650,en
-Badulla,LK,Uva,6.9934,81.0550,en
-Batticaloa,LK,Eastern,7.7310,81.6747,en
-Colombo,LK,Western,6.927079,79.861243,en
-Galle,LK,Southern,6.053519,80.220977,en
-Gampaha,LK,Western,7.0873,79.9999,en
-Hambantota,LK,Southern,6.1429,81.1212,en
-Jaffna,LK,Northern,9.6615,80.0255,en
-Kalutara,LK,Western,6.5854,79.9607,en
-Kandy,LK,Central,7.2906,80.6337,en
-Kegalle,LK,Sabaragamuwa,7.2513,80.3464,en
-Kilinochchi,LK,Northern,9.3961,80.3982,en
-Kurunegala,LK,North Western,7.4863,80.3623,en
-Mannar,LK,Northern,8.9779,79.9093,en
-Matale,LK,Central,7.4675,80.6234,en
-Matara,LK,Southern,5.9485,80.5353,en
-Monaragala,LK,Uva,6.8710,81.3487,en
-Mullaitivu,LK,Northern,9.2671,80.8142,en
-Nuwara Eliya,LK,Central,6.9708,80.7829,en
-Polonnaruwa,LK,North Central,7.9403,81.0188,en
-Puttalam,LK,North Western,8.0330,79.8264,en
-Ratnapura,LK,Sabaragamuwa,6.6828,80.3991,en
-Trincomalee,LK,Eastern,8.5874,81.2152,en
-Vavuniya,LK,Northern,8.7542,80.4982,en
+Chanthabouly,LA,Vientiane Capital,17.9757,102.6331,en
+Sikhottabong,LA,Vientiane Capital,17.9757,102.6331,en
+Xaysettha,LA,Vientiane Capital,17.9757,102.6331,en
+Sisattanak,LA,Vientiane Capital,17.9757,102.6331,en
+Naxaithong,LA,Vientiane Capital,17.9757,102.6331,en
+Xaythany,LA,Vientiane Capital,17.9757,102.6331,en
+Hadxaifong,LA,Vientiane Capital,17.9757,102.6331,en
+Sangthong,LA,Vientiane Capital,17.9757,102.6331,en
+Paknguem,LA,Vientiane Capital,17.9757,102.6331,en
+Phongsaly,LA,Phongsaly,21.68,102.1,en
+Mai,LA,Phongsaly,21.68,102.1,en
+Khoua,LA,Phongsaly,21.68,102.1,en
+Samphanh,LA,Phongsaly,21.68,102.1,en
+Boonneua,LA,Phongsaly,21.68,102.1,en
+Nhodou,LA,Phongsaly,21.68,102.1,en
+Boontai,LA,Phongsaly,21.68,102.1,en
+Luangnamtha,LA,Luang Namtha,20.917,101.4,en
+Sing,LA,Luang Namtha,20.917,101.4,en
+Long,LA,Luang Namtha,20.917,101.4,en
+Viengphoukha,LA,Luang Namtha,20.917,101.4,en
+Nalae,LA,Luang Namtha,20.917,101.4,en
+Xay,LA,Oudomxay,20.69,101.98,en
+La,LA,Oudomxay,20.69,101.98,en
+Namor,LA,Oudomxay,20.69,101.98,en
+Nga,LA,Oudomxay,20.69,101.98,en
+Beng,LA,Oudomxay,20.69,101.98,en
+Houn,LA,Oudomxay,20.69,101.98,en
+Pakbeng,LA,Oudomxay,20.69,101.98,en
+Huayxai,LA,Bokeo,20.28,100.43,en
+Tonpheung,LA,Bokeo,20.28,100.43,en
+Meung,LA,Bokeo,20.28,100.43,en
+Phaoudom,LA,Bokeo,20.28,100.43,en
+Paktha,LA,Bokeo,20.28,100.43,en
+Luangprabang,LA,Luang Prabang,19.8856,102.1347,en
+Xiengngeun,LA,Luang Prabang,19.8856,102.1347,en
+Nan,LA,Luang Prabang,19.8856,102.1347,en
+Parkou,LA,Luang Prabang,19.8856,102.1347,en
+Nambak,LA,Luang Prabang,19.8856,102.1347,en
+Ngoi,LA,Luang Prabang,19.8856,102.1347,en
+Pakxeng,LA,Luang Prabang,19.8856,102.1347,en
+Phonxay,LA,Luang Prabang,19.8856,102.1347,en
+Chomphet,LA,Luang Prabang,19.8856,102.1347,en
+Viengkham,LA,Luang Prabang,19.8856,102.1347,en
+Phoukhoun,LA,Luang Prabang,19.8856,102.1347,en
+Phonthong,LA,Luang Prabang,19.8856,102.1347,en
+Xamneua,LA,Houaphanh,20.415,104.045,en
+Xiengkhor,LA,Houaphanh,20.415,104.045,en
+Hiem,LA,Houaphanh,20.415,104.045,en
+Viengxay,LA,Houaphanh,20.415,104.045,en
+Houameuang,LA,Houaphanh,20.415,104.045,en
+Xamtay,LA,Houaphanh,20.415,104.045,en
+Sopbao,LA,Houaphanh,20.415,104.045,en
+Ed,LA,Houaphanh,20.415,104.045,en
+Kuan,LA,Houaphanh,20.415,104.045,en
+Xon,LA,Houaphanh,20.415,104.045,en
+Xayabouly,LA,Xayaboury,19.25,101.75,en
+Khop,LA,Xayaboury,19.25,101.75,en
+Hongsa,LA,Xayaboury,19.25,101.75,en
+Ngeun,LA,Xayaboury,19.25,101.75,en
+Xienghone,LA,Xayaboury,19.25,101.75,en
+Phiang,LA,Xayaboury,19.25,101.75,en
+Paklai,LA,Xayaboury,19.25,101.75,en
+Kenthao,LA,Xayaboury,19.25,101.75,en
+Boten,LA,Xayaboury,19.25,101.75,en
+Thongmyxay,LA,Xayaboury,19.25,101.75,en
+Xaysathan,LA,Xayaboury,19.25,101.75,en
+Pek,LA,Xiangkhouang,19.45,103.15,en
+Kham,LA,Xiangkhouang,19.45,103.15,en
+Nonghed,LA,Xiangkhouang,19.45,103.15,en
+Khoun,LA,Xiangkhouang,19.45,103.15,en
+Mok,LA,Xiangkhouang,19.45,103.15,en
+Phoukoud,LA,Xiangkhouang,19.45,103.15,en
+Phaxay,LA,Xiangkhouang,19.45,103.15,en
+Phonhong,LA,Vientiane Province,18.5,102.4,en
+Thoulakhom,LA,Vientiane Province,18.5,102.4,en
+Keooudom,LA,Vientiane Province,18.5,102.4,en
+Kasi,LA,Vientiane Province,18.5,102.4,en
+Vangvieng,LA,Vientiane Province,18.5,102.4,en
+Feuang,LA,Vientiane Province,18.5,102.4,en
+Xanakham,LA,Vientiane Province,18.5,102.4,en
+Med,LA,Vientiane Province,18.5,102.4,en
+Viengkham,LA,Vientiane Province,18.5,102.4,en
+Hinherb,LA,Vientiane Province,18.5,102.4,en
+Meun,LA,Vientiane Province,18.5,102.4,en
+Pakxan,LA,Bolikhamxay,18.4,103.66,en
+Thaphabad,LA,Bolikhamxay,18.4,103.66,en
+Pakkading,LA,Bolikhamxay,18.4,103.66,en
+Bolikhanh,LA,Bolikhamxay,18.4,103.66,en
+Khamkued,LA,Bolikhamxay,18.4,103.66,en
+Viengthong,LA,Bolikhamxay,18.4,103.66,en
+Xaychamphone,LA,Bolikhamxay,18.4,103.66,en
+Thakhek,LA,Khammouane,17.4,104.8,en
+Mahaxay,LA,Khammouane,17.4,104.8,en
+Nongbok,LA,Khammouane,17.4,104.8,en
+Hinboun,LA,Khammouane,17.4,104.8,en
+Nhommalad,LA,Khammouane,17.4,104.8,en
+Bualapha,LA,Khammouane,17.4,104.8,en
+Nakai,LA,Khammouane,17.4,104.8,en
+Xebangfay,LA,Khammouane,17.4,104.8,en
+Xaybouathong,LA,Khammouane,17.4,104.8,en
+Khounkham,LA,Khammouane,17.4,104.8,en
+Kaysonephomvihane,LA,Savannakhet,16.556,104.75,en
+Outhoomphone,LA,Savannakhet,16.556,104.75,en
+Atsaphangthong,LA,Savannakhet,16.556,104.75,en
+Phin,LA,Savannakhet,16.556,104.75,en
+Sepone,LA,Savannakhet,16.556,104.75,en
+Nong,LA,Savannakhet,16.556,104.75,en
+Thapangthong,LA,Savannakhet,16.556,104.75,en
+Songkhone,LA,Savannakhet,16.556,104.75,en
+Champhone,LA,Savannakhet,16.556,104.75,en
+Xonnabuly,LA,Savannakhet,16.556,104.75,en
+Xaybuly,LA,Savannakhet,16.556,104.75,en
+Vilabuly,LA,Savannakhet,16.556,104.75,en
+Atsaphone,LA,Savannakhet,16.556,104.75,en
+Xayphoothong,LA,Savannakhet,16.556,104.75,en
+Phalanxay,LA,Savannakhet,16.556,104.75,en
+Saravane,LA,Salavan,15.7167,106.4167,en
+Taoi,LA,Salavan,15.7167,106.4167,en
+Toumlan,LA,Salavan,15.7167,106.4167,en
+Lakhonepheng,LA,Salavan,15.7167,106.4167,en
+Vapy,LA,Salavan,15.7167,106.4167,en
+Khongxedone,LA,Salavan,15.7167,106.4167,en
+Laongarm,LA,Salavan,15.7167,106.4167,en
+Samuoi,LA,Salavan,15.7167,106.4167,en
+Lamarm,LA,Sekong,15.3667,106.7333,en
+Kaleum,LA,Sekong,15.3667,106.7333,en
+Dakcheung,LA,Sekong,15.3667,106.7333,en
+Thateng,LA,Sekong,15.3667,106.7333,en
+Pakse,LA,Champasak,15.12,105.79,en
+Sanasomboon,LA,Champasak,15.12,105.79,en
+Bachiengchaleunsouk,LA,Champasak,15.12,105.79,en
+Pakxong,LA,Champasak,15.12,105.79,en
+Pathoumphone,LA,Champasak,15.12,105.79,en
+Phonthong,LA,Champasak,15.12,105.79,en
+Champasak,LA,Champasak,15.12,105.79,en
+Sukhuma,LA,Champasak,15.12,105.79,en
+Moonlapamok,LA,Champasak,15.12,105.79,en
+Khong,LA,Champasak,15.12,105.79,en
+Xaysettha,LA,Attapeu,14.81,106.84,en
+Samakkhixay,LA,Attapeu,14.81,106.84,en
+Sanamxay,LA,Attapeu,14.81,106.84,en
+Sanxay,LA,Attapeu,14.81,106.84,en
+Phouvong,LA,Attapeu,14.81,106.84,en
+Anouvong,LA,Xaisomboun,18.9,102.63,en
+Thathom,LA,Xaisomboun,18.9,102.63,en
+Longchaeng,LA,Xaisomboun,18.9,102.63,en
+Hom,LA,Xaisomboun,18.9,102.63,en
+Longsan,LA,Xaisomboun,18.9,102.63,en

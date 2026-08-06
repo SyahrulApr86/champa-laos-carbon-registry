@@ -1,84 +1,149 @@
 Name,Country,District,Latitude,Longitude,Language
-Colombo 1 (Fort),LK,Colombo,6.9271,79.8612,en
-Colombo 2 (Slave Island),LK,Colombo,6.9271,79.8612,en
-Colombo 3 (Kollupitiya),LK,Colombo,6.9271,79.8612,en
-Colombo 4 (Bambalapitiya),LK,Colombo,6.9271,79.8612,en
-Colombo 5 (Havelock Town),LK,Colombo,6.9271,79.8612,en
-Colombo 6 (Wellawatte),LK,Colombo,6.9271,79.8612,en
-Colombo 7 (Cinnamon Gardens),LK,Colombo,6.9271,79.8612,en
-Colombo 8 (Borella),LK,Colombo,6.9271,79.8612,en
-Colombo 9 (Dematagoda),LK,Colombo,6.9271,79.8612,en
-Colombo 10 (Maradana),LK,Colombo,6.9271,79.8612,en
-Colombo 11 (Pettah),LK,Colombo,6.9271,79.8612,en
-Colombo 12 (Hulftsdorp),LK,Colombo,6.9271,79.8612,en
-Colombo 13 (Kotahena),LK,Colombo,6.9271,79.8612,en
-Colombo 14 (Grandpass),LK,Colombo,6.9271,79.8612,en
-Colombo 15 (Mutwal),LK,Colombo,6.9271,79.8612,en
-Dehiwala,LK,Colombo,6.8444,79.8650,en
-Mount Lavinia,LK,Colombo,6.8283,79.8630,en
-Moratuwa,LK,Colombo,6.7730,79.8815,en
-Ratmalana,LK,Colombo,6.8194,79.8802,en
-Gampaha,LK,Gampaha,7.0902,79.9940,en
-Negombo,LK,Gampaha,7.2083,79.8358,en
-Kalutara,LK,Kalutara,6.5831,79.9607,en
-Horana,LK,Kalutara,6.7167,80.0667,en
-Kandy,LK,Kandy,7.2906,80.6337,en
-Peradeniya,LK,Kandy,7.2627,80.5981,en
-Gampola,LK,Kandy,7.1646,80.5706,en
-Kadugannawa,LK,Kandy,7.2546,80.5239,en
-Digana,LK,Kandy,7.3005,80.7558,en
-Matale,LK,Matale,7.4675,80.6234,en
-Dambulla,LK,Matale,7.8717,80.6520,en
-Galewela,LK,Matale,7.7833,80.5667,en
-Ukuwela,LK,Matale,7.4167,80.6833,en
-Nuwara Eliya,LK,Nuwara Eliya,6.9708,80.7829,en
-Hatton,LK,Nuwara Eliya,6.8994,80.5934,en
-Talawakele,LK,Nuwara Eliya,6.9340,80.6692,en
-Ginigathhena,LK,Nuwara Eliya,6.9633,80.5333,en
-Ampara,LK,Ampara,7.2964,81.6745,en
-Kalmunai,LK,Ampara,7.4167,81.8167,en
-Akkaraipattu,LK,Ampara,7.2167,81.8500,en
-Sammanthurai,LK,Ampara,7.3667,81.8333,en
-Batticaloa,LK,Batticaloa,7.7102,81.6924,en
-Kattankudy,LK,Batticaloa,7.6833,81.7333,en
-Eravur,LK,Batticaloa,7.7667,81.6000,en
-Valachchenai,LK,Batticaloa,7.8994,81.5661,en
-Trincomalee,LK,Trincomalee,8.5760,81.2330,en
-Kinniya,LK,Trincomalee,8.4833,81.1833,en
-Muttur,LK,Trincomalee,8.4500,81.2667,en
-Anuradhapura,LK,Anuradhapura,8.3114,80.4037,en
-Mihintale,LK,Anuradhapura,8.3752,80.5070,en
-Kekirawa,LK,Anuradhapura,8.0356,80.5950,en
-Polonnaruwa,LK,Polonnaruwa,7.9403,81.0188,en
-Hingurakgoda,LK,Polonnaruwa,8.0500,80.9500,en
-Medirigiriya,LK,Polonnaruwa,8.1833,80.9167,en
-Kurunegala,LK,Kurunegala,7.4863,80.3621,en
-Kuliyapitiya,LK,Kurunegala,7.4667,80.0333,en
-Pannala,LK,Kurunegala,7.3833,80.0333,en
-Puttalam,LK,Puttalam,8.0333,79.8333,en
-Chilaw,LK,Puttalam,7.5833,79.8000,en
-Wennappuwa,LK,Puttalam,7.3000,79.8500,en
-Jaffna,LK,Jaffna,9.6685,80.0074,en
-Point Pedro,LK,Jaffna,9.8167,80.2333,en
-Mannar,LK,Mannar,8.9833,79.9000,en
-Pesalai,LK,Mannar,9.0500,79.7333,en
-Mullaitivu,LK,Mullaitivu,9.2674,80.8128,en
-Puthukudiyiruppu,LK,Mullaitivu,9.3833,80.7667,en
-Vavuniya,LK,Vavuniya,8.7500,80.5000,en
-Omanthai,LK,Vavuniya,8.8500,80.4667,en
-Kilinochchi,LK,Kilinochchi,9.4000,80.4000,en
-Paranthan,LK,Kilinochchi,9.4333,80.4167,en
-Kegalle,LK,Kegalle,7.2514,80.3464,en
-Warakapola,LK,Kegalle,7.1500,80.2500,en
-Ratnapura,LK,Ratnapura,6.6828,80.3992,en
-Balangoda,LK,Ratnapura,6.6470,80.7042,en
-Galle,LK,Galle,6.0535,80.2210,en
-Ambalangoda,LK,Galle,6.2394,80.0533,en
-Matara,LK,Matara,5.9485,80.5353,en
-Weligama,LK,Matara,5.9736,80.4292,en
-Hambantota,LK,Hambantota,6.1240,81.1185,en
-Tangalle,LK,Hambantota,6.0228,80.7916,en
-Badulla,LK,Badulla,6.9896,81.0552,en
-Bandarawela,LK,Badulla,6.8316,80.9936,en
-Monaragala,LK,Monaragala,6.8804,81.3509,en
-Wellawaya,LK,Monaragala,6.7351,81.1015,en
+Chanthabouly Central,LA,Chanthabouly,17.9757,102.6331,en
+Sikhottabong Central,LA,Sikhottabong,17.9757,102.6331,en
+Xaysettha Central,LA,Xaysettha,17.9757,102.6331,en
+Sisattanak Central,LA,Sisattanak,17.9757,102.6331,en
+Naxaithong Central,LA,Naxaithong,17.9757,102.6331,en
+Xaythany Central,LA,Xaythany,17.9757,102.6331,en
+Hadxaifong Central,LA,Hadxaifong,17.9757,102.6331,en
+Sangthong Central,LA,Sangthong,17.9757,102.6331,en
+Paknguem Central,LA,Paknguem,17.9757,102.6331,en
+Phongsaly Central,LA,Phongsaly,21.68,102.1,en
+Mai Central,LA,Mai,21.68,102.1,en
+Khoua Central,LA,Khoua,21.68,102.1,en
+Samphanh Central,LA,Samphanh,21.68,102.1,en
+Boonneua Central,LA,Boonneua,21.68,102.1,en
+Nhodou Central,LA,Nhodou,21.68,102.1,en
+Boontai Central,LA,Boontai,21.68,102.1,en
+Luangnamtha Central,LA,Luangnamtha,20.917,101.4,en
+Sing Central,LA,Sing,20.917,101.4,en
+Long Central,LA,Long,20.917,101.4,en
+Viengphoukha Central,LA,Viengphoukha,20.917,101.4,en
+Nalae Central,LA,Nalae,20.917,101.4,en
+Xay Central,LA,Xay,20.69,101.98,en
+La Central,LA,La,20.69,101.98,en
+Namor Central,LA,Namor,20.69,101.98,en
+Nga Central,LA,Nga,20.69,101.98,en
+Beng Central,LA,Beng,20.69,101.98,en
+Houn Central,LA,Houn,20.69,101.98,en
+Pakbeng Central,LA,Pakbeng,20.69,101.98,en
+Huayxai Central,LA,Huayxai,20.28,100.43,en
+Tonpheung Central,LA,Tonpheung,20.28,100.43,en
+Meung Central,LA,Meung,20.28,100.43,en
+Phaoudom Central,LA,Phaoudom,20.28,100.43,en
+Paktha Central,LA,Paktha,20.28,100.43,en
+Luangprabang Central,LA,Luangprabang,19.8856,102.1347,en
+Xiengngeun Central,LA,Xiengngeun,19.8856,102.1347,en
+Nan Central,LA,Nan,19.8856,102.1347,en
+Parkou Central,LA,Parkou,19.8856,102.1347,en
+Nambak Central,LA,Nambak,19.8856,102.1347,en
+Ngoi Central,LA,Ngoi,19.8856,102.1347,en
+Pakxeng Central,LA,Pakxeng,19.8856,102.1347,en
+Phonxay Central,LA,Phonxay,19.8856,102.1347,en
+Chomphet Central,LA,Chomphet,19.8856,102.1347,en
+Viengkham Central,LA,Viengkham,19.8856,102.1347,en
+Phoukhoun Central,LA,Phoukhoun,19.8856,102.1347,en
+Phonthong Central,LA,Phonthong,19.8856,102.1347,en
+Xamneua Central,LA,Xamneua,20.415,104.045,en
+Xiengkhor Central,LA,Xiengkhor,20.415,104.045,en
+Hiem Central,LA,Hiem,20.415,104.045,en
+Viengxay Central,LA,Viengxay,20.415,104.045,en
+Houameuang Central,LA,Houameuang,20.415,104.045,en
+Xamtay Central,LA,Xamtay,20.415,104.045,en
+Sopbao Central,LA,Sopbao,20.415,104.045,en
+Ed Central,LA,Ed,20.415,104.045,en
+Kuan Central,LA,Kuan,20.415,104.045,en
+Xon Central,LA,Xon,20.415,104.045,en
+Xayabouly Central,LA,Xayabouly,19.25,101.75,en
+Khop Central,LA,Khop,19.25,101.75,en
+Hongsa Central,LA,Hongsa,19.25,101.75,en
+Ngeun Central,LA,Ngeun,19.25,101.75,en
+Xienghone Central,LA,Xienghone,19.25,101.75,en
+Phiang Central,LA,Phiang,19.25,101.75,en
+Paklai Central,LA,Paklai,19.25,101.75,en
+Kenthao Central,LA,Kenthao,19.25,101.75,en
+Boten Central,LA,Boten,19.25,101.75,en
+Thongmyxay Central,LA,Thongmyxay,19.25,101.75,en
+Xaysathan Central,LA,Xaysathan,19.25,101.75,en
+Pek Central,LA,Pek,19.45,103.15,en
+Kham Central,LA,Kham,19.45,103.15,en
+Nonghed Central,LA,Nonghed,19.45,103.15,en
+Khoun Central,LA,Khoun,19.45,103.15,en
+Mok Central,LA,Mok,19.45,103.15,en
+Phoukoud Central,LA,Phoukoud,19.45,103.15,en
+Phaxay Central,LA,Phaxay,19.45,103.15,en
+Phonhong Central,LA,Phonhong,18.5,102.4,en
+Thoulakhom Central,LA,Thoulakhom,18.5,102.4,en
+Keooudom Central,LA,Keooudom,18.5,102.4,en
+Kasi Central,LA,Kasi,18.5,102.4,en
+Vangvieng Central,LA,Vangvieng,18.5,102.4,en
+Feuang Central,LA,Feuang,18.5,102.4,en
+Xanakham Central,LA,Xanakham,18.5,102.4,en
+Med Central,LA,Med,18.5,102.4,en
+Viengkham Central,LA,Viengkham,18.5,102.4,en
+Hinherb Central,LA,Hinherb,18.5,102.4,en
+Meun Central,LA,Meun,18.5,102.4,en
+Pakxan Central,LA,Pakxan,18.4,103.66,en
+Thaphabad Central,LA,Thaphabad,18.4,103.66,en
+Pakkading Central,LA,Pakkading,18.4,103.66,en
+Bolikhanh Central,LA,Bolikhanh,18.4,103.66,en
+Khamkued Central,LA,Khamkued,18.4,103.66,en
+Viengthong Central,LA,Viengthong,18.4,103.66,en
+Xaychamphone Central,LA,Xaychamphone,18.4,103.66,en
+Thakhek Central,LA,Thakhek,17.4,104.8,en
+Mahaxay Central,LA,Mahaxay,17.4,104.8,en
+Nongbok Central,LA,Nongbok,17.4,104.8,en
+Hinboun Central,LA,Hinboun,17.4,104.8,en
+Nhommalad Central,LA,Nhommalad,17.4,104.8,en
+Bualapha Central,LA,Bualapha,17.4,104.8,en
+Nakai Central,LA,Nakai,17.4,104.8,en
+Xebangfay Central,LA,Xebangfay,17.4,104.8,en
+Xaybouathong Central,LA,Xaybouathong,17.4,104.8,en
+Khounkham Central,LA,Khounkham,17.4,104.8,en
+Kaysonephomvihane Central,LA,Kaysonephomvihane,16.556,104.75,en
+Outhoomphone Central,LA,Outhoomphone,16.556,104.75,en
+Atsaphangthong Central,LA,Atsaphangthong,16.556,104.75,en
+Phin Central,LA,Phin,16.556,104.75,en
+Sepone Central,LA,Sepone,16.556,104.75,en
+Nong Central,LA,Nong,16.556,104.75,en
+Thapangthong Central,LA,Thapangthong,16.556,104.75,en
+Songkhone Central,LA,Songkhone,16.556,104.75,en
+Champhone Central,LA,Champhone,16.556,104.75,en
+Xonnabuly Central,LA,Xonnabuly,16.556,104.75,en
+Xaybuly Central,LA,Xaybuly,16.556,104.75,en
+Vilabuly Central,LA,Vilabuly,16.556,104.75,en
+Atsaphone Central,LA,Atsaphone,16.556,104.75,en
+Xayphoothong Central,LA,Xayphoothong,16.556,104.75,en
+Phalanxay Central,LA,Phalanxay,16.556,104.75,en
+Saravane Central,LA,Saravane,15.7167,106.4167,en
+Taoi Central,LA,Taoi,15.7167,106.4167,en
+Toumlan Central,LA,Toumlan,15.7167,106.4167,en
+Lakhonepheng Central,LA,Lakhonepheng,15.7167,106.4167,en
+Vapy Central,LA,Vapy,15.7167,106.4167,en
+Khongxedone Central,LA,Khongxedone,15.7167,106.4167,en
+Laongarm Central,LA,Laongarm,15.7167,106.4167,en
+Samuoi Central,LA,Samuoi,15.7167,106.4167,en
+Lamarm Central,LA,Lamarm,15.3667,106.7333,en
+Kaleum Central,LA,Kaleum,15.3667,106.7333,en
+Dakcheung Central,LA,Dakcheung,15.3667,106.7333,en
+Thateng Central,LA,Thateng,15.3667,106.7333,en
+Pakse Central,LA,Pakse,15.12,105.79,en
+Sanasomboon Central,LA,Sanasomboon,15.12,105.79,en
+Bachiengchaleunsouk Central,LA,Bachiengchaleunsouk,15.12,105.79,en
+Pakxong Central,LA,Pakxong,15.12,105.79,en
+Pathoumphone Central,LA,Pathoumphone,15.12,105.79,en
+Phonthong Central,LA,Phonthong,15.12,105.79,en
+Champasak Central,LA,Champasak,15.12,105.79,en
+Sukhuma Central,LA,Sukhuma,15.12,105.79,en
+Moonlapamok Central,LA,Moonlapamok,15.12,105.79,en
+Khong Central,LA,Khong,15.12,105.79,en
+Xaysettha Central,LA,Xaysettha,14.81,106.84,en
+Samakkhixay Central,LA,Samakkhixay,14.81,106.84,en
+Sanamxay Central,LA,Sanamxay,14.81,106.84,en
+Sanxay Central,LA,Sanxay,14.81,106.84,en
+Phouvong Central,LA,Phouvong,14.81,106.84,en
+Anouvong Central,LA,Anouvong,18.9,102.63,en
+Thathom Central,LA,Thathom,18.9,102.63,en
+Longchaeng Central,LA,Longchaeng,18.9,102.63,en
+Hom Central,LA,Hom,18.9,102.63,en
+Longsan Central,LA,Longsan,18.9,102.63,en

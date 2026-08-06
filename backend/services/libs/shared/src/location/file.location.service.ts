@@ -145,8 +145,6 @@ export class FileLocationService implements LocationInterface {
       Number(columns[indexes.latitudeIndex].trim()),
     ];
     entity.lang = columns[indexes.languageIndex].trim();
-    entity.key =
-      entity[nameField].trim().replace(/\s+/g, "") + "_" + entity.lang;
     if (this.isDistrict(entity, type)) {
       entity.provinceName = columns[indexes.provinceIndex].trim();
     }
@@ -161,6 +159,41 @@ export class FileLocationService implements LocationInterface {
       entity.districtName = columns[indexes.districtIndex].trim();
       entity.divisionName = columns[indexes.divisionIndex].trim();
       entity.cityName = columns[indexes.cityIndex].trim();
+    }
+
+    if (entity.countryAlpha2 === "LA") {
+      // Lao location names are not globally unique. For example, the same
+      // district can exist in more than one province. Include the hierarchy
+      // and coordinates so the CSV loader can seed the complete hierarchy
+      // without colliding on a name-only key.
+      const keyParts = [entity.countryAlpha2];
+      if (this.isDistrict(entity, type)) {
+        keyParts.push(entity.provinceName);
+      }
+      if (this.isDSDivision(entity, type)) {
+        keyParts.push(entity.districtName);
+      }
+      if (this.isCity(entity, type)) {
+        keyParts.push(entity.districtName, entity.divisionName);
+      }
+      if (this.isPostal(entity, type)) {
+        keyParts.push(entity.districtName, entity.divisionName, entity.cityName);
+      }
+      keyParts.push(
+        entity[nameField],
+        Array.isArray(entity.geoCoordinates)
+          ? entity.geoCoordinates.map((coordinate) => String(coordinate)).join("_")
+          : "",
+        entity.lang
+      );
+      entity.key = keyParts
+        .filter((part) => part !== undefined && part !== null && part !== "")
+        .join("_")
+        .replace(/\s+/g, "");
+    } else {
+      // Preserve the existing key format for the legacy location datasets so
+      // restarting the service does not duplicate their rows.
+      entity.key = entity[nameField].trim().replace(/\s+/g, "") + "_" + entity.lang;
     }
     return entity;
   }

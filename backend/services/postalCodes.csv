@@ -1,84 +1,149 @@
 Name,City,Country,District,DS Division,Latitude,Longitude,Language
-100,Colombo 1 (Fort),LK,Colombo,Colombo 1 (Fort),6.9271,79.8612,en
-200,Colombo 2 (Slave Island),LK,Colombo,Colombo 2 (Slave Island),6.9271,79.8612,en
-300,Colombo 3 (Kollupitiya),LK,Colombo,Colombo 3 (Kollupitiya),6.9271,79.8612,en
-400,Colombo 4 (Bambalapitiya),LK,Colombo,Colombo 4 (Bambalapitiya),6.9271,79.8612,en
-500,Colombo 5 (Havelock Town),LK,Colombo,Colombo 5 (Havelock Town),6.9271,79.8612,en
-600,Colombo 6 (Wellawatte),LK,Colombo,Colombo 6 (Wellawatte),6.9271,79.8612,en
-700,Colombo 7 (Cinnamon Gardens),LK,Colombo,Colombo 7 (Cinnamon Gardens),6.9271,79.8612,en
-800,Colombo 8 (Borella),LK,Colombo,Colombo 8 (Borella),6.9271,79.8612,en
-900,Colombo 9 (Dematagoda),LK,Colombo,Colombo 9 (Dematagoda),6.9271,79.8612,en
-1000,Colombo 10 (Maradana),LK,Colombo,Colombo 10 (Maradana),6.9271,79.8612,en
-1100,Colombo 11 (Pettah),LK,Colombo,Colombo 11 (Pettah),6.9271,79.8612,en
-1200,Colombo 12 (Hulftsdorp),LK,Colombo,Colombo 12 (Hulftsdorp),6.9271,79.8612,en
-1300,Colombo 13 (Kotahena),LK,Colombo,Colombo 13 (Kotahena),6.9271,79.8612,en
-1400,Colombo 14 (Grandpass),LK,Colombo,Colombo 14 (Grandpass),6.9271,79.8612,en
-1500,Colombo 15 (Mutwal),LK,Colombo,Colombo 15 (Mutwal),6.9271,79.8612,en
-10350,Dehiwala,LK,Colombo,Dehiwala,6.8444,79.8650,en
-10370,Mount Lavinia,LK,Colombo,Mount Lavinia,6.8283,79.8630,en
-10400,Moratuwa,LK,Colombo,Moratuwa,6.7730,79.8815,en
-10390,Ratmalana,LK,Colombo,Ratmalana,6.8194,79.8802,en
-11000,Gampaha,LK,Gampaha,Gampaha,7.0902,79.9940,en
-11500,Negombo,LK,Gampaha,Negombo,7.2083,79.8358,en
-12000,Kalutara,LK,Kalutara,Kalutara,6.5831,79.9607,en
-12400,Horana,LK,Kalutara,Horana,6.7167,80.0667,en
-20000,Kandy,LK,Kandy,Kandy,7.2906,80.6337,en
-20400,Peradeniya,LK,Kandy,Peradeniya,7.2627,80.5981,en
-20500,Gampola,LK,Kandy,Gampola,7.1646,80.5706,en
-20300,Kadugannawa,LK,Kandy,Kadugannawa,7.2546,80.5239,en
-20180,Digana,LK,Kandy,Digana,7.3005,80.7558,en
-21000,Matale,LK,Matale,Matale,7.4675,80.6234,en
-21100,Dambulla,LK,Matale,Dambulla,7.8717,80.6520,en
-21200,Galewela,LK,Matale,Galewela,7.7833,80.5667,en
-21300,Ukuwela,LK,Matale,Ukuwela,7.4167,80.6833,en
-22200,Nuwara Eliya,LK,Nuwara Eliya,Nuwara Eliya,6.9708,80.7829,en
-22000,Hatton,LK,Nuwara Eliya,Hatton,6.8994,80.5934,en
-22100,Talawakele,LK,Nuwara Eliya,Talawakele,6.9340,80.6692,en
-20680,Ginigathhena,LK,Nuwara Eliya,Ginigathhena,6.9633,80.5333,en
-32000,Ampara,LK,Ampara,Ampara,7.2964,81.6745,en
-32300,Kalmunai,LK,Ampara,Kalmunai,7.4167,81.8167,en
-32400,Akkaraipattu,LK,Ampara,Akkaraipattu,7.2167,81.8500,en
-32200,Sammanthurai,LK,Ampara,Sammanthurai,7.3667,81.8333,en
-30000,Batticaloa,LK,Batticaloa,Batticaloa,7.7102,81.6924,en
-30100,Kattankudy,LK,Batticaloa,Kattankudy,7.6833,81.7333,en
-30300,Eravur,LK,Batticaloa,Eravur,7.7667,81.6000,en
-30400,Valachchenai,LK,Batticaloa,Valachchenai,7.8994,81.5661,en
-31000,Trincomalee,LK,Trincomalee,Trincomalee,8.5760,81.2330,en
-31100,Kinniya,LK,Trincomalee,Kinniya,8.4833,81.1833,en
-31200,Muttur,LK,Trincomalee,Muttur,8.4500,81.2667,en
-50000,Anuradhapura,LK,Anuradhapura,Anuradhapura,8.3114,80.4037,en
-50300,Mihintale,LK,Anuradhapura,Mihintale,8.3752,80.5070,en
-50100,Kekirawa,LK,Anuradhapura,Kekirawa,8.0356,80.5950,en
-51000,Polonnaruwa,LK,Polonnaruwa,Polonnaruwa,7.9403,81.0188,en
-51400,Hingurakgoda,LK,Polonnaruwa,Hingurakgoda,8.0500,80.9500,en
-51500,Medirigiriya,LK,Polonnaruwa,Medirigiriya,8.1833,80.9167,en
-60000,Kurunegala,LK,Kurunegala,Kurunegala,7.4863,80.3621,en
-60200,Kuliyapitiya,LK,Kurunegala,Kuliyapitiya,7.4667,80.0333,en
-60160,Pannala,LK,Kurunegala,Pannala,7.3833,80.0333,en
-61300,Puttalam,LK,Puttalam,Puttalam,8.0333,79.8333,en
-61200,Chilaw,LK,Puttalam,Chilaw,7.5833,79.8000,en
-61170,Wennappuwa,LK,Puttalam,Wennappuwa,7.3000,79.8500,en
-40000,Jaffna,LK,Jaffna,Jaffna,9.6685,80.0074,en
-40500,Point Pedro,LK,Jaffna,Point Pedro,9.8167,80.2333,en
-41000,Mannar,LK,Mannar,Mannar,8.9833,79.9000,en
-41012,Pesalai,LK,Mannar,Pesalai,9.0500,79.7333,en
-42000,Mullaitivu,LK,Mullaitivu,Mullaitivu,9.2674,80.8128,en
-42400,Puthukudiyiruppu,LK,Mullaitivu,Puthukudiyiruppu,9.3833,80.7667,en
-43000,Vavuniya,LK,Vavuniya,Vavuniya,8.7500,80.5000,en
-43052,Omanthai,LK,Vavuniya,Omanthai,8.8500,80.4667,en
-44000,Kilinochchi,LK,Kilinochchi,Kilinochchi,9.4000,80.4000,en
-44300,Paranthan,LK,Kilinochchi,Paranthan,9.4333,80.4167,en
-71000,Kegalle,LK,Kegalle,Kegalle,7.2514,80.3464,en
-71600,Warakapola,LK,Kegalle,Warakapola,7.1500,80.2500,en
-70000,Ratnapura,LK,Ratnapura,Ratnapura,6.6828,80.3992,en
-70100,Balangoda,LK,Ratnapura,Balangoda,6.6470,80.7042,en
-80000,Galle,LK,Galle,Galle,6.0535,80.2210,en
-80300,Ambalangoda,LK,Galle,Ambalangoda,6.2394,80.0533,en
-81000,Matara,LK,Matara,Matara,5.9485,80.5353,en
-81700,Weligama,LK,Matara,Weligama,5.9736,80.4292,en
-82000,Hambantota,LK,Hambantota,Hambantota,6.1240,81.1185,en
-82200,Tangalle,LK,Hambantota,Tangalle,6.0228,80.7916,en
-90000,Badulla,LK,Badulla,Badulla,6.9896,81.0552,en
-90100,Bandarawela,LK,Badulla,Bandarawela,6.8316,80.9936,en
-91000,Monaragala,LK,Monaragala,Monaragala,6.8804,81.3509,en
-91200,Wellawaya,LK,Monaragala,Wellawaya,6.7351,81.1015,en
+00101,Chanthabouly,LA,Chanthabouly,Chanthabouly Central,17.9757,102.6331,en
+00102,Sikhottabong,LA,Sikhottabong,Sikhottabong Central,17.9757,102.6331,en
+00103,Xaysettha,LA,Xaysettha,Xaysettha Central,17.9757,102.6331,en
+00104,Sisattanak,LA,Sisattanak,Sisattanak Central,17.9757,102.6331,en
+00105,Naxaithong,LA,Naxaithong,Naxaithong Central,17.9757,102.6331,en
+00106,Xaythany,LA,Xaythany,Xaythany Central,17.9757,102.6331,en
+00107,Hadxaifong,LA,Hadxaifong,Hadxaifong Central,17.9757,102.6331,en
+00108,Sangthong,LA,Sangthong,Sangthong Central,17.9757,102.6331,en
+00109,Paknguem,LA,Paknguem,Paknguem Central,17.9757,102.6331,en
+00201,Phongsaly,LA,Phongsaly,Phongsaly Central,21.68,102.1,en
+00202,Mai,LA,Mai,Mai Central,21.68,102.1,en
+00203,Khoua,LA,Khoua,Khoua Central,21.68,102.1,en
+00204,Samphanh,LA,Samphanh,Samphanh Central,21.68,102.1,en
+00205,Boonneua,LA,Boonneua,Boonneua Central,21.68,102.1,en
+00206,Nhodou,LA,Nhodou,Nhodou Central,21.68,102.1,en
+00207,Boontai,LA,Boontai,Boontai Central,21.68,102.1,en
+00301,Luangnamtha,LA,Luangnamtha,Luangnamtha Central,20.917,101.4,en
+00302,Sing,LA,Sing,Sing Central,20.917,101.4,en
+00303,Long,LA,Long,Long Central,20.917,101.4,en
+00304,Viengphoukha,LA,Viengphoukha,Viengphoukha Central,20.917,101.4,en
+00305,Nalae,LA,Nalae,Nalae Central,20.917,101.4,en
+00401,Xay,LA,Xay,Xay Central,20.69,101.98,en
+00402,La,LA,La,La Central,20.69,101.98,en
+00403,Namor,LA,Namor,Namor Central,20.69,101.98,en
+00404,Nga,LA,Nga,Nga Central,20.69,101.98,en
+00405,Beng,LA,Beng,Beng Central,20.69,101.98,en
+00406,Houn,LA,Houn,Houn Central,20.69,101.98,en
+00407,Pakbeng,LA,Pakbeng,Pakbeng Central,20.69,101.98,en
+00501,Huayxai,LA,Huayxai,Huayxai Central,20.28,100.43,en
+00502,Tonpheung,LA,Tonpheung,Tonpheung Central,20.28,100.43,en
+00503,Meung,LA,Meung,Meung Central,20.28,100.43,en
+00504,Phaoudom,LA,Phaoudom,Phaoudom Central,20.28,100.43,en
+00505,Paktha,LA,Paktha,Paktha Central,20.28,100.43,en
+00601,Luangprabang,LA,Luangprabang,Luangprabang Central,19.8856,102.1347,en
+00602,Xiengngeun,LA,Xiengngeun,Xiengngeun Central,19.8856,102.1347,en
+00603,Nan,LA,Nan,Nan Central,19.8856,102.1347,en
+00604,Parkou,LA,Parkou,Parkou Central,19.8856,102.1347,en
+00605,Nambak,LA,Nambak,Nambak Central,19.8856,102.1347,en
+00606,Ngoi,LA,Ngoi,Ngoi Central,19.8856,102.1347,en
+00607,Pakxeng,LA,Pakxeng,Pakxeng Central,19.8856,102.1347,en
+00608,Phonxay,LA,Phonxay,Phonxay Central,19.8856,102.1347,en
+00609,Chomphet,LA,Chomphet,Chomphet Central,19.8856,102.1347,en
+00610,Viengkham,LA,Viengkham,Viengkham Central,19.8856,102.1347,en
+00611,Phoukhoun,LA,Phoukhoun,Phoukhoun Central,19.8856,102.1347,en
+00612,Phonthong,LA,Phonthong,Phonthong Central,19.8856,102.1347,en
+00701,Xamneua,LA,Xamneua,Xamneua Central,20.415,104.045,en
+00702,Xiengkhor,LA,Xiengkhor,Xiengkhor Central,20.415,104.045,en
+00703,Hiem,LA,Hiem,Hiem Central,20.415,104.045,en
+00704,Viengxay,LA,Viengxay,Viengxay Central,20.415,104.045,en
+00705,Houameuang,LA,Houameuang,Houameuang Central,20.415,104.045,en
+00706,Xamtay,LA,Xamtay,Xamtay Central,20.415,104.045,en
+00707,Sopbao,LA,Sopbao,Sopbao Central,20.415,104.045,en
+00708,Ed,LA,Ed,Ed Central,20.415,104.045,en
+00709,Kuan,LA,Kuan,Kuan Central,20.415,104.045,en
+00710,Xon,LA,Xon,Xon Central,20.415,104.045,en
+00801,Xayabouly,LA,Xayabouly,Xayabouly Central,19.25,101.75,en
+00802,Khop,LA,Khop,Khop Central,19.25,101.75,en
+00803,Hongsa,LA,Hongsa,Hongsa Central,19.25,101.75,en
+00804,Ngeun,LA,Ngeun,Ngeun Central,19.25,101.75,en
+00805,Xienghone,LA,Xienghone,Xienghone Central,19.25,101.75,en
+00806,Phiang,LA,Phiang,Phiang Central,19.25,101.75,en
+00807,Paklai,LA,Paklai,Paklai Central,19.25,101.75,en
+00808,Kenthao,LA,Kenthao,Kenthao Central,19.25,101.75,en
+00809,Boten,LA,Boten,Boten Central,19.25,101.75,en
+00810,Thongmyxay,LA,Thongmyxay,Thongmyxay Central,19.25,101.75,en
+00811,Xaysathan,LA,Xaysathan,Xaysathan Central,19.25,101.75,en
+00901,Pek,LA,Pek,Pek Central,19.45,103.15,en
+00902,Kham,LA,Kham,Kham Central,19.45,103.15,en
+00903,Nonghed,LA,Nonghed,Nonghed Central,19.45,103.15,en
+00904,Khoun,LA,Khoun,Khoun Central,19.45,103.15,en
+00905,Mok,LA,Mok,Mok Central,19.45,103.15,en
+00906,Phoukoud,LA,Phoukoud,Phoukoud Central,19.45,103.15,en
+00907,Phaxay,LA,Phaxay,Phaxay Central,19.45,103.15,en
+01001,Phonhong,LA,Phonhong,Phonhong Central,18.5,102.4,en
+01002,Thoulakhom,LA,Thoulakhom,Thoulakhom Central,18.5,102.4,en
+01003,Keooudom,LA,Keooudom,Keooudom Central,18.5,102.4,en
+01004,Kasi,LA,Kasi,Kasi Central,18.5,102.4,en
+01005,Vangvieng,LA,Vangvieng,Vangvieng Central,18.5,102.4,en
+01006,Feuang,LA,Feuang,Feuang Central,18.5,102.4,en
+01007,Xanakham,LA,Xanakham,Xanakham Central,18.5,102.4,en
+01008,Med,LA,Med,Med Central,18.5,102.4,en
+01009,Viengkham,LA,Viengkham,Viengkham Central,18.5,102.4,en
+01010,Hinherb,LA,Hinherb,Hinherb Central,18.5,102.4,en
+01011,Meun,LA,Meun,Meun Central,18.5,102.4,en
+01101,Pakxan,LA,Pakxan,Pakxan Central,18.4,103.66,en
+01102,Thaphabad,LA,Thaphabad,Thaphabad Central,18.4,103.66,en
+01103,Pakkading,LA,Pakkading,Pakkading Central,18.4,103.66,en
+01104,Bolikhanh,LA,Bolikhanh,Bolikhanh Central,18.4,103.66,en
+01105,Khamkued,LA,Khamkued,Khamkued Central,18.4,103.66,en
+01106,Viengthong,LA,Viengthong,Viengthong Central,18.4,103.66,en
+01107,Xaychamphone,LA,Xaychamphone,Xaychamphone Central,18.4,103.66,en
+01201,Thakhek,LA,Thakhek,Thakhek Central,17.4,104.8,en
+01202,Mahaxay,LA,Mahaxay,Mahaxay Central,17.4,104.8,en
+01203,Nongbok,LA,Nongbok,Nongbok Central,17.4,104.8,en
+01204,Hinboun,LA,Hinboun,Hinboun Central,17.4,104.8,en
+01205,Nhommalad,LA,Nhommalad,Nhommalad Central,17.4,104.8,en
+01206,Bualapha,LA,Bualapha,Bualapha Central,17.4,104.8,en
+01207,Nakai,LA,Nakai,Nakai Central,17.4,104.8,en
+01208,Xebangfay,LA,Xebangfay,Xebangfay Central,17.4,104.8,en
+01209,Xaybouathong,LA,Xaybouathong,Xaybouathong Central,17.4,104.8,en
+01210,Khounkham,LA,Khounkham,Khounkham Central,17.4,104.8,en
+01301,Kaysonephomvihane,LA,Kaysonephomvihane,Kaysonephomvihane Central,16.556,104.75,en
+01302,Outhoomphone,LA,Outhoomphone,Outhoomphone Central,16.556,104.75,en
+01303,Atsaphangthong,LA,Atsaphangthong,Atsaphangthong Central,16.556,104.75,en
+01304,Phin,LA,Phin,Phin Central,16.556,104.75,en
+01305,Sepone,LA,Sepone,Sepone Central,16.556,104.75,en
+01306,Nong,LA,Nong,Nong Central,16.556,104.75,en
+01307,Thapangthong,LA,Thapangthong,Thapangthong Central,16.556,104.75,en
+01308,Songkhone,LA,Songkhone,Songkhone Central,16.556,104.75,en
+01309,Champhone,LA,Champhone,Champhone Central,16.556,104.75,en
+01310,Xonnabuly,LA,Xonnabuly,Xonnabuly Central,16.556,104.75,en
+01311,Xaybuly,LA,Xaybuly,Xaybuly Central,16.556,104.75,en
+01312,Vilabuly,LA,Vilabuly,Vilabuly Central,16.556,104.75,en
+01313,Atsaphone,LA,Atsaphone,Atsaphone Central,16.556,104.75,en
+01314,Xayphoothong,LA,Xayphoothong,Xayphoothong Central,16.556,104.75,en
+01315,Phalanxay,LA,Phalanxay,Phalanxay Central,16.556,104.75,en
+01401,Saravane,LA,Saravane,Saravane Central,15.7167,106.4167,en
+01402,Taoi,LA,Taoi,Taoi Central,15.7167,106.4167,en
+01403,Toumlan,LA,Toumlan,Toumlan Central,15.7167,106.4167,en
+01404,Lakhonepheng,LA,Lakhonepheng,Lakhonepheng Central,15.7167,106.4167,en
+01405,Vapy,LA,Vapy,Vapy Central,15.7167,106.4167,en
+01406,Khongxedone,LA,Khongxedone,Khongxedone Central,15.7167,106.4167,en
+01407,Laongarm,LA,Laongarm,Laongarm Central,15.7167,106.4167,en
+01408,Samuoi,LA,Samuoi,Samuoi Central,15.7167,106.4167,en
+01501,Lamarm,LA,Lamarm,Lamarm Central,15.3667,106.7333,en
+01502,Kaleum,LA,Kaleum,Kaleum Central,15.3667,106.7333,en
+01503,Dakcheung,LA,Dakcheung,Dakcheung Central,15.3667,106.7333,en
+01504,Thateng,LA,Thateng,Thateng Central,15.3667,106.7333,en
+01601,Pakse,LA,Pakse,Pakse Central,15.12,105.79,en
+01602,Sanasomboon,LA,Sanasomboon,Sanasomboon Central,15.12,105.79,en
+01603,Bachiengchaleunsouk,LA,Bachiengchaleunsouk,Bachiengchaleunsouk Central,15.12,105.79,en
+01604,Pakxong,LA,Pakxong,Pakxong Central,15.12,105.79,en
+01605,Pathoumphone,LA,Pathoumphone,Pathoumphone Central,15.12,105.79,en
+01606,Phonthong,LA,Phonthong,Phonthong Central,15.12,105.79,en
+01607,Champasak,LA,Champasak,Champasak Central,15.12,105.79,en
+01608,Sukhuma,LA,Sukhuma,Sukhuma Central,15.12,105.79,en
+01609,Moonlapamok,LA,Moonlapamok,Moonlapamok Central,15.12,105.79,en
+01610,Khong,LA,Khong,Khong Central,15.12,105.79,en
+01701,Xaysettha,LA,Xaysettha,Xaysettha Central,14.81,106.84,en
+01702,Samakkhixay,LA,Samakkhixay,Samakkhixay Central,14.81,106.84,en
+01703,Sanamxay,LA,Sanamxay,Sanamxay Central,14.81,106.84,en
+01704,Sanxay,LA,Sanxay,Sanxay Central,14.81,106.84,en
+01705,Phouvong,LA,Phouvong,Phouvong Central,14.81,106.84,en
+01801,Anouvong,LA,Anouvong,Anouvong Central,18.9,102.63,en
+01802,Thathom,LA,Thathom,Thathom Central,18.9,102.63,en
+01803,Longchaeng,LA,Longchaeng,Longchaeng Central,18.9,102.63,en
+01804,Hom,LA,Hom,Hom Central,18.9,102.63,en
+01805,Longsan,LA,Longsan,Longsan Central,18.9,102.63,en

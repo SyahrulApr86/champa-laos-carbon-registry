@@ -64,28 +64,36 @@ export class LocationService {
     );
   }
 
-  /**
-   * Registration intentionally offers only province-level Lao PDR geography.
-   * District/city/postal selections remain unavailable until their hierarchy
-   * has an approved source; callers receive an explicit empty state rather
-   * than an invented lower-level list.
-   */
   async getRegistrationProvinces() {
     const provinces = await this.provinceRepo.find({
       where: { countryAlpha2: "LA" },
       order: { provinceName: "ASC" },
     });
+    const uniqueProvinces = Array.from(
+      new Map(provinces.map((province) => [province.provinceName, province])).values()
+    );
+    const [districts, divisions, cities, postalCodes] = await Promise.all([
+      this.districtRepo.count({ where: { countryAlpha2: "LA" } }),
+      this.divisionRepo.count({ where: { countryAlpha2: "LA" } }),
+      this.cityRepo.count({ where: { countryAlpha2: "LA" } }),
+      this.postalRepo.count({ where: { countryAlpha2: "LA" } }),
+    ]);
+    const lowerLevelGeography =
+      districts > 0 && divisions > 0 && cities > 0 && postalCodes > 0
+        ? "available"
+        : "incomplete";
 
     return {
-      data: provinces.map((province) => ({
+      data: uniqueProvinces.map((province) => ({
         id: province.key,
         name: province.provinceName,
       })),
       meta: {
         geography: "Lao PDR province",
         source: "configured_location_dataset",
-        availability: provinces.length ? "available" : "not_configured",
-        lower_level_geography: "not_configured",
+        availability: uniqueProvinces.length ? "available" : "not_configured",
+        lower_level_geography: lowerLevelGeography,
+        lower_level_counts: { districts, divisions, cities, postalCodes },
       },
     };
   }

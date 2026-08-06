@@ -41,6 +41,8 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
   const { state } = useLocation();
   const enableRegistration =
     import.meta.env.VITE_APP_ENABLE_REGISTRATION || "true";
+  const disableCaptcha =
+    import.meta.env.VITE_APP_DISABLE_CAPTCHA === "true";
   const countryName = import.meta.env.VITE_APP_COUNTRY_NAME || "CountryX";
 
   const handleLanguageChange = (lang: string) => {
@@ -73,8 +75,8 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
       const response = await post(API_PATHS.LOGIN, {
         username: email.trim(),
         password: values.password.trim(),
-        captchaChallengeId,
-        captchaText: values.captchaText?.trim(),
+        captchaChallengeId: disableCaptcha ? "disabled" : captchaChallengeId,
+        captchaText: disableCaptcha ? "disabled" : values.captchaText?.trim(),
       });
 
       updateUserAbility(ability, {
@@ -112,7 +114,9 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
       setErrorMsg(error?.message);
       setShowError(true);
       form.resetFields(["captchaText"]);
-      fetchCaptcha();
+      if (!disableCaptcha) {
+        fetchCaptcha();
+      }
     } finally {
       setLoading(false);
     }
@@ -122,7 +126,9 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
     if (localStorage.getItem("i18nextLng")!.length > 2) {
       i18next.changeLanguage("en");
     }
-    fetchCaptcha();
+    if (!disableCaptcha) {
+      fetchCaptcha();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -274,61 +280,65 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                             {t("login:forgot-pwd")}?
                           </span>
                         </div>
-                        <Form.Item
-                          name="captchaText"
-                          label={`${t("login:captchaLabel")}`}
-                          validateTrigger={"onSubmit"}
-                          rules={[
-                            {
-                              required: true,
-                              message: `${t("login:captchaRequired")}`,
-                            },
-                          ]}
-                        >
-                          <div className="login-captcha-container">
-                            <div className="login-captcha-image-wrapper">
-                              {captchaSvg ? (
-                                <span
-                                  className="login-captcha-image"
-                                  dangerouslySetInnerHTML={{
-                                    __html: captchaSvg,
-                                  }}
-                                />
-                              ) : (
-                                <div className="login-captcha-image-loading">
-                                  <Spin size="small" />
+                        {!disableCaptcha && (
+                          <>
+                            <Form.Item
+                              name="captchaText"
+                              label={`${t("login:captchaLabel")}`}
+                              validateTrigger={"onSubmit"}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: `${t("login:captchaRequired")}`,
+                                },
+                              ]}
+                            >
+                              <div className="login-captcha-container">
+                                <div className="login-captcha-image-wrapper">
+                                  {captchaSvg ? (
+                                    <span
+                                      className="login-captcha-image"
+                                      dangerouslySetInnerHTML={{
+                                        __html: captchaSvg,
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="login-captcha-image-loading">
+                                      <Spin size="small" />
+                                    </div>
+                                  )}
+                                  <Button
+                                    type="text"
+                                    shape="circle"
+                                    size="small"
+                                    icon={<ReloadOutlined />}
+                                    className="login-captcha-refresh-btn"
+                                    aria-label={`${t("login:captchaRefreshAlt")}`}
+                                    disabled={captchaLoading}
+                                    onClick={() => fetchCaptcha()}
+                                  />
                                 </div>
-                              )}
-                              <Button
-                                type="text"
-                                shape="circle"
-                                size="small"
-                                icon={<ReloadOutlined />}
-                                className="login-captcha-refresh-btn"
-                                aria-label={`${t("login:captchaRefreshAlt")}`}
-                                disabled={captchaLoading}
-                                onClick={() => fetchCaptcha()}
+                                <Input
+                                  className="login-captcha-input"
+                                  placeholder={`${t("login:captchaPlaceholder")}`}
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </Form.Item>
+                            {captchaError && (
+                              <Alert
+                                type="error"
+                                showIcon
+                                message={captchaError}
+                                action={
+                                  <Button size="small" onClick={fetchCaptcha}>
+                                    Retry
+                                  </Button>
+                                }
+                                style={{ marginBottom: 16 }}
                               />
-                            </div>
-                            <Input
-                              className="login-captcha-input"
-                              placeholder={`${t("login:captchaPlaceholder")}`}
-                              autoComplete="off"
-                            />
-                          </div>
-                        </Form.Item>
-                        {captchaError && (
-                          <Alert
-                            type="error"
-                            showIcon
-                            message={captchaError}
-                            action={
-                              <Button size="small" onClick={fetchCaptcha}>
-                                Retry
-                              </Button>
-                            }
-                            style={{ marginBottom: 16 }}
-                          />
+                            )}
+                          </>
                         )}
                         <Form.Item>
                           <div className="login-submit-btn-container">
@@ -338,7 +348,11 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                               htmlType="submit"
                               block
                               loading={loading}
-                              disabled={!captchaChallengeId || captchaLoading}
+                              disabled={
+                                disableCaptcha
+                                  ? false
+                                  : !captchaChallengeId || captchaLoading
+                              }
                             >
                               {t("common:login")}
                             </Button>

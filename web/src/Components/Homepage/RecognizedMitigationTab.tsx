@@ -4,6 +4,7 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { API_PATHS } from "../../Config/apiConfig";
 import { AnalyticsMeta } from "./dashboardAnalytics";
 import { DonutBreakdown } from "./CarbonDashboard";
+import { readPublicEnvelope } from "./publicData";
 import "./Dashboard.scss";
 import "./DashboardAnalytics.scss";
 
@@ -70,12 +71,17 @@ const parseSummary = (response: unknown): RecognizedMitigationSummary => {
     byStatus: data.byStatus ?? {},
     byProponentType: data.byProponentType ?? {},
     estimatedReductionTco2e: Number.isFinite(Number(data.estimatedReductionTco2e)) ? Number(data.estimatedReductionTco2e) : null,
-    isCanonical: false,
+    meta: raw.meta,
+    isCanonical: Boolean(raw.meta),
   };
 };
 
 const parseRows = (response: unknown) => {
+  const envelope = readPublicEnvelope<RecognizedMitigationRow[]>(response);
   const raw = rawBody(response) as { data?: unknown; meta?: AnalyticsMeta; total?: number };
+  if (envelope.meta && Array.isArray(envelope.data)) {
+    return { rows: envelope.data, total: envelope.meta.pagination?.total_items ?? raw.total ?? 0, meta: envelope.meta as AnalyticsMeta };
+  }
   if (Array.isArray(raw.data)) {
     return { rows: raw.data as RecognizedMitigationRow[], total: raw.meta?.pagination?.total_items ?? raw.total ?? 0, meta: raw.meta };
   }

@@ -4,23 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
+import { PublicEnvelope, readPublicEnvelope } from "./publicData";
 import "./Dashboard.scss";
-
-interface PublicMeta {
-  disclosure?: string;
-  availability?: string;
-  pagination?: {
-    page: number;
-    page_size: number;
-    total_items: number;
-    total_pages: number;
-  };
-}
-
-interface PublicEnvelope<T> {
-  data: T;
-  meta: PublicMeta;
-}
 
 interface CommunityProgramSummary {
   totalPrograms: number;
@@ -74,7 +59,7 @@ const CommunityProgramTab = () => {
   useEffect(() => {
     get<PublicEnvelope<CommunityProgramSummary>>(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_SUMMARY)
       .then((response) => {
-        setSummary(response.data?.data ?? emptySummary);
+        setSummary(readPublicEnvelope<CommunityProgramSummary>(response).data ?? emptySummary);
       })
       .catch(() => setSummary(emptySummary));
   }, [get]);
@@ -88,8 +73,9 @@ const CommunityProgramTab = () => {
       if (category) params.set("category", category);
       if (region) params.set("region", region);
       const response = await get<PublicEnvelope<CommunityProgramRow[]>>(`${API_PATHS.COMMUNITY_PROGRAM_PUBLIC_LIST}?${params.toString()}`);
-      setRows(response.data?.data ?? []);
-      setTotal(response.data?.meta?.pagination?.total_items ?? 0);
+      const envelope = readPublicEnvelope<CommunityProgramRow[]>(response);
+      setRows(envelope.data ?? []);
+      setTotal(envelope.meta?.pagination?.total_items ?? 0);
     } catch {
       setRows([]);
       setTotal(0);

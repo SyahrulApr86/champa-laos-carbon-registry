@@ -6,17 +6,8 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { API_PATHS } from "../../Config/apiConfig";
 import { COLOR_CONFIGS } from "../../Config/colorConfigs";
 import { DONUT_PALETTE } from "./CarbonDashboard";
+import { PublicEnvelope, readPublicEnvelope } from "./publicData";
 import "./Dashboard.scss";
-
-interface PublicMeta {
-  availability?: string;
-  pagination?: { total_items: number };
-}
-
-interface PublicEnvelope<T> {
-  data: T;
-  meta: PublicMeta;
-}
 
 interface ChannelBreakdown {
   amount: number;
@@ -91,26 +82,6 @@ const supportStatusColor: Record<string, string> = {
 const PAGE_SIZE = 10;
 
 const pageQuery = (page: number) => `page=${page}&pageSize=${PAGE_SIZE}`;
-
-const readPublicEnvelope = <T,>(response: unknown): PublicEnvelope<T> => {
-  const candidate = response as {
-    data?: unknown;
-    meta?: PublicMeta;
-    response?: { data?: unknown };
-  };
-  const isEnvelope = (value: unknown): value is PublicEnvelope<T> => {
-    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-    return "data" in value && "meta" in value;
-  };
-
-  if (isEnvelope(response)) return response;
-  if (isEnvelope(candidate.response?.data)) return candidate.response.data;
-
-  return {
-    data: (candidate.data ?? response) as T,
-    meta: candidate.meta ?? {},
-  };
-};
 
 const ResourcesTab = () => {
   const { get } = useConnection();

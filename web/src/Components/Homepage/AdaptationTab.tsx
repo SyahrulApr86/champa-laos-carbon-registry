@@ -4,16 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { DonutBreakdown } from "./CarbonDashboard";
+import { PublicEnvelope, readPublicEnvelope } from "./publicData";
 import "./Dashboard.scss";
-
-interface PublicMeta {
-  pagination?: { total_items: number };
-}
-
-interface PublicEnvelope<T> {
-  data: T;
-  meta: PublicMeta;
-}
 
 interface AdaptationSummary {
   totalProjects: number;
@@ -65,7 +57,7 @@ const AdaptationTab = () => {
   useEffect(() => {
     get<PublicEnvelope<AdaptationSummary>>(API_PATHS.ADAPTATION_PUBLIC_SUMMARY)
       .then((response) => {
-        setSummary(response.data?.data ?? emptySummary);
+        setSummary(readPublicEnvelope<AdaptationSummary>(response).data ?? emptySummary);
       })
       .catch(() => setSummary(emptySummary));
   }, [get]);
@@ -80,8 +72,9 @@ const AdaptationTab = () => {
       if (region) params.set("region", region);
       if (status) params.set("status", status);
       const response = await get<PublicEnvelope<AdaptationRow[]>>(`${API_PATHS.ADAPTATION_PUBLIC_SEARCH("", 1, PAGE_SIZE).split("?")[0]}?${params.toString()}`);
-      setRows(response.data?.data ?? []);
-      setTotal(response.data?.meta?.pagination?.total_items ?? 0);
+      const envelope = readPublicEnvelope<AdaptationRow[]>(response);
+      setRows(envelope.data ?? []);
+      setTotal(envelope.meta?.pagination?.total_items ?? 0);
     } catch {
       setRows([]);
       setTotal(0);

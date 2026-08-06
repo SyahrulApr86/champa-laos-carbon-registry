@@ -71,6 +71,7 @@ services:
       logoBase64: "sss"
       IS_EMAIL_DISABLED: "true"
       DISABLE_LOW_PRIORITY_EMAIL: "true"
+      DISABLE_CAPTCHA: "true"
       EMAILPREFIX: ""
       LOCATION_SERVICE: FILE
       ASYNC_OPERATIONS_TYPE: Database
@@ -183,11 +184,13 @@ services:
         VITE_APP_COUNTRY_CODE: "LA"
         VITE_APP_MAP_TYPE: "None"
         VITE_APP_MAPBOXGL_ACCESS_TOKEN: ""
+        VITE_APP_DISABLE_CAPTCHA: "true"
     environment:
       VITE_APP_BACKEND: http://localhost:3000
       VITE_APP_COUNTRY_NAME: "Lao PDR"
       VITE_APP_REGISTRY_NAME: "Champa Registry Demonstration"
       VITE_APP_MAXIMUM_FILE_SIZE: "5242880"
+      VITE_APP_DISABLE_CAPTCHA: "true"
     ports:
       - "3030:3030"
     depends_on:

@@ -1,10 +1,19 @@
 Name,Country,Latitude,Longitude,Language
-Central,LK,7.291418,80.636696,en
-Eastern,LK,7.713054,81.674728,en
-Northern,LK,9.268255,80.814249,en
-Southern,LK,6.053519,80.220977,en
-Western,LK,6.927079,79.861243,en
-North Western,LK,7.940338,80.247860,en
-North Central,LK,8.311351,80.403650,en
-Uva,LK,6.971684,81.124128,en
-Sabaragamuwa,LK,6.705619,80.384738,en
+Vientiane Capital,LA,17.9757,102.6331,en
+Phongsaly,LA,21.6800,102.1000,en
+Luang Namtha,LA,20.9170,101.4000,en
+Oudomxay,LA,20.6900,101.9800,en
+Bokeo,LA,20.2800,100.4300,en
+Luang Prabang,LA,19.8856,102.1347,en
+Houaphanh,LA,20.4150,104.0450,en
+Xayaboury,LA,19.2500,101.7500,en
+Xiangkhouang,LA,19.4500,103.1500,en
+Vientiane Province,LA,18.5000,102.4000,en
+Bolikhamxay,LA,18.4000,103.6600,en
+Khammouane,LA,17.4000,104.8000,en
+Savannakhet,LA,16.5560,104.7500,en
+Salavan,LA,15.7167,106.4167,en
+Sekong,LA,15.3667,106.7333,en
+Champasak,LA,15.1200,105.7900,en
+Attapeu,LA,14.8100,106.8400,en
+Xaisomboun,LA,18.9000,102.6300,en

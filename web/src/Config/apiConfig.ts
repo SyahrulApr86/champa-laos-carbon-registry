@@ -59,6 +59,7 @@ export const API_PATHS = {
   CREDIT_TRANSFER_REQUEST: "national/creditTransactionsManagement/transfer",
   //LOCATION
   PROVINCES: "national/location/province",
+  REGISTRATION_PROVINCES: "national/location/registration-provinces",
   DISTRICTS: "national/location/district",
   CITIES: "national/location/city",
   POSTALCODE: "national/location/postalCode",

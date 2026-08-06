@@ -90,8 +90,10 @@ export const AddNewCompanyComponent = (props: any) => {
   const getRegionList = async () => {
     setLoadingList(true);
     try {
-      const response = await get('national/location/registration-provinces');
-      const provinces = response.data?.data ?? [];
+      const response = await get(API_PATHS.REGISTRATION_PROVINCES);
+      const provinces = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data ?? [];
       setRegionsList(provinces);
       setLocationError(
         provinces.length === 0

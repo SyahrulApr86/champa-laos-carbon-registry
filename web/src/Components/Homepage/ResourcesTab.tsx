@@ -92,6 +92,26 @@ const PAGE_SIZE = 10;
 
 const pageQuery = (page: number) => `page=${page}&pageSize=${PAGE_SIZE}`;
 
+const readPublicEnvelope = <T,>(response: unknown): PublicEnvelope<T> => {
+  const candidate = response as {
+    data?: unknown;
+    meta?: PublicMeta;
+    response?: { data?: unknown };
+  };
+  const isEnvelope = (value: unknown): value is PublicEnvelope<T> => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    return "data" in value && "meta" in value;
+  };
+
+  if (isEnvelope(response)) return response;
+  if (isEnvelope(candidate.response?.data)) return candidate.response.data;
+
+  return {
+    data: (candidate.data ?? response) as T,
+    meta: candidate.meta ?? {},
+  };
+};
+
 const ResourcesTab = () => {
   const { get } = useConnection();
   const [financeSummary, setFinanceSummary] = useState<ClimateFinanceSummary>(emptyFinanceSummary);
@@ -119,7 +139,7 @@ const ResourcesTab = () => {
 
   useEffect(() => {
     get<PublicEnvelope<ClimateFinanceSummary>>(API_PATHS.CLIMATE_FINANCE_PUBLIC_SUMMARY)
-      .then((response) => setFinanceSummary(response.data?.data ?? emptyFinanceSummary))
+      .then((response) => setFinanceSummary(readPublicEnvelope<ClimateFinanceSummary>(response).data ?? emptyFinanceSummary))
       .catch(() => setFinanceSummary(emptyFinanceSummary));
   }, [get]);
 
@@ -132,8 +152,9 @@ const ResourcesTab = () => {
       if (sector) params.set("sector", sector);
       if (channel) params.set("channel", channel);
       const response = await get<PublicEnvelope<ClimateFinanceRow[]>>(`${API_PATHS.CLIMATE_FINANCE_PUBLIC_SEARCH("", 1, PAGE_SIZE).split("?")[0]}?${params.toString()}`);
-      setFinanceRows(response.data?.data ?? []);
-      setFinanceTotal(response.data?.meta?.pagination?.total_items ?? 0);
+      const envelope = readPublicEnvelope<ClimateFinanceRow[]>(response);
+      setFinanceRows(envelope.data ?? []);
+      setFinanceTotal(envelope.meta?.pagination?.total_items ?? 0);
     } catch {
       setFinanceRows([]);
       setFinanceTotal(0);
@@ -155,12 +176,13 @@ const ResourcesTab = () => {
       if (supportSector) params.set("sector", supportSector);
       if (supportStatus) params.set("status", supportStatus);
       const response = await get<PublicEnvelope<SupportRow[]>>(`${path}?${params.toString()}`);
+      const envelope = readPublicEnvelope<SupportRow[]>(response);
       if (kind === "technology") {
-        setTechnologyRows(response.data?.data ?? []);
-        setTechnologyTotal(response.data?.meta?.pagination?.total_items ?? 0);
+        setTechnologyRows(envelope.data ?? []);
+        setTechnologyTotal(envelope.meta?.pagination?.total_items ?? 0);
       } else {
-        setCapacityRows(response.data?.data ?? []);
-        setCapacityTotal(response.data?.meta?.pagination?.total_items ?? 0);
+        setCapacityRows(envelope.data ?? []);
+        setCapacityTotal(envelope.meta?.pagination?.total_items ?? 0);
       }
     } catch {
       if (kind === "technology") { setTechnologyRows([]); setTechnologyTotal(0); }

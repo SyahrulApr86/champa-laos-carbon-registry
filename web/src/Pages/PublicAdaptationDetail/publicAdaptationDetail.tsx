@@ -5,6 +5,7 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { API_PATHS } from "../../Config/apiConfig";
 import LayoutFooter from "../../Components/Footer/layout.footer";
 import AppHeader from "../../Components/AppHeader/appHeader";
+import { readPublicEnvelope } from "../../Components/Homepage/publicData";
 import "./publicAdaptationDetail.scss";
 
 interface AdaptationDetail {
@@ -23,8 +24,6 @@ interface AdaptationDetail {
   responsibleOrganisation: { name: string | null; address: string | null; type: string | null; availability: string };
   createdAt: number;
 }
-
-interface PublicEnvelope<T> { data: T | null; meta?: { disclosure?: string; availability?: string } }
 
 const statusColor: Record<string, string> = { Approved: "green", UnderReview: "gold", Submitted: "gold", Rejected: "red" };
 const stageLabel: Record<string, string> = { UnderReview: "Under Review" };
@@ -57,8 +56,8 @@ const PublicAdaptationDetail = () => {
     if (!adaptationId) { setDetail(null); setLoading(false); return; }
     setLoading(true);
     setError(false);
-    get<PublicEnvelope<AdaptationDetail>>(API_PATHS.ADAPTATION_PUBLIC_DETAIL(adaptationId))
-      .then((response) => setDetail(response.data?.data ?? null))
+    get(API_PATHS.ADAPTATION_PUBLIC_DETAIL(adaptationId))
+      .then((response) => setDetail(readPublicEnvelope<AdaptationDetail>(response).data ?? null))
       .catch(() => { setDetail(null); setError(true); })
       .finally(() => setLoading(false));
   }, [adaptationId, get]);
@@ -81,7 +80,7 @@ const PublicAdaptationDetail = () => {
             <div className="public-adaptation-detail-steps"><Steps current={currentStep} status={status === "Rejected" ? "error" : "process"} items={stageSteps.map((label, index) => status === "Rejected" && index === 1 ? { title: "Rejected" } : { title: label })} /></div>
             <Descriptions className="public-adaptation-detail-summary" title="Adaptation Action Summary" bordered column={1} size="middle">
               <Descriptions.Item label="Registration Number">{detail.adaptationId}</Descriptions.Item>
-              <Descriptions.Item label="Period">{detail.period?.start || displayAvailability(detail.period?.availability)} — {detail.period?.end || displayAvailability(detail.period?.availability)}</Descriptions.Item>
+              <Descriptions.Item label="Period">{detail.period?.start || displayAvailability(detail.period?.availability)} to {detail.period?.end || displayAvailability(detail.period?.availability)}</Descriptions.Item>
               <Descriptions.Item label="Duration">{detail.duration?.label || exactDuration(detail.period?.start, detail.period?.end) || displayAvailability(detail.period?.availability)}</Descriptions.Item>
               <Descriptions.Item label="Implementation Status">{stageLabel[status] || status}</Descriptions.Item>
               <Descriptions.Item label="Category">{detail.sector || "Not available"}</Descriptions.Item>

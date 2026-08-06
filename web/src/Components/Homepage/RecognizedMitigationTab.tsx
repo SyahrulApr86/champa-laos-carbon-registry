@@ -156,7 +156,7 @@ const RecognizedMitigationTab = () => {
       <header className="analytics-dashboard-header">
         <div><p className="analytics-eyebrow">Mitigation Registry</p><h2 className="header-title">Recognised Mitigation Actions</h2></div>
       </header>
-      <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable — provenance cannot be verified."}</p>
+      <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable. Provenance cannot be verified."}</p>
       <p className="registry-table-subtitle">Estimated reductions are not verified reductions and are never certificate issuance volumes.</p>
       <div className="analytics-filter-bar">
         <Input.Search placeholder="Search recognised actions" allowClear onSearch={(value) => { setPage(1); setQuery(value.trim()); }} />
@@ -175,7 +175,7 @@ const RecognizedMitigationTab = () => {
         <article className="donut-card analytics-chart-card">
           <h3 className="section-title">Proponent Type Distribution</h3>
           {chartReconciles ? <>{/* The chart centre is computed from the exact same filtered population as the KPI. */}<DonutBreakdown data={chartData} totalLabel="Actions" totalOverride={chartTotal} /></> : <div className="analytics-unavailable">Not available until the filtered analytics contract reconciles.</div>}
-          <dl className="analytics-metric-meta"><div><dt>Unit</dt><dd>records</dd></div><div><dt>Formula</dt><dd>recognised_action_count by proponent type</dd></div><div><dt>Source</dt><dd>{summary.meta?.source?.label ?? "Not available"}</dd></div><div><dt>Semantics</dt><dd>Non-additive across overlapping classifications</dd></div></dl>
+          <dl className="analytics-metric-meta"><div><dt>Unit</dt><dd>records</dd></div><div><dt>Formula</dt><dd>Count of recognised actions grouped by proponent type</dd></div><div><dt>Source</dt><dd>{summary.meta?.source?.label ?? "Not available"}</dd></div><div><dt>Semantics</dt><dd>Non-additive across overlapping classifications</dd></div></dl>
         </article>
       </div>
       <div className="registry-table-section">

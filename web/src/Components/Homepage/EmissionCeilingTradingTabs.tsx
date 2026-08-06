@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Input, Select, Table, Tabs, Tag, Typography } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
+import { formatPublicEnum } from "./publicData";
 
 type VenueStatus = "synthetic_demo" | "configured" | "not_configured";
 
@@ -48,7 +49,7 @@ interface ParticipantRow {
   year: number;
   series_name: string | null;
   sector: string | null;
-  participant_status: "active" | "unallocated" | "withheld";
+  participant_status: string;
 }
 
 const PAGE_SIZE = 10;
@@ -106,7 +107,7 @@ const MarketDisclosure = ({ meta, status }: { meta?: MarketMeta; status?: VenueS
       showIcon
       type={status === "not_configured" ? "warning" : "info"}
       message={status ? statusLabel[status] : "Synthetic demonstration market"}
-      description={meta?.disclosure || "Synthetic demonstration data — not official Lao PDR market activity or certificate records."}
+      description={meta?.disclosure || "Synthetic demonstration data, not official Lao PDR market activity or certificate records."}
       style={{ marginBottom: 12 }}
     />
     <Typography.Paragraph type="secondary" style={{ marginBottom: 12 }}>
@@ -164,7 +165,7 @@ const TransactionsTable = () => {
       { title: "Quantity", render: (_: unknown, row: TransactionRow) => `${number(row.quantity)} ${row.unit}` },
       { title: "Value", render: (_: unknown, row: TransactionRow) => lak(row.value) },
       { title: "Price / unit", render: (_: unknown, row: TransactionRow) => row.price_per_unit === null ? "Not available" : lak(row.price_per_unit) },
-      { title: "Settlement", dataIndex: "settlement_status" },
+      { title: "Settlement", render: (_: unknown, row: TransactionRow) => formatPublicEnum(row.settlement_status) },
     ]} pagination={{ current: page, pageSize: PAGE_SIZE, total: meta.pagination?.total_items || 0, onChange: setPage, showSizeChanger: false }} />
   </>;
 };
@@ -188,7 +189,7 @@ const ParticipantsTable = () => {
       { title: "Series", render: (_: unknown, row: ParticipantRow) => row.series_name || "Not configured" },
       { title: "Sector", render: (_: unknown, row: ParticipantRow) => row.sector || "Not configured" },
       { title: "Year", dataIndex: "year" },
-      { title: "Status", dataIndex: "participant_status" },
+      { title: "Status", render: (_: unknown, row: ParticipantRow) => formatPublicEnum(row.participant_status) },
     ]} pagination={{ current: page, pageSize: PAGE_SIZE, total: meta.pagination?.total_items || 0, onChange: setPage, showSizeChanger: false }} />
   </>;
 };

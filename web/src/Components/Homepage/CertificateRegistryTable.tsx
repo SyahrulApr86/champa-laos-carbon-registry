@@ -3,6 +3,7 @@ import { Alert, Input, Select, Table, Tag } from "antd";
 import { useConnection } from "../../Context/ConnectionContext/connectionContext";
 import { API_PATHS } from "../../Config/apiConfig";
 import { AnalyticsMeta, Availability, humanMetricValue } from "./dashboardAnalytics";
+import { formatPublicDate } from "./publicData";
 import "./Dashboard.scss";
 import "./DashboardAnalytics.scss";
 
@@ -128,14 +129,14 @@ const CertificateRegistryTable = () => {
     { title: "Retired", key: "retiredUnits", render: (_: unknown, row: CertificateRow) => formatUnits(row.retiredUnits, row) },
     { title: "Cancelled", key: "cancelledUnits", render: (_: unknown, row: CertificateRow) => formatUnits(row.cancelledUnits, row) },
     { title: "Assigned to exchange", key: "assignedToExchangeUnits", render: (_: unknown, row: CertificateRow) => formatUnits(row.assignedToExchangeUnits, row) },
-    { title: "Issued date", dataIndex: "issuedDate", key: "issuedDate", render: (value: string | null) => value ?? "Not available" },
+    { title: "Issued date", dataIndex: "issuedDate", key: "issuedDate", render: (value: string | null) => formatPublicDate(value) },
   ];
 
   return (
     <section className="dashboard-container registry-table-section" aria-busy={loading}>
       <h3 className="section-title">Champa Certificate Registry</h3>
       <p className="registry-table-subtitle">Public certificate balances and event volumes. A transfer is an event volume, not additional supply.</p>
-      <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable — provenance cannot be verified."}</p>
+      <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable. Provenance cannot be verified."}</p>
       <div className="analytics-filter-bar">
         <Input.Search allowClear size="large" placeholder="Search account holder, registry number, or activity" onSearch={(value) => { setPage(1); setQuery(value.trim()); }} className="registry-table-search" />
         <Select value={status} onChange={(value) => { setPage(1); setStatus(value); }} options={[{ value: "", label: "All states" }, { value: "AVAILABLE", label: "Available" }, { value: "RETIRED", label: "Retired" }, { value: "CANCELLED", label: "Cancelled" }, { value: "ASSIGNED_TO_EXCHANGE", label: "Assigned to exchange" }, { value: "WITHHELD", label: "Withheld" }]} />

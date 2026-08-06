@@ -22,6 +22,7 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { useUserContext } from "../../Context/UserInformationContext/userInformationContext";
 import { CompanyRole } from "../../Definitions/Enums/company.role.enum";
 import { Role } from "../../Definitions/Enums/role.enum";
+import { formatPublicEnum } from "../../Components/Homepage/publicData";
 import {
   EMISSION_MARKET_CURRENCIES,
   EMISSION_MARKET_UNITS,
@@ -197,7 +198,7 @@ const EmissionTradingManagement = () => {
           title: "Status",
           dataIndex: "lifecycleStatus",
           key: "lifecycleStatus",
-          render: (value: string) => <Tag color={statusColor(value || "active")}>{value || "active"}</Tag>,
+          render: (value: string) => <Tag color={statusColor(value || "active")}>{formatPublicEnum(value || "active")}</Tag>,
         },
         actionColumn,
       ];
@@ -213,7 +214,7 @@ const EmissionTradingManagement = () => {
           title: "Status",
           dataIndex: "lifecycleStatus",
           key: "lifecycleStatus",
-          render: (value: string) => <Tag color={statusColor(value || "active")}>{value || "active"}</Tag>,
+          render: (value: string) => <Tag color={statusColor(value || "active")}>{formatPublicEnum(value || "active")}</Tag>,
         },
         actionColumn,
       ];
@@ -224,12 +225,12 @@ const EmissionTradingManagement = () => {
       { title: "Buyer", dataIndex: "buyerCompanyId", key: "buyerCompanyId" },
       { title: "Units", dataIndex: "units", key: "units" },
       { title: "Value (LAK)", dataIndex: "valueLAK", key: "valueLAK" },
-      { title: "Settlement", dataIndex: "settlementStatus", key: "settlementStatus" },
+      { title: "Settlement", dataIndex: "settlementStatus", key: "settlementStatus", render: (value: string) => formatPublicEnum(value) },
       {
         title: "Status",
         dataIndex: "lifecycleStatus",
         key: "lifecycleStatus",
-        render: (value: string) => <Tag color={statusColor(value || "active")}>{value || "active"}</Tag>,
+        render: (value: string) => <Tag color={statusColor(value || "active")}>{formatPublicEnum(value || "active")}</Tag>,
       },
       actionColumn,
     ];
@@ -335,7 +336,7 @@ const EmissionTradingManagement = () => {
             <Descriptions bordered size="small" column={2}>
               {detailFields.map(([key, value]) => (
                 <Descriptions.Item key={key} label={key}>
-                  {typeof value === "object" ? JSON.stringify(value) : String(value ?? "—")}
+                  {typeof value === "object" ? JSON.stringify(value) : String(value ?? "Not available")}
                 </Descriptions.Item>
               ))}
             </Descriptions>

@@ -5,6 +5,7 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { API_PATHS } from "../../Config/apiConfig";
 import LayoutFooter from "../../Components/Footer/layout.footer";
 import AppHeader from "../../Components/AppHeader/appHeader";
+import { readPublicEnvelope } from "../../Components/Homepage/publicData";
 import "./publicCommunityDetail.scss";
 
 interface CommunityDetail {
@@ -25,11 +26,6 @@ interface CommunityDetail {
   documents: { items: unknown[]; availability: string };
   location: { region: string; availability: string };
   createdAt: number;
-}
-
-interface PublicEnvelope<T> {
-  data: T | null;
-  meta?: { disclosure?: string; availability?: string };
 }
 
 const statusColor: Record<string, string> = { Active: "green", Completed: "blue", Planned: "gold" };
@@ -61,8 +57,8 @@ const PublicCommunityDetail = () => {
     if (!programId) { setDetail(null); setLoading(false); return; }
     setLoading(true);
     setError(false);
-    get<PublicEnvelope<CommunityDetail>>(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_DETAIL(programId))
-      .then((response) => setDetail(response.data?.data ?? null))
+    get(API_PATHS.COMMUNITY_PROGRAM_PUBLIC_DETAIL(programId))
+      .then((response) => setDetail(readPublicEnvelope<CommunityDetail>(response).data ?? null))
       .catch(() => { setDetail(null); setError(true); })
       .finally(() => setLoading(false));
   }, [get, programId]);
@@ -81,7 +77,7 @@ const PublicCommunityDetail = () => {
             <div className="public-community-detail-subtitle">Registration No. {detail.programId} <Tag color={statusColor[detail.status] || "default"}>{detail.status}</Tag></div>
             <Descriptions className="public-community-detail-summary" title="Community Action Summary" bordered column={1} size="middle">
               <Descriptions.Item label="Registration Number">{detail.programId}</Descriptions.Item>
-              <Descriptions.Item label="Period">{detail.period?.start || "Not available"} — {detail.period?.end || displayAvailability(detail.period?.availability)}</Descriptions.Item>
+              <Descriptions.Item label="Period">{detail.period?.start || "Not available"} to {detail.period?.end || displayAvailability(detail.period?.availability)}</Descriptions.Item>
               <Descriptions.Item label="Duration">{detail.duration?.label || exactDuration(detail.period?.start, detail.period?.end) || displayAvailability(detail.period?.availability)}</Descriptions.Item>
               <Descriptions.Item label="Implementation Status">{detail.status}</Descriptions.Item>
               <Descriptions.Item label="Category">{detail.category || "Not available"}</Descriptions.Item>

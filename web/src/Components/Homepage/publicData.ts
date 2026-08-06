@@ -16,6 +16,41 @@ export interface PublicEnvelope<T> {
   meta?: PublicMeta;
 }
 
+const PUBLIC_ENUM_LABELS: Record<string, string> = {
+  active: "Active",
+  active_demo: "Active (demo)",
+  archived: "Archived",
+  completed: "Completed",
+  configured: "Configured",
+  finalized: "Finalized",
+  not_applicable: "Not applicable",
+  not_configured: "Not configured",
+  pending: "Pending",
+  reversed: "Reversed",
+  settled: "Settled",
+  synthetic_demo: "Synthetic demonstration",
+  unallocated: "Unallocated",
+  voided: "Voided",
+  withheld: "Withheld",
+};
+
+export const formatPublicEnum = (value?: string | null) => {
+  if (!value) return "Not available";
+  return PUBLIC_ENUM_LABELS[value] ?? value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+};
+
+export const formatPublicDate = (value?: string | null) => {
+  if (!value) return "Not available";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+    year: "numeric",
+  });
+};
+
 /**
  * Accept both the raw HTTP envelope and ConnectionContext's unwrapped value.
  * The connection keeps the original Axios response under `response`, while

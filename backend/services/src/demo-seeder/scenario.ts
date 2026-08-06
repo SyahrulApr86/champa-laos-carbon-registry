@@ -18,7 +18,7 @@ export const DEMO_SCENARIO = {
 } as const;
 
 export const DEMO_DISCLOSURE =
-  "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05T00:00:00Z. Coverage: 2021–2026.";
+  "Synthetic demonstration data, not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05T00:00:00Z. Coverage: 2021–2026.";
 
 export const DEMO_MINIMUMS = {
   organisations: 180,
@@ -31,6 +31,7 @@ export const DEMO_MINIMUMS = {
   mapFeatures: 450,
   communityActions: 120,
   adaptationActions: 120,
+  reddPlus: 18,
   resources: 360,
   methodologies: 20,
   experts: 75,

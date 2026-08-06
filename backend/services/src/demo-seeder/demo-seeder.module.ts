@@ -17,6 +17,10 @@ import { EmissionParticipantEntity } from "@app/shared/entities/emission.partici
 import { EmissionTradingEntity } from "@app/shared/entities/emission.trading.entity";
 import { NdcTargetEntity } from "@app/shared/entities/ndc.target.entity";
 import { RecognizedMitigationEntity } from "@app/shared/entities/recognized.mitigation.entity";
+import { ReddPlusEntity } from "@app/shared/entities/redd.plus.entity";
+import { ClimateFinanceEntity } from "@app/shared/entities/climate.finance.entity";
+import { TechnologyTransferEntity } from "@app/shared/entities/technology.transfer.entity";
+import { CapacityBuildingEntity } from "@app/shared/entities/capacity.building.entity";
 import { CertificateRegistryModule } from "@app/shared/certificate-registry/certificate.registry.module";
 import { DemoSeederService } from "./demo-seeder.service";
 import { CanonicalCertificateDemoLoader } from "./canonical-certificate-demo.loader";
@@ -48,6 +52,10 @@ import { NonCertificatePublicDemoLoader } from "./non-certificate-public-demo.lo
       EmissionTradingEntity,
       NdcTargetEntity,
       RecognizedMitigationEntity,
+      ReddPlusEntity,
+      ClimateFinanceEntity,
+      TechnologyTransferEntity,
+      CapacityBuildingEntity,
     ]),
     SharedModule,
     CertificateRegistryModule,

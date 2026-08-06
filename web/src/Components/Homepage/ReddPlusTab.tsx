@@ -92,12 +92,12 @@ const ReddPlusTab = () => {
   return (
     <div className="dashboard-container">
       <div className="registry-table-section">
-        <h3 className="section-title">REDD+ Forest Carbon — National and Province View</h3>
+        <h3 className="section-title">REDD+ Forest Carbon: National and Province View</h3>
         <p className="registry-table-subtitle">
           Capability view only. It does not assert an official Lao PDR REDD+ programme or forest inventory.
         </p>
         <p className="redd-plus-disclosure">
-          {meta?.disclosure ?? "Synthetic demonstration data — not official Lao PDR REDD+ statistics."}
+          {meta?.disclosure ?? "Synthetic demonstration data, not official Lao PDR REDD+ statistics."}
         </p>
 
         {loading && <div className="redd-plus-state"><Spin /> <span>Loading REDD+ geography…</span></div>}
@@ -177,7 +177,7 @@ const ReddPlusTab = () => {
             <p><strong>Actions:</strong> {selectedProvince.projectCount.toLocaleString()}</p>
             <p><strong>Forest area:</strong> {formatMetric(selectedProvince.forestArea)}</p>
             <p><strong>Estimated reduction:</strong> {formatMetric(selectedProvince.estimatedReduction)}</p>
-            <p><strong>Overlap status:</strong> {selectedProvince.overlapStatus === "unknown" ? "Unknown — public geometry is not available for a non-overlap claim." : "Non-overlapping"}</p>
+            <p><strong>Overlap status:</strong> {selectedProvince.overlapStatus === "unknown" ? "Unknown. Public geometry is not available for a non-overlap claim." : "Non-overlapping"}</p>
             <p><strong>Coordinates:</strong> {selectedProvince.lat === null || selectedProvince.lng === null ? "Not available" : `${selectedProvince.lat.toFixed(4)}, ${selectedProvince.lng.toFixed(4)}`}</p>
           </div>
         )}

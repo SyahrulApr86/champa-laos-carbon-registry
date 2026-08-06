@@ -374,10 +374,10 @@ const MethodologyManagement = () => {
               <Descriptions.Item label="Source">{selected.source}</Descriptions.Item>
               <Descriptions.Item label="Category">{selected.category}</Descriptions.Item>
               <Descriptions.Item label="Status"><Tag>{selected.status}</Tag></Descriptions.Item>
-              <Descriptions.Item label="Description">{selected.description || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Description">{selected.description || "Not available"}</Descriptions.Item>
               <Descriptions.Item label="Created by">{selected.createdBy ?? "Legacy/imported record"}</Descriptions.Item>
-              <Descriptions.Item label="Updated by">{selected.updatedBy ?? "—"}</Descriptions.Item>
-              <Descriptions.Item label="Archived by">{selected.archivedBy ?? "—"}</Descriptions.Item>
+              <Descriptions.Item label="Updated by">{selected.updatedBy ?? "Not available"}</Descriptions.Item>
+              <Descriptions.Item label="Archived by">{selected.archivedBy ?? "Not available"}</Descriptions.Item>
             </Descriptions>
           )
         )}

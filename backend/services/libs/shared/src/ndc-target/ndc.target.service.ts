@@ -46,7 +46,7 @@ interface PublicMeta {
 }
 
 const DISCLOSURE =
-  "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2010–2030.";
+  "Synthetic demonstration data, not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2010–2030.";
 
 const buildMeta = (
   filters: Record<string, unknown>,

@@ -72,7 +72,7 @@ export class ProjectManagementController {
   // Reads from ProgrammeService (backed by the Programme table, the model the
   // create/authorize flow actually writes to) rather than ProjectEntity, which
   // the replicator never populates in this fork. Only non-sensitive,
-  // high-level project information is returned — no approval details,
+  // high-level project information is returned. No approval details,
   // internal identifiers, or personal data.
   @Get("public/search")
   async publicSearch(
@@ -89,7 +89,7 @@ export class ProjectManagementController {
     );
   }
 
-  // Public, unauthenticated province-level activity map summary — see
+  // Public, unauthenticated province-level activity map summary. See
   // ProgrammeService.getPublicMapSummary for the aggregation logic.
   // `activityType` selects the domain (mitigation | adaptation | community |
   // redd), mirroring SRN Indonesia's own Activity Type map filter; defaults
@@ -107,7 +107,7 @@ export class ProjectManagementController {
     );
   }
 
-  // Public, unauthenticated single-project detail lookup — see
+  // Public, unauthenticated single-project detail lookup. See
   // ProgrammeService.getPublicProgrammeDetail for the field allowlist.
   // Never throws on a missing programmeId: returns { found: false }.
   @Get("public/detail/:programmeId")

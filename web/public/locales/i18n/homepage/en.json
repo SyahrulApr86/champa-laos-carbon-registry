@@ -59,7 +59,7 @@
   "issuingCarbonCreditsTitle": "Issuing Carbon Credits",
   "issuingCarbonCreditsBody": "A key feature of the Carbon Registry is its ability to track issued carbon credits, ensuring transparency and accountability in the carbon market. Each verified project credit is assigned a unique serial number, based on UNFCCC-CDM methodology. All transfers and retirements are immutably recorded, enhancing the efficiency and reliability of carbon credit transactions.",
   "dashboardAndInsightsTitle": "Dashboard & Insights (New!)",
-  "dashboardAndInsightsBody": "An interactive dashboard visualizes the history of credits issued, retired, and active projects — by country, geography, and organisation.",
+  "dashboardAndInsightsBody": "An interactive dashboard visualizes the history of credits issued, retired, and active projects by country, geography, and organisation.",
   "interoperableTitle": "Exportable data",
   "interoperableBody": "An open RESTful API allows for additional integrations and innovation.",
   "faqTitle": "Frequently Asked Questions",

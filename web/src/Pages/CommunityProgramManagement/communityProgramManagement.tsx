@@ -224,9 +224,9 @@ const CommunityProgramManagement = () => {
             <Descriptions.Item label="Start year">{selected.startYear}</Descriptions.Item>
             <Descriptions.Item label="Status"><Tag color={statusColors[selected.status]}>{selected.status}</Tag></Descriptions.Item>
             <Descriptions.Item label="Created by">{selected.createdByUserId ?? "Legacy/imported record"}</Descriptions.Item>
-            <Descriptions.Item label="Updated by">{selected.updatedByUserId ?? "—"}</Descriptions.Item>
-            <Descriptions.Item label="Archived by">{selected.archivedByUserId ?? "—"}</Descriptions.Item>
-            <Descriptions.Item label="Archive reason">{selected.archiveReason ?? "—"}</Descriptions.Item>
+            <Descriptions.Item label="Updated by">{selected.updatedByUserId ?? "Not available"}</Descriptions.Item>
+            <Descriptions.Item label="Archived by">{selected.archivedByUserId ?? "Not available"}</Descriptions.Item>
+            <Descriptions.Item label="Archive reason">{selected.archiveReason ?? "Not available"}</Descriptions.Item>
           </Descriptions>
         )}
       </Drawer>

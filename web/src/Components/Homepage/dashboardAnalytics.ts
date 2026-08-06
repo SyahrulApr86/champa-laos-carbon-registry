@@ -235,7 +235,7 @@ const fromLegacy = (summary: LegacySummary): DashboardAnalyticsView => {
     meta: {
       availability: "not_available",
       disclosure:
-        "Data metadata unavailable — provenance and methodology cannot yet be verified.",
+        "Data metadata unavailable. Provenance and methodology cannot yet be verified.",
     },
     isCanonical: false,
   };

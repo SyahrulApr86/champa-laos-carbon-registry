@@ -7935,7 +7935,7 @@ export class ProgrammeService {
 
   // Detail-page variant: unlike the list-search bucket above, a single
   // project's public detail page is expected to honestly say "Rejected"
-  // (SRN Indonesia's own detail pages do) — it just never exposes who
+  // (SRN Indonesia's own detail pages do), but it never exposes who
   // rejected it or why, which stays internal-only.
   private toPublicProgrammeDetailStatus(stage: ProgrammeStage): string {
     if (stage === ProgrammeStage.AUTHORISED) {
@@ -8407,7 +8407,7 @@ export class ProgrammeService {
     const source = lots[0]?.provenance ?? {};
     const datasetKind = allLotsSynthetic ? "demo_synthetic" : syntheticLots.length ? "mixed_explicit" : "authoritative";
     const disclosure = allLotsSynthetic
-      ? "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records."
+      ? "Synthetic demonstration data, not official Lao PDR statistics, legal authorisation, market activity, or certificate records."
       : "Public registry aggregates reflect the records available in this deployment; availability and provenance are shown with each metric."
     return {
       data: {
@@ -8524,7 +8524,7 @@ export class ProgrammeService {
         exclusions,
         availability: receivedCount ? "available" : "not_available",
         disclosure:
-          "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2021–2026.",
+          "Synthetic demonstration data, not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2021–2026.",
         aggregation: "individual_activity_feature",
       },
     };
@@ -8654,7 +8654,7 @@ export class ProgrammeService {
     return result;
   }
 
-  // Public, unauthenticated single-project detail lookup — same public-safe
+  // Public, unauthenticated single-project detail lookup, using the same public-safe
   // field allowlist philosophy as publicSearch above (registration/title/
   // sector/coarse status/proponent), extended with the handful of extra
   // fields SRN Indonesia's public detail page shows (activity period,

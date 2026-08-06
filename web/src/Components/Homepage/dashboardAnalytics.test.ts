@@ -38,7 +38,7 @@ describe("dashboard analytics reconciliation", () => {
       },
       meta: {
         dataset_kind: "demo_synthetic",
-        disclosure: "Synthetic demonstration data — not official Lao PDR data.",
+        disclosure: "Synthetic demonstration data, not official Lao PDR data.",
       },
     });
 

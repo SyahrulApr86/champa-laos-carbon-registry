@@ -125,7 +125,7 @@ const NdcTargetSubmit = () => {
           </Form.Item>
           <Form.Item
             name="claimedEmissions"
-            label="Claimed Emission Reduction (Emission Level, Million Tons CO2e) — optional"
+            label="Claimed Emission Reduction (Emission Level, Million Tons CO2e), optional"
           >
             <InputNumber style={{ width: "100%" }} min={0} />
           </Form.Item>

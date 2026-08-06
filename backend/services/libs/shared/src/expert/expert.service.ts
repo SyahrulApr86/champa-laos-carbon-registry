@@ -130,7 +130,7 @@ export class ExpertService {
         source_type: "synthetic_demo",
         scenario: "Champa registry demonstration",
         availability: results.length ? "available" : "empty",
-        disclosure: "Synthetic demonstration data — not official Lao PDR expert records.",
+        disclosure: "Synthetic demonstration data, not official Lao PDR expert records.",
       },
     };
   }

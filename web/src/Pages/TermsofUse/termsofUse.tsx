@@ -195,19 +195,19 @@ const TermsOfUse = () => {
                 license.
               </a>
               <br /> <b>You are free to:</b>
-              <br /> ⦾ Share — copy and redistribute the material in any medium
+              <br /> ⦾ Share: copy and redistribute the material in any medium
               or format.
-              <br /> ⦾ Adapt — remix, transform, and build upon the material for
+              <br /> ⦾ Adapt: remix, transform, and build upon the material for
               any purpose, even commercially.
               <br /> <b>Under the following terms:</b>
-              <br /> ⦾ Attribution — You must give{" "}
+              <br /> ⦾ Attribution: You must give{" "}
               <a href="https://creativecommons.org/licenses/by/4.0/">
                 appropriate credit
               </a>
               , provide a link to the license, and indicate if changes were
               made. You may do so in any reasonable manner, but not in any way
               that suggests the licensor endorses you or your use <br />⦾ No
-              additional restrictions — You may not apply legal terms or
+              additional restrictions: You may not apply legal terms or
               technological measures that legally restrict others from doing
               anything the license permits. Unless otherwise indicated, the Site
               is our proprietary property and all source code, databases,

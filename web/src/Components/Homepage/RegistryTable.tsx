@@ -128,7 +128,7 @@ const RegistryTable = () => {
     <section className="dashboard-container registry-table-section" id="registry-table" aria-busy={loading}>
       <h3 className="section-title">{t("homepage:registryTableTitle")}</h3>
       <p className="registry-table-subtitle">{t("homepage:registryTableSubtitle")}</p>
-      <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable — provenance cannot be verified."}</p>
+      <p className="analytics-disclosure">{meta?.disclosure ?? "Data metadata unavailable. Provenance cannot be verified."}</p>
       <div className="analytics-filter-bar">
         <Input.Search allowClear size="large" placeholder={String(t("homepage:registrySearchPlaceholder"))} onSearch={(value) => { setPage(1); setQuery(value.trim()); }} className="registry-table-search" />
         <Select value={year} onChange={(value) => { setPage(1); setYear(value); }} options={YEARS.map((value) => ({ value, label: value || "All years" }))} />

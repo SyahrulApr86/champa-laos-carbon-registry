@@ -30,7 +30,7 @@ export class NationalAPIController {
         contentVersion: 'champa-content-demo-v1',
         localeKeys: 'homepage',
         availability: 'available',
-        disclosure: 'Synthetic demonstration content — not official Lao PDR policy or contact guidance.',
+        disclosure: 'Synthetic demonstration content, not official Lao PDR policy or contact guidance.',
       },
     };
   }

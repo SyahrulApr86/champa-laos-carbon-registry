@@ -49,7 +49,7 @@ export function safeClone(obj) {
     }
 
     if (seen.has(value)) {
-      // Circular reference detected — remove it
+      // Circular reference detected. Remove it
       return undefined;
     }
     seen.add(value);

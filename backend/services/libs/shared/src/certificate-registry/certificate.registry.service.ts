@@ -19,7 +19,7 @@ import { Company } from "../entities/company.entity";
 import { CertificateLedgerEventType, CertificatePortionState, PublicAvailability } from "../enum/certificate.ledger.enum";
 import { assertLotConservation, assertNonNegativePortion } from "./certificate.registry.invariants";
 
-const DISCLOSURE = "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records.";
+const DISCLOSURE = "Synthetic demonstration data, not official Lao PDR statistics, legal authorisation, market activity, or certificate records.";
 const EPSILON = 0.000001;
 
 type Transition = {

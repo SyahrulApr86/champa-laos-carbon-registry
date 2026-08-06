@@ -126,9 +126,9 @@ const NdcAchievementTab = () => {
   return (
     <div className="dashboard-container">
       <section className="section">
-        <h3 className="section-title">NDC Achievement — {sectorLabel}</h3>
+        <h3 className="section-title">NDC Achievement: {sectorLabel}</h3>
         <p className="ndc-disclosure">
-          {meta?.disclosure ?? "Synthetic demonstration data — not official Lao PDR NDC statistics."}
+          {meta?.disclosure ?? "Synthetic demonstration data, not official Lao PDR NDC statistics."}
         </p>
         <div className="ndc-pill-tabs-nav" role="tablist" aria-label="NDC sector">
           {SECTOR_TABS.map((tab) => (
@@ -159,7 +159,7 @@ const NdcAchievementTab = () => {
                 <div className="ndc-kpi-card-value">{formatMetric(summary.verifiedReduction)} <span className="ndc-kpi-card-unit">tCO2e</span></div>
               </div>
               <div className="ndc-kpi-card">
-                <h4 className="ndc-kpi-card-title">Inventory — {sectorLabel}</h4>
+                <h4 className="ndc-kpi-card-title">Inventory: {sectorLabel}</h4>
                 {["baselineEmissions", "achievedEmissions", "verifiedReduction"].map((key) => (
                   <div className="ndc-kpi-card-stat-row" key={key}>
                     <span className="ndc-kpi-card-stat-label">
@@ -191,7 +191,7 @@ const NdcAchievementTab = () => {
             {series.length >= 2 ? (
               <div className="donut-grid">
                 <div className="donut-card">
-                  <h4 className="section-title">Inventory — Emission Trend from Baseline: {sectorLabel}</h4>
+                  <h4 className="section-title">Inventory: Emission Trend from Baseline, {sectorLabel}</h4>
                   <Chart
                     type="area"
                     height={320}
@@ -205,13 +205,13 @@ const NdcAchievementTab = () => {
                       noData: { text: "No inventory observations" },
                     }}
                     series={[
-                      { name: `Baseline — ${sectorLabel}`, data: series.map((point) => point.baselineEmissions) },
-                      { name: `Achieved / actual — ${sectorLabel}`, data: series.map((point) => point.achievedEmissions) },
+                      { name: `Baseline: ${sectorLabel}`, data: series.map((point) => point.baselineEmissions) },
+                      { name: `Achieved / actual: ${sectorLabel}`, data: series.map((point) => point.achievedEmissions) },
                     ]}
                   />
                 </div>
                 <div className="donut-card">
-                  <h4 className="section-title">Mitigation Actions — Claimed vs verified: {sectorLabel}</h4>
+                  <h4 className="section-title">Mitigation Actions: Claimed vs verified, {sectorLabel}</h4>
                   <Chart
                     type="bar"
                     height={320}
@@ -225,9 +225,9 @@ const NdcAchievementTab = () => {
                       noData: { text: "No mitigation observations" },
                     }}
                     series={hasAnyClaimed ? [
-                      { name: `Claimed reduction — ${sectorLabel}`, data: claimedReductionSeries },
-                      { name: `Verified reduction — ${sectorLabel}`, data: verifiedReductionSeries },
-                    ] : [{ name: `Verified reduction — ${sectorLabel}`, data: verifiedReductionSeries }]}
+                      { name: `Claimed reduction: ${sectorLabel}`, data: claimedReductionSeries },
+                      { name: `Verified reduction: ${sectorLabel}`, data: verifiedReductionSeries },
+                    ] : [{ name: `Verified reduction: ${sectorLabel}`, data: verifiedReductionSeries }]}
                   />
                 </div>
               </div>

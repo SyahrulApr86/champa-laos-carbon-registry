@@ -113,7 +113,7 @@ export class EmissionTradingService {
       availability: "available",
       formula_id: "ceiling_market_separate_namespace_v1",
       disclosure:
-        "Synthetic demonstration data — not official Lao PDR market activity, authorisation, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05T00:00:00.000Z. Coverage: 2021–2026.",
+        "Synthetic demonstration data, not official Lao PDR market activity, authorisation, or certificate records. Scenario: Champa registry demonstration. As of: 2026-08-05T00:00:00.000Z. Coverage: 2021–2026.",
       ledger_boundary: {
         namespace: "emission_ceiling_market",
         certificate_bridge: "absent_by_default",

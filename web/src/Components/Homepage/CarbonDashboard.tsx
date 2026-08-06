@@ -280,7 +280,7 @@ const CarbonDashboard = () => {
         </header>
 
         <div className="analytics-disclosure" role="status">
-          {view.meta.disclosure ?? "Data metadata unavailable — provenance cannot be verified."}
+          {view.meta.disclosure ?? "Data metadata unavailable. Provenance cannot be verified."}
           {view.meta.as_of && <span> As of: {view.meta.as_of}.</span>}
           {view.meta.period?.start && view.meta.period.end && (
             <span> Coverage: {view.meta.period.start}–{view.meta.period.end}.</span>
@@ -343,7 +343,7 @@ const CarbonDashboard = () => {
           <h3 className="section-title">Emission Ceiling &amp; Trading</h3>
           <p className="registry-table-subtitle">
             {isMarketConfigured
-              ? "Synthetic demonstration market — not official Lao PDR market activity or certificate records."
+              ? "Synthetic demonstration market. This is not official Lao PDR market activity or a certificate record."
               : "Market policy and venue are not configured."}
           </p>
           <div className="donut-grid emission-trading-kpi-grid">

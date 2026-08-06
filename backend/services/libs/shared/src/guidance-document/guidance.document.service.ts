@@ -255,7 +255,7 @@ export class GuidanceDocumentService {
           ...new Set(filtered.map((document) => document.category).filter(Boolean)),
         ],
         disclosure:
-          "Synthetic demonstration data — not official Lao PDR guidance records.",
+          "Synthetic demonstration data, not official Lao PDR guidance records.",
       },
     };
   }

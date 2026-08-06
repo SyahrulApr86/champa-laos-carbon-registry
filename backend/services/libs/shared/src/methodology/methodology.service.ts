@@ -98,7 +98,7 @@ export class MethodologyService {
         scenario: "Champa registry demonstration",
         availability: data.length ? "available" : "empty",
         disclosure:
-          "Synthetic demonstration data — not official Lao PDR policy or approval records.",
+          "Synthetic demonstration data, not official Lao PDR policy or approval records.",
       },
     };
   }
@@ -118,7 +118,7 @@ export class MethodologyService {
         source_type: "synthetic_demo",
         scenario: "Champa registry demonstration",
         disclosure:
-          "Synthetic demonstration data — not official Lao PDR policy or approval records.",
+          "Synthetic demonstration data, not official Lao PDR policy or approval records.",
       },
     };
   }

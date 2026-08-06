@@ -288,9 +288,9 @@ const PrivacyPolicy = () => {
               </p>
               <p>
                 <i>
-                  <b>In Short:</b> Some information — such as your Internet
+                  <b>In Short:</b> Some information, such as your Internet
                   Protocol (IP) address and/or browser and device
-                  characteristics — is collected automatically when you visit
+                  characteristics, is collected automatically when you visit
                   our Services.
                 </i>
               </p>
@@ -834,7 +834,7 @@ const PrivacyPolicy = () => {
                 the SMS messages that we send, or by contacting us using the
                 details provided in the section "
                 <a href="#contact">HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</a>
-                " below. You will then be removed from the marketing lists —
+                " below. You will then be removed from the marketing lists ;
                 however, we may still communicate with you, for example to send
                 you service-related messages that are necessary for the
                 administration and use of your account, to respond to service
@@ -1131,7 +1131,7 @@ const PrivacyPolicy = () => {
                 <b>Your rights with respect to your personal data</b>
               </p>
               <p>
-                <u>Right to request deletion of the data — Request to delete</u>
+                <u>Right to request deletion of the data: Request to delete</u>
               </p>
               <p>
                 You can ask for the deletion of your personal information. If
@@ -1144,7 +1144,7 @@ const PrivacyPolicy = () => {
                 against illegal activities.
               </p>
               <p>
-                <u>Right to be informed — Request to know</u>
+                <u>Right to be informed: Request to know</u>
               </p>
               <p>Depending on the circumstances, you have a right to know:</p>
               <ul>

@@ -369,7 +369,7 @@ const Login: FC<LoginPageProps> = (props: LoginPageProps) => {
                         style={{ marginTop: 12, color: "#5b6475", fontSize: 13 }}
                       >
                         <Button block disabled>
-                          OAuth sign-in — Not configured
+                          OAuth sign-in: Not configured
                         </Button>
                         <div style={{ marginTop: 6 }}>
                           External identity providers are unavailable until credentials and policy approval are configured.

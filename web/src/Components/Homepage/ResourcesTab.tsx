@@ -201,7 +201,7 @@ const ResourcesTab = () => {
           <div className="donut-card"><div className="main-statistic"><div className="statistic-value">{financeSummary.totalAmountLAK == null ? "Not available" : financeSummary.totalAmountLAK.toLocaleString()}</div><div className="statistic-title">Total Finance (LAK)</div></div></div>
           <div className="donut-card"><div className="main-statistic"><div className="statistic-value">{financeSummary.totalAmountUSD == null ? "Not available" : financeSummary.totalAmountUSD.toLocaleString()}</div><div className="statistic-title">Total Finance (USD)</div></div></div>
         </div>
-        <div className="resources-section-badge"><InfoCircleOutlined /> Climate Finance Breakdown — unit: {sectorCurrency}, total: {currencyTotal == null ? "Not available" : currencyTotal.toLocaleString()}</div>
+        <div className="resources-section-badge"><InfoCircleOutlined /> Climate Finance Breakdown: unit {sectorCurrency}, total {currencyTotal == null ? "Not available" : currencyTotal.toLocaleString()}</div>
         <div className="resources-chart-grid">
           <div className="resources-chart-card">
             <div className="resources-chart-card-header"><h4 className="section-title">Amount received by sector</h4><Radio.Group size="small" value={sectorCurrency} onChange={(event) => setSectorCurrency(event.target.value)}><Radio.Button value="LAK">LAK</Radio.Button><Radio.Button value="USD">USD</Radio.Button></Radio.Group></div>

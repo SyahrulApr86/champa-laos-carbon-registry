@@ -214,7 +214,7 @@ const MapTab = ({ showLegend = false }: { showLegend?: boolean }) => {
           Individual activity features plotted against Lao PDR province geography. Province aggregates are not individual points.
         </p>
         <p className="map-tab-disclosure">
-          {meta?.disclosure ?? "Synthetic demonstration data — not official Lao PDR statistics or activity records."}
+          {meta?.disclosure ?? "Synthetic demonstration data, not official Lao PDR statistics or activity records."}
         </p>
 
         <div className="map-tab-filters">

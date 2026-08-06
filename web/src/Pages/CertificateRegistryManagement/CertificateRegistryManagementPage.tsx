@@ -145,7 +145,7 @@ const CertificateRegistryManagementPage = () => {
         dataSource={rows}
         columns={[
           { title: "Certificate", dataIndex: "certificate_id" },
-          { title: "Registry number", render: (_: unknown, row: CertificateLotSummary) => row.lot.registry_number ?? "—" },
+          { title: "Registry number", render: (_: unknown, row: CertificateLotSummary) => row.lot.registry_number ?? "Not available" },
           { title: "Quantity", render: (_: unknown, row: CertificateLotSummary) => `${row.lot.issued_quantity} ${row.lot.unit}` },
           { title: "Available", render: (_: unknown, row: CertificateLotSummary) => row.balances.available ?? 0 },
           { title: "Status", render: (_: unknown, row: CertificateLotSummary) => <Tag color={row.lot.archived_at ? "default" : row.event_count ? "green" : "gold"}>{row.lot.archived_at ? "Archived" : row.event_count ? "Issued" : "Draft"}</Tag> },

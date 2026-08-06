@@ -274,7 +274,7 @@ export class ReddPlusService {
         filters: { province: province || null },
         availability: provinces.length ? "available" : "not_available",
         disclosure:
-          "Synthetic demonstration data — not an official Lao PDR REDD+ programme, forest inventory, legal authorisation, or certificate record. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2021–2026.",
+          "Synthetic demonstration data, not an official Lao PDR REDD+ programme, forest inventory, legal authorisation, or certificate record. Scenario: Champa registry demonstration. As of: 2026-08-05. Coverage: 2021–2026.",
         geography: { country: "Lao PDR", provinceCount: provinces.length },
       },
     };

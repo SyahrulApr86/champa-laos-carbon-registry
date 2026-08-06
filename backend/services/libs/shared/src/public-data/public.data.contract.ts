@@ -63,7 +63,7 @@ export interface PublicDetailResponse<T> {
 }
 
 export const SYNTHETIC_DISCLOSURE =
-  "Synthetic demonstration data — not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration.";
+  "Synthetic demonstration data, not official Lao PDR statistics, legal authorisation, market activity, or certificate records. Scenario: Champa registry demonstration.";
 
 export const createPublicMeta = (
   filters: Record<string, string | number | null>,

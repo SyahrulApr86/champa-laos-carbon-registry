@@ -1,22 +1,17 @@
 import {
   Controller,
   Post,
-  Get,
   Request,
   Body,
   Put,
   Query,
-  HttpException,
-  HttpStatus,
   UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "@app/shared/auth/auth.service";
-import { CaptchaService } from "@app/shared/auth/captcha.service";
 import { ForgotPasswordDto } from "@app/shared/dto/forgotPassword.dto";
 import { LoginDto } from "@app/shared/dto/login.dto";
 import { PasswordResetDto } from "@app/shared/dto/passwordReset.dto";
-import { HelperService } from "@app/shared/util/helpers.service";
 import { PasswordResetService } from "@app/shared/util/passwordReset.service";
 import { RefreshLoginDto } from "@app/shared/dto/refreshLogin.dto";
 import { AuthRateLimiterGuard } from "@app/shared/auth/guards/auth-rate-limiter.guard";
@@ -26,16 +21,8 @@ import { AuthRateLimiterGuard } from "@app/shared/auth/guards/auth-rate-limiter.
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly passwordResetService: PasswordResetService,
-    private readonly captchaService: CaptchaService,
-    private helperService: HelperService
+    private readonly passwordResetService: PasswordResetService
   ) {}
-
-  @Get("captcha")
-  @UseGuards(AuthRateLimiterGuard)
-  async getCaptcha() {
-    return this.captchaService.generate();
-  }
 
   @Post("login")
   @UseGuards(AuthRateLimiterGuard)

@@ -22,8 +22,4 @@ export const LOCAL_DEMO_AUTH_FIXTURES = Object.freeze({
       credentialSource: "test_harness_runtime_only",
     },
   ],
-  captcha: {
-    enabledOnlyWhen: "NODE_ENV=test and CHAMPA_CAPTCHA_TEST_MODE=true",
-    answerSource: "CaptchaService test adapter",
-  },
 });

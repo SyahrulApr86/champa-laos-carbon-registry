@@ -17,9 +17,5 @@
   "countryName": "{{countryName}}",
   "digital": "ແຫ່ງຊາດ",
   "transformation": "ທະບຽນຄາບອນ",
-  "carbonMarket": "",
-  "captchaLabel": "ລະຫັດຄວາມປອດໄພ",
-  "captchaPlaceholder": "ປ້ອນລະຫັດຄວາມປອດໄພ",
-  "captchaRequired": "ລະຫັດຄວາມປອດໄພຫ້າມຫວ່າງເປົ່າ",
-  "captchaRefreshAlt": "ໂຫຼດລະຫັດຄວາມປອດໄພໃໝ່"
+  "carbonMarket": ""
 }

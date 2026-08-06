@@ -40,7 +40,7 @@
   "contactSubmit": "Envoi de contact non configuré",
   "contactRequired": "Un message est requis pour prévisualiser le formulaire.",
   "faqContactTitle": "Configuration des contacts",
-  "faqContactBody": "Cet aperçu reprend les champs publics observés dans les preuves. La livraison, la conservation et la politique CAPTCHA doivent être configurées par le propriétaire avant d'activer l'envoi.",
+  "faqContactBody": "Cet aperçu reprend les champs publics observés dans les preuves. La livraison et la conservation doivent être configurées par le propriétaire avant d'activer l'envoi.",
   "faqFallbackTitle": "Contenu FAQ local de démonstration",
   "faqFallbackBody": "Le point de terminaison FAQ public n'est pas configuré dans cet environnement. Le contenu local versionné est affiché au lieu d'un état vide."
 }

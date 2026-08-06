@@ -4,6 +4,5 @@
     "settingsSavedMsg": "Settings saved successfully",
     "settingsSaveFailedMsg": "Settings saving failed",
     "invalidLogin": "Invalid credentials. Please check your username and password and try again.",
-    "invalidCaptcha": "Invalid or expired security code. Please try again.",
     "programmeNotFound": "Programme not found for the given programmeId"
 }

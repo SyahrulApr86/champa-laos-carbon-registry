@@ -6,9 +6,5 @@
   "welcome-back": "Bienvenido de nuevo",
   "register-acc": "¿Necesitas una cuenta?",
   "forgot-pwd": "¿Olvidó su contraseña?",
-  "register-here": "Regístrate aquí",
-  "captchaLabel": "Código de seguridad",
-  "captchaPlaceholder": "Ingrese el código de seguridad",
-  "captchaRequired": "El código de seguridad no puede estar vacío",
-  "captchaRefreshAlt": "Actualizar código de seguridad"
+  "register-here": "Regístrate aquí"
 }

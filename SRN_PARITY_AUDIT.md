@@ -50,9 +50,7 @@ Built with Leaflet + OpenStreetMap. Activity Type filter (Mitigasi/Adaptasi/Prok
 
 ## 6. Login / registration
 
-SRN's login form has a distorted-text CAPTCHA image + refresh button, plus a Google OAuth button.
-
-**✅ Built**: real self-hosted SVG CAPTCHA (`svg-captcha`, in-memory single-use challenges, no external API key), integrated as a pre-check in the login flow, verified end-to-end via a real browser login. **Google OAuth explicitly NOT built** — no real Google Cloud OAuth client ID/secret exists for this project; a non-functional "Login with Google" button would be dishonest UI rather than an honest gap. Requires real credentials from the client before it can be built.
+Champa's login form uses email and password. **Google OAuth explicitly NOT built** — no real Google Cloud OAuth client ID/secret exists for this project; a non-functional "Login with Google" button would be dishonest UI rather than an honest gap. Requires real credentials from the client before it can be built.
 
 Registration form's province dropdown was checked against a scout report claiming hardcoded Zimbabwe provinces — verified as a **false positive** (a dead, unused `provinces` constant existed in the code but the actual rendered dropdown already used `regionsList`, fetched live from the backend's already-Lao-scoped `regions.csv` seed). The dead constant was removed as cleanup.
 

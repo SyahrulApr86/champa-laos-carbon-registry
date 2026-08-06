@@ -28,7 +28,7 @@ not yet built (reason stated); explicit exceptions are marked and never silently
 - [x] 19. Carbon Exchange Transactions (tab, Date/Series/Amount/Value) — built this round
 - [x] 20. PTBAE-PU Participants (tab, Power Unit/Company/Capacity/Year) — built this round
 - [x] 21. Registrasi proponent (3-step: Lembaga/Narahubung/Akun) — `addNewCompanyComponent.tsx` (dead Zimbabwe-provinces code removed; live dropdown already Lao-scoped)
-- [x] 22. Login proponent (username/password, CAPTCHA, forgot password) — real self-hosted CAPTCHA built this round; Google OAuth explicit exception (no credentials)
+- [x] 22. Login proponent (username/password, forgot password) — Google OAuth explicit exception (no credentials)
 - [x] 23. Detail Mitigation NEK (progress stepper, status, docs, vulnerability) — `publicProjectDetail.tsx`, honest 3-step (not fabricated 5-stage); vulnerability panel explicit exception
 - [x] 24. Detail ProKlim (enumerator, period, objectives, status, region) — `publicCommunityDetail.tsx`, built this round
 - [x] 25. Detail Adaptation (organisation, period, objectives, category/location) — `publicAdaptationDetail.tsx`, built this round
@@ -46,7 +46,7 @@ not yet built (reason stated); explicit exceptions are marked and never silently
 - [x] Resources: Financial/Technology/Capacity Building tables, all fields — built
 - [x] Resources chart visual style (bar by sector w/ LAK/USD toggle; pie by channel w/ % legend) — rebuilt
 - [x] Roster of Expert, LVV detail, Module, SPE certificate, PTBAE 3-tabs — all built this round
-- [x] Registration/Login forms — verified, CAPTCHA added
+- [x] Registration/Login forms — verified with credential-only login
 
 ## Explicit exceptions (documented in SRN_PARITY_AUDIT.md, not silent gaps)
 

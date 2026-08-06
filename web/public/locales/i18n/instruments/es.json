@@ -40,7 +40,7 @@
   "contactSubmit": "Envío de contacto no configurado",
   "contactRequired": "Se requiere un mensaje para previsualizar el formulario.",
   "faqContactTitle": "Configuración de contacto",
-  "faqContactBody": "Esta vista previa muestra los campos públicos observados en la evidencia. El destino, la retención y la política CAPTCHA deben configurarse antes de habilitar el envío.",
+  "faqContactBody": "Esta vista previa muestra los campos públicos observados en la evidencia. El destino y la retención deben configurarse antes de habilitar el envío.",
   "faqFallbackTitle": "Contenido FAQ local de demostración",
   "faqFallbackBody": "El endpoint público de FAQ no está configurado en este entorno. Se muestra el contenido local versionado en lugar de un estado vacío."
 }

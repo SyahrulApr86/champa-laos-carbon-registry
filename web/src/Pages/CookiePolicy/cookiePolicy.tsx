@@ -223,55 +223,6 @@ const CookiePolicy = () => {
                   <table>
                     <tr>
                       <td>Name:</td>
-                      <td>_GRECAPTCHA</td>
-                    </tr>
-                    <tr>
-                      <td>Purpose:</td>
-                      <td>
-                        Used to filter spam traffic and allow only legitimate
-                        visitors to use Termly's services.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Provider:</td>
-                      <td>www.google.com</td>
-                    </tr>
-                    <tr>
-                      <td>Service:</td>
-                      <td>
-                        reCAPTCHA{" "}
-                        <a
-                          target="_blank"
-                          href="https://policies.google.com/privacy"
-                        >
-                          {" "}
-                          View Service Privacy Policy
-                        </a>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Country:</td>
-                      <td>United States</td>
-                    </tr>
-                    <tr>
-                      <td>Type:</td>
-                      <td>http_cookie</td>
-                    </tr>
-
-                    <tr>
-                      <td>Expires in:</td>
-                      <td>5 months 27 days</td>
-                    </tr>
-                  </table>
-                </div>
-              </Col>
-            </Row>
-            <Row justify="center">
-              <Col span={20}>
-                <div className="cookie-card-container">
-                  <table>
-                    <tr>
-                      <td>Name:</td>
                       <td>__tlbcpv</td>
                     </tr>
                     <tr>
@@ -592,44 +543,6 @@ const CookiePolicy = () => {
                   These are cookies that have not yet been categorized. We are
                   in the process of classifying these cookies with the help of
                   their providers.
-                </div>
-              </Col>
-            </Row>
-            <Row justify="center">
-              <Col span={20}>
-                <div className="cookie-card-container">
-                  <table>
-                    <tr>
-                      <td>Name:</td>
-                      <td>_grecaptcha</td>
-                    </tr>
-                    <tr>
-                      <td>Purpose:</td>
-                      <td>__________</td>
-                    </tr>
-                    <tr>
-                      <td>Provider:</td>
-                      <td>
-                        <a href="https://carbreg.org">https://carbreg.org</a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Service:</td>
-                      <td>__________ </td>
-                    </tr>
-                    <tr>
-                      <td>Country:</td>
-                      <td>Ireland</td>
-                    </tr>
-                    <tr>
-                      <td>Type:</td>
-                      <td>html_local_storage</td>
-                    </tr>
-                    <tr>
-                      <td>Expires in:</td>
-                      <td>persistent</td>
-                    </tr>
-                  </table>
                 </div>
               </Col>
             </Row>

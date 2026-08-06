@@ -17,9 +17,5 @@
   "countryName": "{{countryName}}",
   "digital": "National",
   "transformation": "Carbon Registry",
-  "carbonMarket": "",
-  "captchaLabel": "Security Code",
-  "captchaPlaceholder": "Enter security code",
-  "captchaRequired": "Security code cannot be empty",
-  "captchaRefreshAlt": "Refresh security code"
+  "carbonMarket": ""
 }

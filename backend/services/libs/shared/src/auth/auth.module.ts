@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
-import { CaptchaService } from "./captcha.service";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { CaslModule } from "../casl/casl.module";
@@ -33,7 +32,7 @@ import { PasswordReset } from "../entities/userPasswordResetToken.entity";
     CompanyModule,
     AsyncOperationsModule,
   ],
-  providers: [AuthService, CaptchaService, LocalStrategy, JwtStrategy, ApiKeyStrategy, Logger, PasswordReset],
-  exports: [AuthService, CaptchaService],
+  providers: [AuthService, LocalStrategy, JwtStrategy, ApiKeyStrategy, Logger, PasswordReset],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -19,7 +19,6 @@ import { AsyncActionType } from "../enum/async.action.type.enum";
 import { PasswordHashService } from "../util/passwordHash.service";
 import { User } from "../entities/user.entity";
 import { LoginDto } from "../dto/login.dto";
-import { CaptchaService } from "./captcha.service";
 
 @Injectable()
 export class AuthService {
@@ -32,8 +31,7 @@ export class AuthService {
     private passwordReset: PasswordResetService,
     public caslAbilityFactory: CaslAbilityFactory,
     private asyncOperationsInterface: AsyncOperationsInterface,
-    private passwordHashService: PasswordHashService,
-    private captchaService: CaptchaService
+    private passwordHashService: PasswordHashService
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -66,13 +64,6 @@ export class AuthService {
   }
 
   async login(login: LoginDto) {
-    if (!this.captchaService.validate(login.captchaChallengeId, login.captchaText)) {
-      throw new HttpException(
-        this.helperService.formatReqMessagesString("common.invalidCaptcha", []),
-        HttpStatus.BAD_REQUEST
-      );
-    }
-
     const user = await this.validateUser(login.username, login.password);
     if (!user) {
       throw new HttpException(

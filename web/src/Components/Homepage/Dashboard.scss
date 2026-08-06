@@ -694,6 +694,35 @@
   }
 }
 
+/* Keep long market KPI values inside their cards at every viewport width. */
+.emission-trading-kpi-grid {
+  .donut-card {
+    container-type: inline-size;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .main-statistic {
+    margin-right: 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .statistic-value {
+    font-size: clamp(1.75rem, 8cqw, 3rem);
+    line-height: 1.08;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .statistic-title {
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+}
+
 .donut-breakdown {
   display: flex;
   align-items: center;

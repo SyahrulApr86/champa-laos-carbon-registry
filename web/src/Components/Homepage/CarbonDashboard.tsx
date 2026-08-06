@@ -346,7 +346,7 @@ const CarbonDashboard = () => {
               ? "Synthetic demonstration market — not official Lao PDR market activity or certificate records."
               : "Market policy and venue are not configured."}
           </p>
-          <div className="donut-grid">
+          <div className="donut-grid emission-trading-kpi-grid">
             <div className="donut-card"><div className="main-statistic"><div className="statistic-value">{tradingSummary.ceiling.totalUnits.toLocaleString()} {tradingSummary.ceiling.unit}</div><div className="statistic-title">Total Ceiling Units</div></div></div>
             <div className="donut-card"><div className="main-statistic"><div className="statistic-value">{tradingSummary.ceiling.companies}</div><div className="statistic-title">Companies with Allocated Ceiling</div></div></div>
             <div className="donut-card"><div className="main-statistic"><div className="statistic-value">{tradingSummary.trading.totalUnits.toLocaleString()} {tradingSummary.trading.unit}</div><div className="statistic-title">Total Units Traded</div></div></div>

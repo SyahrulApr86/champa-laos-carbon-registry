@@ -144,6 +144,10 @@ import { CertificateLot } from "../entities/certificate.lot.entity";
 import { CertificatePortion } from "../entities/certificate.portion.entity";
 import { CertificateLedgerEvent } from "../entities/certificate.ledger.event.entity";
 import { CertificateLedgerEventType, CertificatePortionState, PublicAvailability } from "../enum/certificate.ledger.enum";
+import {
+  createPublicMeta,
+  PublicListResponse,
+} from "../public-data/public.data.contract";
 
 export interface PublicCertificate {
   accountHolder: string | null;
@@ -7953,7 +7957,13 @@ export class ProgrammeService {
     page = 1,
     size = 10,
     stage?: string
-  ): Promise<{ data: any[]; total: number }> {
+  ): Promise<PublicListResponse<{
+    registrationNumber: string;
+    title: string;
+    sector: string | null;
+    status: string;
+    proponent: string | null;
+  }> & { total: number }> {
     const keyword = (q || "").trim();
     const safePage = Math.max(1, page);
     const safeSize = Math.min(50, Math.max(1, size));
@@ -7988,15 +7998,29 @@ export class ProgrammeService {
 
     const [results, total] = await qb.getManyAndCount();
 
+    const data = results.map((programme) => ({
+      registrationNumber: programme.programmeId,
+      title: programme.title,
+      sector: programme.sector,
+      status: this.toPublicProgrammeStatus(programme.currentStage),
+      proponent: programme.company?.[0]?.name ?? null,
+    }));
+
     return {
-      data: results.map((programme) => ({
-        registrationNumber: programme.programmeId,
-        title: programme.title,
-        sector: programme.sector,
-        status: this.toPublicProgrammeStatus(programme.currentStage),
-        proponent: programme.company?.[0]?.name ?? null,
-      })),
+      data,
       total,
+      meta: createPublicMeta(
+        { q: keyword || null, stage: safeStage ?? null },
+        {
+          unit: "records",
+          quality_status: "derived",
+          pagination: {
+            page: safePage,
+            page_size: safeSize,
+            total_items: total,
+          },
+        }
+      ),
     };
   }
 

@@ -5,6 +5,7 @@ const base = process.env.CHAMPA_BASE?.replace(/\/$/, "");
 const disclosurePrefix = "Synthetic demonstration data";
 const endpoints = [
   { name: "analytics_summary", path: "/national/analytics/public/summary", pagination: false, metricResponse: true },
+  { name: "programme_search", path: "/national/projectManagement/public/search?q=&page=1&size=10", pagination: true },
   { name: "certificates_first_page", path: "/national/programme/public/certificate-registry?q=&page=1&pageSize=10", pagination: true, certificateResponse: true },
   { name: "certificates_last_page", path: "/national/programme/public/certificate-registry?q=__w9_empty__&page=999&pageSize=10", pagination: true },
   { name: "mitigation_map", path: "/national/projectManagement/public/mapSummary?activityType=mitigation", mapResponse: true },

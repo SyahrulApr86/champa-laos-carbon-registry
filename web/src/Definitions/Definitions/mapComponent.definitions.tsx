@@ -1,5 +1,5 @@
 export enum MapTypes {
-  Mapbox = 'Mapbox',
+  MapLibre = 'MapLibre',
   None = 'None',
 }
 

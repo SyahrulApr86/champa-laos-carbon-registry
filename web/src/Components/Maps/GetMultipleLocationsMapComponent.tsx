@@ -3,7 +3,7 @@ import { FormInstance } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import { MapSourceData } from "../../Definitions/Definitions/mapComponent.definitions";
 import { MapComponent } from "./mapComponent";
-import "./mapboxComponent.scss";
+import "./maplibreComponent.scss";
 import { DeleteOutlined } from "@ant-design/icons";
 import { deepCopy } from "../../Utils/deepCopy";
 
@@ -33,11 +33,6 @@ const GetMultipleLocationsMapComponent = (
   const mapType = import.meta.env.VITE_APP_MAP_TYPE
     ? import.meta.env.VITE_APP_MAP_TYPE
     : "None";
-  const accessToken = import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    ? import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    : "";
-
-  console.log("---------------map accessToken-----------------", accessToken);
 
   const [projectLocations, setProjectLocations] = useState<any[][]>(
     existingCoordinate || []
@@ -186,8 +181,7 @@ const GetMultipleLocationsMapComponent = (
         updateZoomLevel={updateZoomLevel}
         updateCenter={updateCenter}
         height={250}
-        style="mapbox://styles/mapbox/light-v11"
-        accessToken={accessToken}
+        style="osm-raster"
         onPolygonComplete={!disabled ? onPolygonComplete : undefined}
         mapSource={projectLocationMapSource}
         layer={projectLocationMapLayer}

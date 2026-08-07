@@ -12,7 +12,7 @@ import UserManagement from "./Pages/UserManagement/userManagement";
 import AddNewCompany from "./Pages/Company/addNewCompany";
 import CompanyManagement from "./Pages/CompanyManagement/companyManagement";
 // import ProgrammeManagement from './Pages/Old_ProgrammeManagement/programmeManagement';
-import "mapbox-gl/dist/mapbox-gl.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import Homepage from "./Pages/Homepage/homepage";
 import PrivacyPolicy from "./Pages/PrivacyPolicy/privacyPolicy";
 import CodeOfConduct from "./Pages/CodeofConduct/codeofConduct";

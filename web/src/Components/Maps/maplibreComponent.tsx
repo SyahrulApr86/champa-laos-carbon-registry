@@ -1,15 +1,30 @@
 import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import * as maplibregl from 'maplibre-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import {
   MapComponentProps,
   MarkerData,
 } from '../../Definitions/Definitions/mapComponent.definitions';
-import './mapboxComponent.scss';
+import './maplibreComponent.scss';
 
-export const MapboxComponent = (props: MapComponentProps) => {
+// Free, key-less raster basemap built from OpenStreetMap tiles. This avoids
+// any hosted-style vendor (e.g. Mapbox) and the account/token it would need.
+const OSM_RASTER_STYLE: any = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenStreetMap contributors',
+    },
+  },
+  layers: [{ id: 'osm', type: 'raster', source: 'osm', minzoom: 0, maxzoom: 19 }],
+};
+
+export const MapLibreComponent = (props: MapComponentProps) => {
   const mapContainerRef = useRef(null);
 
   const {
@@ -22,25 +37,21 @@ export const MapboxComponent = (props: MapComponentProps) => {
     onMouseMove,
     layer,
     height,
-    style,
-    zoom,
     onRender,
-    accessToken,
     onPolygonComplete,
     outlineLayer,
     updateZoomLevel,
+    zoom,
   } = props;
-
-  mapboxgl.accessToken = accessToken;
 
   useEffect(() => {
     if (!mapContainerRef || !mapContainerRef.current || center.length !== 2) {
       return;
     }
 
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: mapContainerRef.current || '',
-      style: style,
+      style: OSM_RASTER_STYLE,
       center:
         !Number.isNaN(center[0]) && !Number.isNaN(center[1])
           ? [center[0], center[1]]
@@ -59,10 +70,9 @@ export const MapboxComponent = (props: MapComponentProps) => {
         defaultMode: 'draw_polygon',
       });
 
-      map.addControl(draw);
-      map.on('draw.create', (e) => {
+      map.addControl(draw as any);
+      map.on('draw.create' as any, (e: any) => {
         const data = draw.getAll();
-        console.log('draw.create called');
         onPolygonComplete(data);
         if (updateZoomLevel) {
           const tempZoom = map.getZoom();
@@ -70,7 +80,6 @@ export const MapboxComponent = (props: MapComponentProps) => {
         }
         if (updateCenter) {
           const tempCenter = map.getCenter();
-          console.log('-------tempCenter---------', tempCenter);
           updateCenter([tempCenter.lng, tempCenter.lat]);
         }
       });
@@ -91,7 +100,7 @@ export const MapboxComponent = (props: MapComponentProps) => {
         map.on('click', function (e) {
           const popupContent = onClick(map, e);
           if (showPopupOnClick && popupContent) {
-            const popup = new mapboxgl.Popup()
+            new maplibregl.Popup()
               .setLngLat(map.unproject(e.point))
               .setHTML(popupContent)
               .addTo(map);
@@ -127,7 +136,7 @@ export const MapboxComponent = (props: MapComponentProps) => {
           if (markersList) {
             markersList.forEach((marker: MarkerData) => {
               if (!currentMarkes[marker.id as number]) {
-                const createdMarker = new mapboxgl.Marker({
+                const createdMarker = new maplibregl.Marker({
                   color: marker.color,
                   element: marker.element ? marker.element : undefined,
                 })
@@ -150,7 +159,7 @@ export const MapboxComponent = (props: MapComponentProps) => {
 
     if (markers) {
       markers.forEach((marker: MarkerData) => {
-        new mapboxgl.Marker({
+        new maplibregl.Marker({
           color: marker.color,
           element: marker.element ? marker.element : undefined,
         })

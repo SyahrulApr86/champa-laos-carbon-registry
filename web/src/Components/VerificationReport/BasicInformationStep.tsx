@@ -43,9 +43,6 @@ export const BasicInformationStep = (props: VerificationStepProps) => {
   const { get, post } = useConnection();
   const [contactNoInput] = useState<any>();
   const [countryList, setCountryList] = useState<[]>([]);
-  const accessToken = import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    ? import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    : "";
 
   const maximumImageSize = import.meta.env.VITE_APP_MAXIMUM_FILE_SIZE
     ? parseInt(import.meta.env.VITE_APP_MAXIMUM_FILE_SIZE)

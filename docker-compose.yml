@@ -181,8 +181,7 @@ services:
         VITE_APP_REGISTRY_NAME: "Champa Registry Demonstration"
         VITE_APP_COUNTRY_FLAG_URL: "https://upload.wikimedia.org/wikipedia/commons/5/56/Flag_of_Laos.svg"
         VITE_APP_COUNTRY_CODE: "LA"
-        VITE_APP_MAP_TYPE: "None"
-        VITE_APP_MAPBOXGL_ACCESS_TOKEN: ""
+        VITE_APP_MAP_TYPE: "MapLibre"
     environment:
       VITE_APP_BACKEND: http://localhost:3000
       VITE_APP_COUNTRY_NAME: "Lao PDR"

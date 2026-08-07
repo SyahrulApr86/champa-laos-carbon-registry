@@ -205,10 +205,6 @@ const ProjectDetailsViewComponent = (props: any) => {
 
   const projectTimelineRef = useRef<HTMLDivElement>(null);
 
-  const accessToken = import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    ? import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    : "";
-
   const showModal = () => {
     setOpenModal(true);
   };
@@ -1459,8 +1455,7 @@ const ProjectDetailsViewComponent = (props: any) => {
                       center={projectLocationMapCenter}
                       zoom={6}
                       height={300}
-                      style="mapbox://styles/mapbox/light-v11"
-                      accessToken={accessToken}
+                      style="osm-raster"
                       mapSource={projectLocationMapSource}
                       layer={projectLocationMapLayer}
                       outlineLayer={projectLocationMapOutlineLayer}

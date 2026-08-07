@@ -1,17 +1,17 @@
 @use '../../Styles/colors.dashboard.scss';
 
 .map-box-container {
-  .mapboxgl-popup-content {
+  .maplibregl-popup-content {
     background-color: colors.$white !important;
     color: colors.$card-title !important;
   }
 
-  .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
     border-top-color: colors.$white !important;
   }
 
-  .mapboxgl-popup-close-button,
-  .mapboxgl-popup-close-button:hover {
+  .maplibregl-popup-close-button,
+  .maplibregl-popup-close-button:hover {
     display: none;
   }
 }

@@ -27,9 +27,6 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
   const mapType = import.meta.env.VITE_APP_MAP_TYPE
     ? import.meta.env.VITE_APP_MAP_TYPE
     : "None";
-  const accessToken = import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    ? import.meta.env.VITE_APP_MAPBOXGL_ACCESS_TOKEN
-    : "";
 
   const getCenter = (list: any[]) => {
     let count = 0;
@@ -191,8 +188,7 @@ const GetLocationMapComponent = (props: CMAMapComponentProps) => {
           updateZoomLevel={updateZoomLevel}
           zoom={zoomLevel}
           height={400}
-          style="mapbox://styles/mapbox/light-v11"
-          accessToken={accessToken}
+          style="osm-raster"
           onPolygonComplete={!disabled ? onPolygonComplete : undefined}
           mapSource={combinedMapSource}
           layer={combinedLayer}

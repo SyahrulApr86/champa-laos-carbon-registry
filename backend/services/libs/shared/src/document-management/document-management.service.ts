@@ -81,11 +81,46 @@ export class DocumentManagementService {
         addDocumentDto.documentType ==
         DocumentTypeEnum.INITIAL_NOTIFICATION_FORM
       ) {
-        projectRefId = await this.counterService.incrementCount(
-          CounterType.PROJECT,
-          4
-        );
-        projectCompanyId = user.companyId;
+        if (addDocumentDto.projectRefId) {
+          // Editing an existing project's Initial Notification, rather than
+          // submitting a new one: reuse the existing project's refId instead
+          // of minting a new one, so the edit updates the same project.
+          project = await this.programmeLedgerService.getProjectById(
+            addDocumentDto.projectRefId
+          );
+          if (!project) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString("project.noProject", []),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          if (project.companyId !== user.companyId) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString(
+                "project.noInfCreatePermission",
+                []
+              ),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          if (project.projectProposalStage !== ProjectProposalStage.PENDING) {
+            throw new HttpException(
+              this.helperService.formatReqMessagesString(
+                "project.programmeIsNotInSuitableStageToProceed",
+                []
+              ),
+              HttpStatus.BAD_REQUEST
+            );
+          }
+          projectRefId = project.refId;
+          projectCompanyId = project.companyId;
+        } else {
+          projectRefId = await this.counterService.incrementCount(
+            CounterType.PROJECT,
+            4
+          );
+          projectCompanyId = user.companyId;
+        }
       } else {
         project = await this.programmeLedgerService.getProjectById(
           addDocumentDto.projectRefId
@@ -120,13 +155,15 @@ export class DocumentManagementService {
 
       switch (addDocumentDto.documentType) {
         case DocumentTypeEnum.INITIAL_NOTIFICATION_FORM: {
+          const isEditingExistingProject = !!addDocumentDto.projectRefId;
+
           if (
             user.companyRole !== CompanyRole.PROJECT_DEVELOPER ||
             user.role !== Role.Admin
           ) {
             throw new HttpException(
               this.helperService.formatReqMessagesString(
-                "project.noPermission",
+                "project.noInfCreatePermission",
                 []
               ),
               HttpStatus.BAD_REQUEST
@@ -184,21 +221,13 @@ export class DocumentManagementService {
               );
             }
           }
-          const project = plainToClass(ProjectEntity, projectCreateDto);
-          project.refId = projectRefId;
-          project.projectProposalStage = ProjectProposalStage.PENDING;
-          project.companyId = projectCompanyId;
-          project.txType = TxType.CREATE_PROJECT;
-          project.txTime = new Date().getTime();
-          project.createTime = project.txTime;
-          project.updateTime = project.txTime;
 
           const docUrls = [];
           if (projectCreateDto.additionalDocuments?.length > 0) {
             for (const additionalDocument of projectCreateDto.additionalDocuments) {
               const docUrl = await this.uploadDocument(
                 DocType.INF_ADDITIONAL_DOCUMENT,
-                project.refId,
+                projectRefId,
                 additionalDocument
               );
               docUrls.push(docUrl);
@@ -209,10 +238,50 @@ export class DocumentManagementService {
           newDoc.content = projectCreateDto;
 
           const infDoc = await this.documentRepository.save(newDoc);
-          project.txRef = this.getDocumentTxRef(
+          const infTxRef = this.getDocumentTxRef(
             DocumentTypeEnum.INITIAL_NOTIFICATION_FORM,
             infDoc.id
           );
+
+          if (isEditingExistingProject) {
+            const updatedProgramme =
+              await this.programmeLedgerService.updateProjectProposalStage(
+                projectRefId,
+                TxType.UPDATE_PROJECT_DETAILS,
+                infTxRef,
+                {
+                  title: projectCreateDto.title,
+                  sector: projectCreateDto.sector,
+                  sectoralScope: projectCreateDto.sectoralScope,
+                  independentCertifiers: projectCreateDto.independentCertifiers,
+                }
+              );
+
+            await this.logProjectStage(
+              projectRefId,
+              ProjectAuditLogType.PROJECT_DETAILS_UPDATED,
+              user.id
+            );
+            return new DataResponseDto(HttpStatus.OK, {
+              ...updatedProgramme,
+              company: {
+                companyId: projectCompany.companyId,
+                name: projectCompany.name,
+                logo: projectCompany.logo,
+              },
+            });
+          }
+
+          const project = plainToClass(ProjectEntity, projectCreateDto);
+          project.refId = projectRefId;
+          project.projectProposalStage = ProjectProposalStage.PENDING;
+          project.companyId = projectCompanyId;
+          project.txType = TxType.CREATE_PROJECT;
+          project.txTime = new Date().getTime();
+          project.createTime = project.txTime;
+          project.updateTime = project.txTime;
+          project.txRef = infTxRef;
+
           let savedProgramme = await this.programmeLedgerService.createProject(
             project
           );

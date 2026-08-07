@@ -9,6 +9,7 @@ import { FormMode } from "../../../Definitions/Enums/formMode.enum";
 import { CompanyRole } from "../../../Definitions/Enums/company.role.enum";
 import { useUserContext } from "../../../Context/UserInformationContext/userInformationContext";
 import { ProjectProposalStage } from "../../../Definitions/Enums/programmeStage.enum";
+import { Role } from "../../../Definitions/Enums/role.enum";
 import { DocType } from "../../../Definitions/Enums/document.type";
 import { saveAs } from "file-saver";
 import { DocumentEnum } from "../../../Definitions/Enums/document.enum";
@@ -48,17 +49,17 @@ const ProjectDocuments = (props: IProjectDetails) => {
     navigate(ROUTES.VALIDATION_REPORT(id), { state: permissionsState });
   };
 
+  const canEditInf =
+    projectProposalStage === ProjectProposalStage.PENDING &&
+    userInfoState?.companyRole === CompanyRole.PROJECT_DEVELOPER &&
+    userInfoState?.userRole === Role.Admin;
+
   const navigateToInfView = () => {
-    console.log(
-      "----------inf_view_route____",
-      id,
-      ROUTES.INF_VIEW(id as string)
-    );
     if (id) {
       navigate(ROUTES.INF_VIEW(id), {
         state: {
-          mode: FormMode.VIEW,
-          documentId: documents[DocumentEnum.INF as string]?.refId,
+          mode: canEditInf ? FormMode.EDIT : FormMode.VIEW,
+          documentRefId: documents[DocumentEnum.INF as string]?.refId,
         },
       });
     }
@@ -115,7 +116,7 @@ const ProjectDocuments = (props: IProjectDetails) => {
         </Col>
         <Col md={6} className="documentAction-col">
           <Button className="document-action-btn" onClick={navigateToInfView}>
-            View
+            {canEditInf ? "EDIT" : "View"}
           </Button>
         </Col>
       </Row>

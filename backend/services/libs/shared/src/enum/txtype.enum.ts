@@ -43,4 +43,5 @@ export enum TxType {
   RETIRE_REQ = "41",
   CANCEL = "42",
   ASSIGN_TO_EXCHANGE = "43",
+  UPDATE_PROJECT_DETAILS = "44",
 }

@@ -277,6 +277,13 @@ export class ProgrammeLedgerService {
               uPayload["activities"] = [data];
             }
             break;
+          case TxType.UPDATE_PROJECT_DETAILS:
+            uPayload["title"] = data?.title;
+            uPayload["sector"] = data?.sector;
+            uPayload["sectoralScope"] = data?.sectoralScope;
+            uPayload["independentCertifiers"] = data?.independentCertifiers;
+            expectedCurrentProposalStages = [ProjectProposalStage.PENDING];
+            break;
           default:
             break;
         }

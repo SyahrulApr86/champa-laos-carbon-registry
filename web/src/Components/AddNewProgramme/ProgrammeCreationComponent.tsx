@@ -302,11 +302,17 @@ export const ProgrammeCreationComponent = (props: any) => {
   };
 
   useEffect(() => {
-    if (state?.mode === null || state?.mode === undefined) {
+    if (
+      state?.mode === null ||
+      state?.mode === undefined ||
+      state?.mode === FormMode.EDIT
+    ) {
       getProvinces();
       getCountryList();
       getIndependentCertifiers();
-      getOrganizationDetails();
+      if (state?.mode !== FormMode.EDIT) {
+        getOrganizationDetails();
+      }
     }
   }, []);
 
@@ -353,7 +359,7 @@ export const ProgrammeCreationComponent = (props: any) => {
 
       try {
         const res = await post(API_PATHS.QUERY_DOCUMENT, {
-          refId: state?.documentId,
+          refId: state?.documentRefId,
           documentType: DocumentEnum.INF,
         });
 
@@ -391,6 +397,11 @@ export const ProgrammeCreationComponent = (props: any) => {
       };
 
       if (documentData && projectData) {
+        const isEditMode = state?.mode === FormMode.EDIT;
+        // Editing re-submits this data as-is, so it must keep the raw enum
+        // key / certifier id array the Select widgets actually expect.
+        // View mode stays on the human-readable label/name text since it's
+        // only ever displayed, disabled, never resubmitted.
         const viewData = {
           ...documentData,
           briefProjectDescription: documentData.projectDescription,
@@ -399,16 +410,38 @@ export const ProgrammeCreationComponent = (props: any) => {
           ),
           projectLocation: documentData.geographicalLocationCoordinates,
           startTime: toMoment(documentData?.startDate),
-          independentCertifiers: projectData?.independentCertifiers?.join(","),
-          sectoralScope: formatScope(documentData?.sectoralScope),
+          independentCertifiers: isEditMode
+            ? documentData?.independentCertifiers
+            : projectData?.independentCertifiers?.join(","),
+          sectoralScope: isEditMode
+            ? documentData?.sectoralScope
+            : formatScope(documentData?.sectoralScope),
         };
 
         form.setFieldsValue(viewData);
+
+        if (state?.mode === FormMode.EDIT) {
+          setSelectedSector(documentData?.sector);
+          if (documentData?.province) {
+            await getDistricts(documentData.province);
+          }
+          if (documentData?.district) {
+            await getCities(documentData.district);
+          }
+          if (documentData?.city) {
+            await getPostalCodes(documentData.city);
+          }
+        }
       }
     };
 
-    if (state?.mode === FormMode.VIEW && state?.documentId) {
-      setDisableFields(true);
+    if (
+      (state?.mode === FormMode.VIEW || state?.mode === FormMode.EDIT) &&
+      state?.documentRefId
+    ) {
+      if (state?.mode === FormMode.VIEW) {
+        setDisableFields(true);
+      }
       getViewData();
     }
   }, []);
@@ -460,6 +493,7 @@ export const ProgrammeCreationComponent = (props: any) => {
         ...{
           name: "INF",
           documentType: DocumentEnum.INF,
+          ...(state?.mode === FormMode.EDIT ? { projectRefId: id } : {}),
         },
         data: {
           ...body,

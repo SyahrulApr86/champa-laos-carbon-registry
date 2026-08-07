@@ -1,0 +1,14 @@
+{
+  "requestCreated": "Certificate issuance request submitted.",
+  "requestApproved": "Certificate issuance request approved and certificate issued.",
+  "requestRejected": "Certificate issuance request rejected.",
+  "requestAlreadyPending": "A certificate issuance request is already pending for this credit block.",
+  "requestNotExists": "The specified certificate issuance request does not exist.",
+  "requestNotPending": "The certificate issuance request is no longer pending.",
+  "creditBlockNotExists": "The specified credit block does not exist.",
+  "creditBlockDoesNotOwnBySender": "The sender does not own the credit block.",
+  "notEnoughCreditAmount": "Not enough credit amount available for certificate issuance.",
+  "noRequestPermission": "You do not have permission to request certificate issuance.",
+  "noActionPermission": "You do not have permission to approve or reject certificate issuance requests.",
+  "unauthorized": "You are not authorised to view certificate issuance requests."
+}

@@ -4,6 +4,7 @@ import { useConnection } from "../../Context/ConnectionContext/connectionContext
 import { useUserContext } from "../../Context/UserInformationContext/userInformationContext";
 import { CompanyRole } from "../../Definitions/Enums/company.role.enum";
 import { Role } from "../../Definitions/Enums/role.enum";
+import { API_PATHS } from "../../Config/apiConfig";
 import CertificateLotEditor from "./CertificateLotEditor";
 import {
   archiveCertificateLot,
@@ -23,10 +24,25 @@ import {
 
 const lifecycleOptions: CertificateLifecycleEvent[] = ["ISSUED", "TRANSFERRED", "RETIRED", "CANCELLED", "ASSIGNED_TO_EXCHANGE", "RELEASED", "REVERSED"];
 
+interface CertificateIssuanceRequestRow {
+  id: string;
+  creditBlockId: string;
+  serialNumber: string;
+  projectRefId: string;
+  companyId: string;
+  requestedQuantity: string;
+  status: "Pending" | "Approved" | "Rejected";
+  certificateId?: string;
+  requestedAt: string;
+}
+
 const CertificateRegistryManagementPage = () => {
   const connection = useConnection();
   const { userInfoState } = useUserContext();
   const [rows, setRows] = useState<CertificateLotSummary[]>([]);
+  const [certRequests, setCertRequests] = useState<CertificateIssuanceRequestRow[]>([]);
+  const [certRequestsLoading, setCertRequestsLoading] = useState(false);
+  const [certActioning, setCertActioning] = useState<string>();
   const [selected, setSelected] = useState<CertificateLotDetail>();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,9 +70,39 @@ const CertificateRegistryManagementPage = () => {
     }
   }, [connection, query]);
 
+  const loadCertRequests = useCallback(async () => {
+    setCertRequestsLoading(true);
+    try {
+      const response = await connection.get(API_PATHS.CERTIFICATE_ISSUANCE_LIST);
+      setCertRequests((response.data as CertificateIssuanceRequestRow[]) ?? []);
+    } catch {
+      setCertRequests([]);
+    } finally {
+      setCertRequestsLoading(false);
+    }
+  }, [connection]);
+
   useEffect(() => {
     if (isAuthorized) void loadRows();
   }, [isAuthorized, loadRows]);
+
+  useEffect(() => {
+    if (isAuthorized) void loadCertRequests();
+  }, [isAuthorized, loadCertRequests]);
+
+  const actionCertRequest = async (requestId: string, action: "Approve" | "Reject") => {
+    setCertActioning(requestId);
+    try {
+      await connection.post(API_PATHS.CERTIFICATE_ISSUANCE_ACTION, { requestId, action });
+      message.success(action === "Approve" ? "Certificate issued" : "Request rejected");
+      await loadCertRequests();
+      await loadRows();
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "Unable to action certificate request");
+    } finally {
+      setCertActioning(undefined);
+    }
+  };
 
   const selectLot = async (certificateLotId: string) => {
     try {
@@ -135,6 +181,44 @@ const CertificateRegistryManagementPage = () => {
     <div style={{ padding: 24 }}>
       <Typography.Title level={2}>Certificate registry management</Typography.Title>
       <Typography.Paragraph>Canonical lots are editable only before issuance. Ledger events are immutable and corrected with a reversal.</Typography.Paragraph>
+      <Typography.Title level={4}>Certificate issuance requests</Typography.Title>
+      <Typography.Paragraph>Requests submitted by Project Developers from their credit balance. Approving mints a new certificate lot for the requested credits.</Typography.Paragraph>
+      <Table
+        rowKey="id"
+        loading={certRequestsLoading}
+        dataSource={certRequests}
+        pagination={false}
+        style={{ marginBottom: 24 }}
+        columns={[
+          { title: "Project", dataIndex: "projectRefId" },
+          { title: "Serial number", dataIndex: "serialNumber" },
+          { title: "Quantity", dataIndex: "requestedQuantity" },
+          {
+            title: "Status",
+            dataIndex: "status",
+            render: (status: CertificateIssuanceRequestRow["status"]) => (
+              <Tag color={status === "Approved" ? "green" : status === "Rejected" ? "red" : "gold"}>{status}</Tag>
+            ),
+          },
+          { title: "Certificate ID", render: (_: unknown, row: CertificateIssuanceRequestRow) => row.certificateId ?? "Not issued" },
+          {
+            title: "Action",
+            render: (_: unknown, row: CertificateIssuanceRequestRow) =>
+              row.status === "Pending" ? (
+                <Space>
+                  <Button size="small" type="primary" loading={certActioning === row.id} onClick={() => void actionCertRequest(row.id, "Approve")}>
+                    Approve
+                  </Button>
+                  <Button size="small" danger loading={certActioning === row.id} onClick={() => void actionCertRequest(row.id, "Reject")}>
+                    Reject
+                  </Button>
+                </Space>
+              ) : null,
+          },
+        ]}
+      />
+      <Divider />
+      <Typography.Title level={4}>Certificate lots</Typography.Title>
       <Space style={{ marginBottom: 16 }}>
         <Input.Search placeholder="Search certificate, lot or registry number" allowClear onSearch={setQuery} style={{ width: 360 }} />
         <Button onClick={() => { setSelected(undefined); setReason(""); }}>New lot</Button>

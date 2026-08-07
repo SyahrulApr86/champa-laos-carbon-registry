@@ -230,5 +230,17 @@
     "creditRetireCancelledSuccessfully": "The credit retire request has been cancelled successfully",
     "country": "Country",
     "shouldBeInterger": "Credit Amount Should be Interger Value",
-    "invalidOrganizationName":"Invalid organization name"
+    "invalidOrganizationName":"Invalid organization name",
+    "requestCertificate": "Request Certificate",
+    "requestCertificateTitle": "Request Certificate Issuance",
+    "requestCertificateBody": "This will request DNA to issue a certificate for the selected credits. Once approved, the certificate will be available in the certificate registry.",
+    "certificateRequestSubmitted": "Certificate issuance request submitted successfully",
+    "certificateRequestFailed": "Certificate issuance request failed, please try again.",
+    "certificateId": "Certificate ID",
+    "certificateStatus": "Certificate Status",
+    "certificateRequests": "Certificate Requests",
+    "noCertificateRequests": "No Certificate Requests",
+    "Pending": "Pending",
+    "Approved": "Approved",
+    "Rejected": "Rejected"
 }

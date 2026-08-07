@@ -28,6 +28,8 @@ import { ExpertController } from "./expert.controller";
 import { GuidanceDocumentController } from "./guidance.document.controller";
 import { RecognizedMitigationController } from "./recognized.mitigation.controller";
 import { CertificateRegistryModule } from "@app/shared/certificate-registry/certificate.registry.module";
+import { CertificateIssuanceRequestModule } from "@app/shared/certificate-issuance-request/certificate.issuance.request.module";
+import { CertificateIssuanceRequestController } from "./certificate.issuance.request.controller";
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { CertificateRegistryModule } from "@app/shared/certificate-registry/cert
     SharedModule,
     CoreModule,
     CertificateRegistryModule,
+    CertificateIssuanceRequestModule,
   ],
   controllers: [
     NationalAPIController,
@@ -63,6 +66,7 @@ import { CertificateRegistryModule } from "@app/shared/certificate-registry/cert
     ExpertController,
     GuidanceDocumentController,
     RecognizedMitigationController,
+    CertificateIssuanceRequestController,
   ],
   providers: [NationalAPIService, Logger],
 })

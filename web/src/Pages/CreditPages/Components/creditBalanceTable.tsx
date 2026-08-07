@@ -26,6 +26,7 @@ import "../creditPageStyles.scss";
 import { IssuedOrReceivedOptions } from "../Enums/creditEventEnum";
 import { CreditActionType } from "../Enums/creditActionType.enum";
 import { CreditActionModal } from "./creditActionModal";
+import { CertificateRequestModal } from "./certificateRequestModal";
 import { CompanyRole } from "../../../Definitions/Enums/company.role.enum";
 import { HttpStatusCode } from "axios";
 import { ActionResponseModal } from "../../../Components/Models/actionResponseModal";
@@ -99,6 +100,9 @@ export const CreditBalanceTableComponent = (props: any) => {
     data: CreditBalanceInterface;
     proceedAction: CreditRetirementProceedAction;
   }>();
+  const [certModalVisible, setCertModalVisible] = useState<boolean>(false);
+  const [certModalLoading, setCertModalLoading] = useState<boolean>(false);
+  const [certModalData, setCertModalData] = useState<CreditBalanceInterface>();
   const [modalResponseVisible, setModalResponseVisible] =
     useState<boolean>(false);
   const [modalResponseData, setModalResponseData] = useState<{
@@ -225,6 +229,14 @@ export const CreditBalanceTableComponent = (props: any) => {
                 data: record,
               });
               setModalActionVisible(true);
+            },
+          },
+          {
+            text: t("requestCertificate"),
+            icon: <Icon.PatchCheck color={COLOR_CONFIGS.PRIMARY_THEME_COLOR} />,
+            click: () => {
+              setCertModalData(record);
+              setCertModalVisible(true);
             },
           },
         ]}
@@ -508,6 +520,54 @@ export const CreditBalanceTableComponent = (props: any) => {
     }
   };
 
+  const onFinishCertificateRequest = async (
+    blockId: any,
+    creditAmount: number
+  ) => {
+    try {
+      setCertModalLoading(true);
+      const response: any = await post(API_PATHS.CERTIFICATE_ISSUANCE_REQUEST, {
+        blockId: blockId,
+        amount: Number(creditAmount),
+      });
+      if (response.status === HttpStatusCode.Created) {
+        setModalResponseData({
+          type: ActionResponseType.SUCCESS,
+          icon: (
+            <Icon.CheckCircle color={COLOR_CONFIGS.SUCCESS_RESPONSE_COLOR} />
+          ),
+          title: t("certificateRequestSubmitted"),
+          buttonText: t("okay"),
+        });
+      } else {
+        setModalResponseData({
+          type: ActionResponseType.FAILED,
+          icon: (
+            <ExclamationCircleOutlined
+              color={COLOR_CONFIGS.FAILED_RESPONSE_COLOR}
+            />
+          ),
+          title: t("certificateRequestFailed"),
+          buttonText: t("okay"),
+        });
+      }
+    } catch (error: any) {
+      message.error(error.message || t("somethingWentWrong"));
+      setModalResponseData({
+        type: ActionResponseType.FAILED,
+        icon: (
+          <Icon.ExclamationCircle color={COLOR_CONFIGS.FAILED_RESPONSE_COLOR} />
+        ),
+        title: t("certificateRequestFailed"),
+        buttonText: t("okay"),
+      });
+    } finally {
+      setModalResponseVisible(true);
+      setCertModalLoading(false);
+      setCertModalVisible(false);
+    }
+  };
+
   return (
     <div className="content-card">
       <Row
@@ -604,6 +664,16 @@ export const CreditBalanceTableComponent = (props: any) => {
         remarkRequired={modalActionData?.remarkRequired}
         proceedAction={modalActionData?.proceedAction}
         data={modalActionData?.data}
+      />
+      <CertificateRequestModal
+        onFinish={onFinishCertificateRequest}
+        onCancel={() => setCertModalVisible(false)}
+        t={t}
+        openModal={certModalVisible}
+        loading={certModalLoading}
+        icon={<Icon.PatchCheck color={COLOR_CONFIGS.PRIMARY_THEME_COLOR} />}
+        title={t("requestCertificateTitle")}
+        data={certModalData}
       />
       <ActionResponseModal
         type={modalResponseData?.type}

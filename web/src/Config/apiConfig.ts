@@ -57,6 +57,9 @@ export const API_PATHS = {
   CREDIT_RETIREMENT_PERFROM:
     "national/creditTransactionsManagement/performRetireAction",
   CREDIT_TRANSFER_REQUEST: "national/creditTransactionsManagement/transfer",
+  CERTIFICATE_ISSUANCE_REQUEST: "national/certificateIssuanceRequest/request",
+  CERTIFICATE_ISSUANCE_ACTION: "national/certificateIssuanceRequest/action",
+  CERTIFICATE_ISSUANCE_LIST: "national/certificateIssuanceRequest/list",
   //LOCATION
   PROVINCES: "national/location/province",
   REGISTRATION_PROVINCES: "national/location/registration-provinces",

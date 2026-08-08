@@ -27,7 +27,7 @@ Password: ChampaLaos2026!
 
 To restore this deployment's data exactly as it stood after the documentation was written (demo accounts, organisations, projects, uploaded documents, and every test record referenced in the [Champa docs site](https://github.com/SyahrulApr86/champa-docs)), see [`deploy-snapshot/README.md`](./deploy-snapshot/README.md).
 
-The sections below (Architecture, Ledger, Project Structure, Customization, Local Development, Cloud, API) describe the underlying codebase shared with upstream and remain accurate for this fork.
+The sections below document the shared upstream codebase (architecture, ledger, project structure, customization, API). Sections describing deployment paths this fork doesn't use — Serverless local dev, AWS Cloud, ITMO Platform connectivity — are marked as such; this deployment runs via Docker Compose only, as shown above.
 
 ## Index
 * [About](#about)
@@ -42,11 +42,11 @@ The sections below (Architecture, Ledger, Project Structure, Customization, Loca
 * [Run as Containers](#container)
 * [Run Services Locally](#local-development)
 * [Run Services on Cloud](#cloud)
+* [External Connectivity](#external)
 * [User Onboarding](#user)
 * [Web Frontend](#frontend)
 * [Localization](#localization)
 * [API](#api)
-* [Status Page](#status)
 * [Governance & Support](#support)
 * [Contributing](./CONTRIBUTING.md)
 * [Community Guidelines](./COMMUNITY.md)
@@ -187,10 +187,11 @@ Currently implemented for 2 options.
 
 1. File based approach. User has to manually add the regions with the geo coordinates. [Sample File](./backend/services/regions.csv). To apply new file changes, replicator service needs to restart.
 2. [Mapbox](https://mapbox.com). Dynamically query geo coordinates from the Mapbox API.
+3. OpenStreetMap. No API key required.
 
-Can add more options by implementing [location interface](./backend/services/src/shared/location/location.interface.ts)
+Can add more options by implementing [location interface](./backend/services/libs/shared/src/location/location.interface.ts)
 
-Change by environment variable `LOCATION_SERVICE`. Supported types `MAPBOX`, `FILE(Default)`
+Change by environment variable `LOCATION_SERVICE`. Supported types `MAPBOX`, `OPENSTREET`, `FILE(Default)`. This deployment uses `FILE` for the `national` service and `OPENSTREET` for the `replicator` service (see `docker-compose.yml`).
 
 **File Service**
 
@@ -199,7 +200,7 @@ Implemented 2 options for static file hosting.
 1. NestJS static file hosting using the local storage and container volumes.
 2. AWS S3 file storage.
 
-Can add more options by implementing [file handler interface](./backend/services/src/shared/file-handler/filehandler.interface.ts)
+Can add more options by implementing [file handler interface](./backend/services/libs/shared/src/file-handler/filehandler.interface.ts)
 
 Change by environment variable `FILE_SERVICE`. Supported types `S3`, `LOCAL(Default)`
 
@@ -251,19 +252,25 @@ The below diagram demonstrates the ledger behavior of project create, authorise,
 ## Project Structure
 
     .
-    ├── .github                         # CI/CD [Github Actions files]
+    ├── .github                         # CI/CD [Github Actions workflows, CODEOWNERS]
     ├── deployment                      # Declarative configuration files for initial resource creation and setup [AWS Cloudformation]
     ├── backend                         # System service implementation
         ├── services                    # Services implementation [NestJS application]
             ├── src
                 ├── national-api        # National API [NestJS module]
-                ├── stats-api           # Statistics API [NestJS module]
+                ├── analytics-api       # Analytics/statistics API [NestJS module]
                 ├── ledger-replicator   # Blockchain Database data replicator [QLDB to Postgres]
+                ├── async-operations-handler  # Background job processing
+                ├── data-importer       # External data import (e.g. ITMO Platform)
+                ├── demo-seeder         # Synthetic demo data generator (see below)
             ├── libs
                 ├── core                # System and database configurations
                 ├── shared              # Shared resources [NestJS module]
             ├── serverless.yml          # Service deployment scripts [Serverless + AWS Lambda]
-    ├── web                             # System web frontend implementation [ReactJS]
+            ├── organisations.csv       # Base seed organisations
+            ├── users.csv               # Base seed users
+    ├── web                             # System web frontend implementation [React + TypeScript + Vite]
+    ├── deploy-snapshot                 # Point-in-time DB + filestore snapshot for this deployment (see below)
     ├── .gitignore
     ├── docker-compose.yml              # Docker container definitions
     └── README.md
@@ -355,7 +362,7 @@ For contribution and licensing terms, see [Standards and License](#standards) an
     - `SMTP_PASSWORD`
   - Use `DB_PASSWORD` env variable to change PostgresSQL database password
   - Configure system root account email by updating environment variable `ROOT EMAIL`. If the email service is enabled, on the first docker start, this email address will receive a new email with the root user password.
-  - By default frontend does not show map images on dashboard and project view. To enable them please update `REACT_APP_MAP_TYPE` env variable to `Mapbox` and add new env variable `REACT_APP_MAPBOXGL_ACCESS_TOKEN` with [MapBox public access token](https://docs.mapbox.com/help/tutorials/get-started-tokens-api/) in web container.
+  - This deployment renders maps with MapLibre + OpenStreetMap (no API key required), set via `VITE_APP_MAP_TYPE=MapLibre` on the `web` build. Upstream also supports Mapbox by setting `VITE_APP_MAP_TYPE=Mapbox` and adding `VITE_APP_MAPBOXGL_ACCESS_TOKEN` with a [MapBox public access token](https://docs.mapbox.com/help/tutorials/get-started-tokens-api/), but this fork does not use it. Note the frontend build uses Vite (`VITE_APP_*`), not Create React App (`REACT_APP_*`).
 - Add user data
   - Update [organisations.csv](./organisations.csv) file to add organisations.
   - Update [users.csv](./users.csv) file to add users.
@@ -376,6 +383,8 @@ For contribution and licensing terms, see [Standards and License](#standards) an
 
 ## Local Development
 
+> This Serverless-offline workflow is inherited from upstream and works if you need it, but this deployment is developed and run through Docker Compose only (see [Run as Containers](#container)). Nothing below is configured or exercised for Champa.
+
 - Setup postgreSQL locally and create a new database.
 - Update following DB configurations in the .env.local file (If the file does not exist please create a new .env.local)
   - DB_HOST (Default localhost)
@@ -392,6 +401,8 @@ For contribution and licensing terms, see [Standards and License](#standards) an
 <a name="cloud"></a>
 
 ## Deploy System on the AWS Cloud
+
+> Upstream also supports a serverless/Lambda deployment path via AWS CloudFormation. This fork is not deployed this way — it runs as Docker containers only. Kept here as inherited upstream documentation.
 
 - Execute to create all the required resources on the AWS.
   ```
@@ -415,6 +426,8 @@ For contribution and licensing terms, see [Standards and License](#standards) an
 <a name="external"></a>
 
 ## External Connectivity
+
+> This is an upstream integration point. This deployment does not set `ITMO_API_KEY`/`ITMO_EMAIL`/`ITMO_PASSWORD`/`ITMO_ENDPOINT` in `docker-compose.yml`, so the `data-importer` module is present in the codebase but inactive here. Kept as inherited upstream documentation.
 
 ### UNDP'S ITMO Platform
 The Carbon Registry is designed to be linked to the ITMO Voluntary Bilateral Cooperation Platform, https://carboncooperation.undp.org/, managed by UNDP. This enables countries to automatically sync projects created/authorised and credits issued within its national registry to the international trading platform. The system does this by:
@@ -572,15 +585,15 @@ All the CRUD operations can be performed as per the following table,
 
 ### Web Frontend
 
-Web frontend implemented using ReactJS framework. Please refer [getting started with react app](./web/README.md) for more information.
+Web frontend implemented using React + TypeScript, built with Vite (not Create React App — build-time config uses `VITE_APP_*` env variables). See [`web/README.md`](./web/README.md).
 
 <a name="localization"></a>
 
 ### Localization
 
-- Languages (Current): English
-- Languages (In Progress): French. Spanish
-  Please refer [here](./web/public/locales/i18n/README.md) for adding a new language translation file.
+The language switcher offers English, Español, Français, and ລາວ (Lao) — this deployment added the Lao translation on top of upstream's English/Spanish/French.
+
+Translation files live under `web/public/locales/i18n/<namespace>/<locale>.json` (e.g. `common/lo.json`). Please refer [here](./web/public/locales/i18n/README.md) for adding a new language translation file.
 
 <a name="api"></a>
 
@@ -611,102 +624,16 @@ Note: Above resource requirement mentioned for a single instance from each micro
 The United Nations Development Program (UNDP) is responsible for managing the application. To ensure alignment with international demand, Digital For Climate (D4C) will act as an advisory body to the Digital Public Good Carbon Registry codebase. D4C is a collaboration between [European Bank for Reconstruction and Development (EBRD)](https://www.ebrd.com), [United Nations Development Program (UNDP)](https://www.undp.org), [United Nations Framework Convention on Climate Change (UNFCCC)](https://www.unfccc.int), [International Emissions Trading Association (IETA)](https://www.ieta.org), [European Space Agency (ESA)](https://www.esa.int), and [World Bank Group](https://www.worldbank.org)  that aims to coordinate respective workflows and create a modular and interoperable end-to-end digital ecosystem for the carbon market. The overarching goal is to support a transparent, high integrity global carbon market that can channel capital for impactful climate action and low-carbon development.
 
 
-+This code is managed by [United Nations Development Programme](https://www.undp.org) as custodian, detailed in the press release. For technical questions, please visit the community of practice [‘Keeping Track of the Paris Agreement’](<https://unfccc.int/news/paris-agreement-progress-tracker](https://www.sparkblue.org/group/keeping-track-digital-public-goods-paris-agreement/content/fourth-community-practice-meeting)>) or submit through the [open forum](https://github.com/undp/carbon-registry/discussions). For any other questions, contact us at digital4planet@undp.org.
-+
-+## Project Vision
-+
-+Our long‑term vision is to empower every country to track and manage carbon credits transparently and efficiently.  By providing an open, interoperable and standards‑based registry, we aim to accelerate climate action and support sustainable development across the globe.
-+
-+## Project Mission
-+
-+The mission of the National Carbon Credit Registry is to deliver an open‑source, modular and extensible platform for recording the issuance, transfer and retirement of carbon credits.  Through collaboration with governments, standards bodies and the open‑source community we strive to ensure high‑integrity market infrastructure that anyone can deploy and adapt.
-+
-+## Agency Mission
-+
-+The United Nations Development Programme (UNDP) works to eradicate poverty, reduce inequalities and build resilience so countries can sustain progress.  This registry aligns with UNDP’s mission by enabling transparent reporting of mitigation activities and helping countries meet their obligations under the Paris Agreement.
-+
-+## Team Mission
-+
-+The Digital4Climate team within UNDP’s Digital Public Goods programme maintains this project.  Our team’s mission is to provide high‑quality software and documentation, to steward community contributions responsibly, and to foster an ecosystem of partners working towards equitable climate solutions.
-+
-+## Core Team
-+
-+The following individuals currently lead and maintain the project.  See [COMMUNITY.md](COMMUNITY.md) for additional roles and contributors.
-+
-+| Role | Name | GitHub |
-+| --- | --- | --- |
-+| Technical Lead | Mike Nolan | [@nolski](https://github.com/nolski) |
-+| Product Lead | Vu Hanh Dung Nguyen | [@zungundp](https://github.com/zungundp) |
-+
-+## Documentation Index
-+
-+Comprehensive developer and user documentation is maintained in the `documentation` directory.  You can find API references, architectural decision records and deployment guides in the relevant subfolders.  If you are new to the project, start with [backend/services/README.md](./backend/services/README.md) and [web/README.md](./web/README.md).
-+
-+## Repository Structure
-+
-+The repository is organised into several top‑level directories:
-+
-+- **backend/** – source code for the service‑oriented API and related libraries.
-+- **web/** – the React‑based frontend application.
-+- **documentation/** – design documents, API references and diagrams.
-+- **.github/** – GitHub workflows, issue templates and the [`CODEOWNERS.md`](.github/CODEOWNERS.md) file.
-+- **scripts/** – helper scripts for development and deployment.
-+
-+Refer to each directory’s README for details on its contents.
-+
-+## Development & Software Delivery Lifecycle
-+
-+We follow an agile development process with regular releases.  Changes are made on short‑lived feature branches and reviewed via pull requests.  Continuous integration (CI) workflows run automated tests and linters on every PR.  Once approved, changes are merged into the `main` branch and automatically deployed through our GitHub Actions pipelines.
-+
-+## Local Development
-+
-+To run the registry locally:
-+
-+1. Clone this repository.
-+2. Install dependencies in both the backend and web directories using `npm install`.
-+3. Start the services using Docker Compose (`docker compose up --build`) or by running each service individually as described in their READMEs.
-+4. Visit the frontend at `http://localhost:3000` and the API at `http://localhost:3001` (default ports) to verify everything is working.
-+
-+Detailed instructions for each component are provided in [backend/services/README.md](./backend/services/README.md) and [web/README.md](./web/README.md).
-+
-+## Coding Style & Linters
-+
-+We enforce consistent code style using [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/).  Run `npm run lint` in the respective service directory to check your changes locally.  Many formatting issues can be fixed automatically via `npm run lint -- --fix`.
-+
-+## Branching Model
-+
-+The `main` branch always contains the latest stable version of the code.  New work should be conducted on feature branches named according to the purpose of the change (e.g. `feature/add-new-endpoint`).  Keep your branch up to date with `main` and open a pull request when your work is ready.  We follow the standard GitHub flow; see [CONTRIBUTING.md](CONTRIBUTING.md#workflow--branching) for more information.
-+
-+## Contributing
-+
-+We welcome contributions of all kinds!  Read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to report issues, propose new features, improve documentation and submit pull requests.
-+
-+## Code Owners
-+
-+This repository uses a [`CODEOWNERS`](.github/CODEOWNERS.md) file to specify maintainers responsible for different parts of the codebase.  When opening a pull request, tag the relevant owners to ensure your changes are reviewed by the right people.
-+
-+## Community
-+
-+The registry is built by an open community of developers, researchers and policy makers.  Visit [COMMUNITY.md](COMMUNITY.md) to learn about our members, roles and ways to participate.
-+
-+## Community Guidelines
-+
-+Participation in this project is governed by our [Community Guidelines](COMMUNITY_GUIDELINES.md).  They outline expectations for respectful and inclusive communication and describe how to get help.
-+
-+## Governance
-+
-+The project is stewarded by UNDP in collaboration with Digital for Climate and other partners.  Governance policies, roles and escalation processes are described in [COMMUNITY.md](COMMUNITY.md).  Major decisions are made openly with community input.
-+
-+## Feedback
-+
-+We value your feedback!  Use the GitHub [Issues](https://github.com/undp/carbon-registry/issues) and [Discussions](https://github.com/undp/carbon-registry/discussions) tabs to report bugs, request features or ask questions.  For sensitive topics you can also reach us via the contact addresses listed above.
-+
-+## Glossary
-+
-+| Term | Definition |
-+| --- | --- |
-+| **AEF** | Agreed Electronic Format: a standardised reporting format for Article 6.2 credits. |
-+| **DNA** | Designated National Authority: national body responsible for approving projects and credit transfers. |
-+| **IC** | Independent Certifier: entity that validates and verifies mitigation projects. |
-+| **Serial Number** | Unique identifier assigned to a batch of credits or projects. |
-+| **MRV** | Monitoring, Reporting and Verification: the process used to track emission reductions. |
+This code is managed by UNDP as custodian. For technical questions about the upstream toolkit, visit the community of practice [Keeping Track of the Paris Agreement](https://www.sparkblue.org/group/keeping-track-digital-public-goods-paris-agreement) or the [open forum](https://github.com/undp/carbon-registry/discussions). For questions about this specific fork or deployment, use this repository's own issue tracker.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md), [COMMUNITY.md](./COMMUNITY.md), and [SECURITY.md](./SECURITY.md) (linked in the [Index](#about) above) for contribution workflow, community roles, and responsible disclosure. Maintainer responsibility by area of the codebase is defined in [`.github/CODEOWNERS.md`](.github/CODEOWNERS.md).
+
+## Glossary
+
+| Term | Definition |
+| --- | --- |
+| **AEF** | Agreed Electronic Format: a standardised reporting format for Article 6.2 credits. |
+| **DNA** | Designated National Authority: national body responsible for approving projects and credit transfers. |
+| **IC** | Independent Certifier: entity that validates and verifies mitigation projects. |
+| **Serial Number** | Unique identifier assigned to a batch of credits or projects. |
+| **MRV** | Monitoring, Reporting and Verification: the process used to track emission reductions. |

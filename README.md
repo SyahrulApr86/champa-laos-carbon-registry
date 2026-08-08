@@ -1,36 +1,37 @@
-![GitHub last commit](https://img.shields.io/github/last-commit/undp/carbon-registry)
-![Uptime](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/undp/carbon-registry-status/master/api/carbon-registry/uptime.json)
-![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/undp/carbon-registry/server-deployments.yml?branch=main&label=server%20build)
-![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/undp/carbon-registry/frontend-deployment-prod.yml?branch=main&label=frontend%20build)
-[![](https://img.shields.io/badge/chat-SparkBlue-blue)](https://www.sparkblue.org/group/keeping-track-digital-public-goods-paris-agreement)
-[![](https://img.shields.io/badge/Digital%20Public%20Good-Certified-blueviolet)](https://app.digitalpublicgoods.net/a/10403)
-
 <a name="about"></a>
 
-# National Carbon Credit Registry (NEW RELEASE)
+# Champa — Lao PDR National Carbon Registry
 
-# About
-The National Carbon Credit Registry (v2.0) is an open-source toolkit developed by UNDP to help countries develop a national registry to fulfil the requirements of Article 6 (Paris Agreement).
+Champa is Lao PDR's deployment of UNDP's open-source [National Carbon Registry](https://github.com/undp/carbon-registry), configured for the Ministry of Agriculture and Environment (MAE) to track, authorize, issue, and retire carbon credits under the Decree on Carbon Credits, and to report to UNFCCC in the Agreed Electronic Format (AEF) for Article 6.
 
-It allows countries to track, record, issue, monitor, and trade credits from various mitigation activities, all while ensuring data integrity through a secure ledger. The system tracks the entire process of carbon credits, from issuance to retirement, and makes the data publicly available to enhance transparency.
+This repository is a fork of the upstream UNDP codebase (AGPL-3.0), customized with Lao PDR branding, seed accounts/organisations, and Champa-specific bug fixes. It is not the upstream project — see [undp/carbon-registry](https://github.com/undp/carbon-registry) for the generic toolkit, its release notes, and the official demo site.
 
-The UNDP hosts and maintains a free standard code base on this Github, with basic feature functionality. Countries can customize and deploy their version of the registry, so that it meets national requirements, linking it to other national and international systems. Using open-source code helps reduce costs, avoid duplication, and ensure compatibility with existing systems, simplifying the creation of domestic carbon markets.
+<a name="this-deployment"></a>
 
-The National Carbon Registry enables carbon credit tracking transactions from mitigation activities, as the digital implementation of the Paris Agreement. Any country can customize and deploy a local version of the registry then connect it to other national & international registries, MRV systems, and more.
+## This deployment
 
-More information about the project’s background, vision, policy context, support provided can be found in the demo site https://www.demo.carbreg.org/. For national governments wishing to access the demo site to adapt the system, please contact the UNDP DPG team digital4planet@undp.org through your UNDP country office to request a walkthrough demonstration and to discuss further support and collaboration.
+```sh
+docker compose up -d --build
+```
 
-The system continues to offer the below key features:
+- Web frontend: http://localhost:3030
+- National API: http://localhost:3000/national
+- Analytics API: http://localhost:3100/stats
 
-- **User and Organization Management:** The system supports roles like Designated National Authority (DNA), Project Developers (PD), and Independant Certifiers (IC), each with Admin, Manager, or Viewer access. Users can register, log in, and reset passwords. Organizations are created and approved by DNA admins or the root user, with status management.
-- **Project Lifecycle:** Projects go through phases: Initial Notification form submission, Project Design Document submission, Validation Report submission, and final Authorization. Each step requires approvals from DNA or IC, with clear statuses and automated notifications. With the Monitoring and Verification reports submissions and approvals, the carbon credits are issued for the project for the amount that was approved when the project was authorized.
-- **Credit Transfers and Retirements:** Issued credits can be transferred to other approved organizations or retired voluntarily or through cross-border processes. Transfers and retirements require approval from the DNA. All actions are tracked in detailed tables with status updates.
-- **Dashboard and Reporting:**
-  The dashboard displays overall system statistics, including all relevant projects and credit details. Users can also access comprehensive project information on the project detail overview page. This includes an activity timeline, which provides a clear audit trail of all actions performed by stakeholders, ensuring transparency and traceability throughout the project lifecycle.
-  Additionally, the system supports Agreed Electronic Format (AEF) reports, allowing structured reporting of data such as, authorizations, issuances, transfers, and retirements ensuring international compliance and data standardization.
+Seed accounts come from [`organisations.csv`](./organisations.csv) and [`users.csv`](./users.csv), reloaded on every `national` service start. Demo login (DNA/Admin):
+
+```
+Email:    admin@champa.la
+Password: ChampaLaos2026!
+```
+
+To restore this deployment's data exactly as it stood after the documentation was written (demo accounts, organisations, projects, uploaded documents, and every test record referenced in the [Champa docs site](https://github.com/SyahrulApr86/champa-docs)), see [`deploy-snapshot/README.md`](./deploy-snapshot/README.md).
+
+The sections below (Architecture, Ledger, Project Structure, Customization, Local Development, Cloud, API) describe the underlying codebase shared with upstream and remain accurate for this fork.
 
 ## Index
 * [About](#about)
+* [This deployment](#this-deployment)
 * [Standards and License](#standards)
 * [Changelog](#changelog)
 * [Features and User flow](#userflow)
@@ -94,7 +95,7 @@ Key features of the software include:
 
 <a name="demo"></a>
 ## Demo Site
-A demo site at https://www.demo.carbreg.org/login illustrates the basic functionality of the carbon registry for your country. Please contact the UNDP DPG team to request a walkthrough of the demo and to be added to the user list for the demo site.
+For this fork, run it locally with `docker compose up -d --build` (see [This deployment](#this-deployment) above) — there is no hosted Champa demo site. UNDP separately hosts a generic demo at https://www.demo.carbreg.org/login for the upstream toolkit; contact the UNDP DPG team to request a walkthrough of that one.
 
 <a name="architecture"></a>
 

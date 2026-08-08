@@ -177,7 +177,7 @@ All the external services access through a generic interface. It will decouple t
 
 **Geo Location Service**
 
-Currently implemented for 2 options.
+Currently implemented for 3 options.
 
 1. File based approach. User has to manually add the regions with the geo coordinates. [Sample File](./backend/services/regions.csv). To apply new file changes, replicator service needs to restart.
 2. [Mapbox](https://mapbox.com). Dynamically query geo coordinates from the Mapbox API.
@@ -201,7 +201,7 @@ Change by environment variable `FILE_SERVICE`. Supported types `S3`, `LOCAL(Defa
 ### **Database Architecture**
 
 Primary/secondary database architecture used to store carbon project and account balances.
-Ledger database is the primary database. Add/update projects and update account balances in a single transaction. Currently implemented only for AWS QLDB
+Ledger database is the primary database. Add/update projects and update account balances in a single transaction. Implemented for AWS QLDB or PostgreSQL, selected via `LEDGER_TYPE` (`QLDB` or `PGSQL`, default `PGSQL`). This deployment does not set `LEDGER_TYPE` in `docker-compose.yml`, so it runs on the PostgreSQL ledger — no AWS QLDB involved.
 
 Operational Database is the secondary database. Eventually replicated to this from primary database via data stream. Implemented based on PostgresSQL
 
@@ -301,7 +301,7 @@ The system supports adding and composing functionality in a modular way:
 - **Extending existing modules:** Existing modules (e.g. national API, analytics, replicator, data import) are structured so that new behaviour can be added through additional handlers, optional steps, or pluggable implementations of defined interfaces.
 - **Optional components:** Optional capabilities—such as analytics, external data import, verification support, or safeguards-related modules—can be enabled or disabled per deployment. The codebase uses interfaces and dependency injection so that optional components can be swapped or omitted without changing core services.
 
-Documentation on integrating and listing module integrations is maintained in the repository (e.g. under `modules/`). Implementing the relevant interfaces (e.g. ledger replicator, location service, file handler, data importer) allows new backends or integrations to be added in a consistent way.
+Implementing the relevant interfaces (e.g. ledger replicator, location service, file handler, data importer) allows new backends or integrations to be added in a consistent way. (Upstream has a `modules/` directory intended for listing third-party module integrations; it's currently just a placeholder with no content.)
 
 ### 4. Data Integration & Interoperability
 
@@ -345,7 +345,7 @@ For contribution and licensing terms, see [Standards and License](#standards) an
 ## Run Services As Containers
 
 - Update [docker compose file](./docker-compose.yml) env variables as required.
-  - Currently all the emails are disabled using env variable `IS_EMAIL_DISABLED`. When the emails are disabled email payload will be printed on the console. User account passwords needs to extract from this console log. Including root user account, search for a log line starting with `Password (temporary)` on national container (`docker logs -f undp-carbon-registry-national-1`).
+  - This deployment sets `IS_EMAIL_DISABLED=true` — no emails are sent; new-user/reset-password flows that would normally email a password don't work end-to-end. It doesn't affect the seeded demo accounts, which already have known passwords (see [This deployment](#this-deployment) above).
   - Add / update following environment variables to enable email functionality.
     - `IS_EMAIL_DISABLED`=false
     - `SOURCE_EMAIL` (Sender email address)
@@ -353,17 +353,17 @@ For contribution and licensing terms, see [Standards and License](#standards) an
     - `SMTP_USERNAME`
     - `SMTP_PASSWORD`
   - Use `DB_PASSWORD` env variable to change PostgresSQL database password
-  - Configure system root account email by updating environment variable `ROOT EMAIL`. If the email service is enabled, on the first docker start, this email address will receive a new email with the root user password.
+  - Configure the root/DNA admin account email by updating the `rootEmail` environment variable on the `national` service (this deployment sets it to `admin@champa.la`). If the email service is enabled, this address receives the initial password on first start.
   - This deployment renders maps with MapLibre + OpenStreetMap (no API key required), set via `VITE_APP_MAP_TYPE=MapLibre` on the `web` build. Upstream also supports Mapbox by setting `VITE_APP_MAP_TYPE=Mapbox` and adding `VITE_APP_MAPBOXGL_ACCESS_TOKEN` with a [MapBox public access token](https://docs.mapbox.com/help/tutorials/get-started-tokens-api/), but this fork does not use it. Note the frontend build uses Vite (`VITE_APP_*`), not Create React App (`REACT_APP_*`).
 - Add user data
   - Update [organisations.csv](./organisations.csv) file to add organisations.
   - Update [users.csv](./users.csv) file to add users.
   - When updating files keep the header and replace existing dummy data with your data.
   - These users and companys add to the system each docker restart.
-- Run `docker-compose up -d --build`. This will build and start containers for following services,
+- Run `docker compose up -d --build`. This will build and start containers for following services,
   - PostgresDB container
   - National service
-  - Analytics service
+  - Analytics service (`stats` container)
   - Replicator service
   - React web server with Nginx.
 - Web frontend on http://localhost:3030/
@@ -424,23 +424,22 @@ Translation files live under `web/public/locales/i18n/<namespace>/<locale>.json`
 
 ### Application Programming Interface (API)
 
-For integration, reference RESTful Web API Documentation documentation via Swagger. To access
+Both APIs expose Swagger documentation for integration. For this deployment:
 
-- National API: api.APP_URL/national
-- Status API: api.APP_URL/stats
+- National API: http://localhost:3000/national
+- Analytics API: http://localhost:3100/stats
 
 <a name="resource"></a>
 
 ### Resource Requirements
 
-| Resource |                                            Minimum | Recommended |
-| :------- | -------------------------------------------------: | ----------: |
-| Memory   |                                               4 GB |        8 GB |
-| CPU      |                                            4 Cores |     4 Cores |
-| Storage  |                                              20 GB |       50 GB |
-| OS       | Linux <br> Windows Server 2016 and later versions. |             |
+| Resource | Minimum | Recommended |
+| :------- | ------: | ----------: |
+| Memory   |    4 GB |        8 GB |
+| CPU      | 4 Cores |     4 Cores |
+| Storage  |   20 GB |       50 GB |
 
-Note: Above resource requirement mentioned for a single instance from each microservice.
+Any host that runs Docker works — this deployment only runs via Docker Compose (see [Run as Containers](#container)). Above requirement is per single instance of each container.
 
 <a name="support"></a>
 

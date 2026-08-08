@@ -27,7 +27,7 @@ Password: ChampaLaos2026!
 
 To restore this deployment's data exactly as it stood after the documentation was written (demo accounts, organisations, projects, uploaded documents, and every test record referenced in the [Champa docs site](https://github.com/SyahrulApr86/champa-docs)), see [`deploy-snapshot/README.md`](./deploy-snapshot/README.md).
 
-The sections below document the shared upstream codebase (architecture, ledger, project structure, customization, API). Sections describing deployment paths this fork doesn't use — Serverless local dev, AWS Cloud, ITMO Platform connectivity — are marked as such; this deployment runs via Docker Compose only, as shown above.
+The sections below document the shared upstream codebase (architecture, ledger, project structure, customization, API). Upstream sections this fork doesn't use — Serverless local dev, AWS Cloud deploy, ITMO Platform connectivity — have been removed; this deployment runs via Docker Compose only, as shown above.
 
 ## Index
 * [About](#about)
@@ -40,9 +40,6 @@ The sections below document the shared upstream codebase (architecture, ledger, 
 * [Project Structure](#structure)
 * [Customization Framework and Extensibility](#customization)
 * [Run as Containers](#container)
-* [Run Services Locally](#local-development)
-* [Run Services on Cloud](#cloud)
-* [External Connectivity](#external)
 * [User Onboarding](#user)
 * [Web Frontend](#frontend)
 * [Localization](#localization)
@@ -172,10 +169,7 @@ When credits are Tranferred or Retired, it can be a transaction of a full block 
 
 ### **Deployment**
 
-System services can deploy in 2 ways.
-
-- **As a Container** - Each service boundary containerized in to a docker container and can deploy on any container orchestration service. [Please refer Docker Compose file](./docker-compose.yml)
-- **As a Function** - Each service boundary packaged as a function (Serverless) and host on any Function As A Service (FaaS) stack. [Please refer Serverless configuration file](./backend/services/serverless.yml)
+Each service boundary is containerized into a Docker container. [See the Docker Compose file](./docker-compose.yml) and [Run as Containers](#container) below.
 
 ### **External Service Providers**
 
@@ -253,7 +247,6 @@ The below diagram demonstrates the ledger behavior of project create, authorise,
 
     .
     ├── .github                         # CI/CD [Github Actions workflows, CODEOWNERS]
-    ├── deployment                      # Declarative configuration files for initial resource creation and setup [AWS Cloudformation]
     ├── backend                         # System service implementation
         ├── services                    # Services implementation [NestJS application]
             ├── src
@@ -261,12 +254,11 @@ The below diagram demonstrates the ledger behavior of project create, authorise,
                 ├── analytics-api       # Analytics/statistics API [NestJS module]
                 ├── ledger-replicator   # Blockchain Database data replicator [QLDB to Postgres]
                 ├── async-operations-handler  # Background job processing
-                ├── data-importer       # External data import (e.g. ITMO Platform)
+                ├── data-importer       # External data import (e.g. ITMO Platform, unused here)
                 ├── demo-seeder         # Synthetic demo data generator (see below)
             ├── libs
                 ├── core                # System and database configurations
                 ├── shared              # Shared resources [NestJS module]
-            ├── serverless.yml          # Service deployment scripts [Serverless + AWS Lambda]
             ├── organisations.csv       # Base seed organisations
             ├── users.csv               # Base seed users
     ├── web                             # System web frontend implementation [React + TypeScript + Vite]
@@ -333,7 +325,7 @@ The main customization touchpoints in the repository are organized as follows:
 | **DTOs and validation** | `backend/services/libs/shared/src/dto/` — request/response shapes and validation rules that affect API contracts and form behaviour. |
 | **Reference data** | `backend/services/countries.json`, `backend/services/regions.csv` (or equivalent path) — countries and geographic regions used by setup and location services. |
 | **Service selection** | Environment variables (e.g. `RUN_MODULE`, `LEDGER_TYPE`, `LOCATION_SERVICE`, `FILE_SERVICE`) — which modules and implementations are active. |
-| **Deployment and infrastructure** | `docker-compose.yml`, `deployment/`, `backend/services/serverless.yml` — service composition and cloud/deployment configuration. |
+| **Deployment and infrastructure** | `docker-compose.yml` — service composition and container configuration. |
 | **Localization** | `web/public/locales/` — translation files per language and namespace. |
 
 Schema definitions, entity and view definitions, and ledger interfaces live under `backend/services/libs/shared/src/` (entities, view-entities, ledger-db, etc.) and define the core data model; extensions or country-specific overrides can be introduced via configuration packages or additional modules that consume these interfaces.
@@ -378,173 +370,6 @@ For contribution and licensing terms, see [Standards and License](#standards) an
 - API Endpoints,
   - http://localhost:3000/national#/
   - http://localhost:3100/stats#/
-
-<a name="local-development"></a>
-
-## Local Development
-
-> This Serverless-offline workflow is inherited from upstream and works if you need it, but this deployment is developed and run through Docker Compose only (see [Run as Containers](#container)). Nothing below is configured or exercised for Champa.
-
-- Setup postgreSQL locally and create a new database.
-- Update following DB configurations in the .env.local file (If the file does not exist please create a new .env.local)
-  - DB_HOST (Default localhost)
-  - DB_PORT (Default 5432)
-  - DB_USER (Default root)
-  - DB_PASSWORD
-  - DB_NAME (Default carbondbdev)
-- Move to folder `cd backend/service`
-- Run `yarn run sls:install `
-- Initial user data setup `serverless invoke local --stage=local --function setup --data '{"rootEmail": "<Root user email>","systemCountryCode": "<System country Alpha 2 code>", "name": "<System country name>", "logoBase64": "<System country logo base64>"}'`
-- Start all the services by executing `sls offline --stage=local`
-- Now all the system services are up and running. Swagger documentation will be available on `http://localhost:3000/local/national`
-
-<a name="cloud"></a>
-
-## Deploy System on the AWS Cloud
-
-> Upstream also supports a serverless/Lambda deployment path via AWS CloudFormation. This fork is not deployed this way — it runs as Docker containers only. Kept here as inherited upstream documentation.
-
-- Execute to create all the required resources on the AWS.
-  ```
-  aws cloudformation deploy --template-file ./deployment/aws-formation.yml --stack-name carbon-registry-basic --parameter-overrides EnvironmentName=<stage> DBPassword=<password> --capabilities CAPABILITY_NAMED_IAM
-  ```
-- Setup following Github Secrets to enable CI/CD
-  - AWS_ACCESS_KEY_ID
-  - AWS_SECRET_ACCESS_KEY
-- Run it manually to deploy all the lambda services immediately. It will create 2 lambda layers and following lambda functions,
-  - national-api: Handle all carbon registry user and program creation. Trigger by external http request.
-  - replicator: Replicate Ledger database entries in to Postgres database for analytics. Trigger by new record on the Kinesis stream.
-  - setup: Function to add initial system user data.
-- Create initial user data in the system by invoking setup lambda function by executing
-  ```
-  aws lambda invoke \
-      --function-name carbon-registry-services-dev-setup --cli-binary-format raw-in-base64-out\
-      --payload '{"rootEmail": "<Root user email>","systemCountryCode": "<System country Alpha 2 code>", "name": "<System country name>", "logoBase64": "<System country logo base64>"}' \
-      response.json
-  ```
-
-<a name="external"></a>
-
-## External Connectivity
-
-> This is an upstream integration point. This deployment does not set `ITMO_API_KEY`/`ITMO_EMAIL`/`ITMO_PASSWORD`/`ITMO_ENDPOINT` in `docker-compose.yml`, so the `data-importer` module is present in the codebase but inactive here. Kept as inherited upstream documentation.
-
-### UNDP'S ITMO Platform
-The Carbon Registry is designed to be linked to the ITMO Voluntary Bilateral Cooperation Platform, https://carboncooperation.undp.org/, managed by UNDP. This enables countries to automatically sync projects created/authorised and credits issued within its national registry to the international trading platform. The system does this by:
-1. Carbon Registry make a daily to the retrieve ITMO platform projects.
-2. Projects create in the Carbon Registry when projects are authorized in the ITMO Platform
-3. The Carbon Registry update when the projects are Issued with credits in the ITMO Platform
-
-#### <b>Lifecycle</b>
-
-![alt text](./documention/imgs/ITMOxCARBON_LifeCycle.svg)
-
-#### <b>Project Creation and Authorisation</b>
-
-- Authorisation of projects in the ITMO Platform identified by the event name: "ITMO-Design Document (DD) & Validation Report / Upload on National Public Registry".
-- If the Company Tax Id doesn’t exist in the Carbon Registry, that company created in the Carbon Registry.
-- When creating the project:
-  - The project created with the state “Pending”
-  - The credit estimate set to 100 by default
-  - The company percentage set to 100%
-  - The serial number for the project generated the same as any other project in the Carbon Registry.
-- Projects retrieved from the ITMO Platform and created in the Carbon Registry can Authorised/Rejected by a DNA user the same as any other project in the Carbon Registry
-- When a project is authorised, the authorised credits will be the default credit estimate mentioned above. The project can be issued with credits by a DNA user the same as any other project in the Carbon Registry.
-
-#### <b>Credit Issuance</b>
-
-- Credits can be issued for projects retrieved from the ITMO Platform and created in the Carbon Registry in two ways;
-  - By a DNA user the same as any other project.
-  - Credit issuance in the ITMO Platform which should be reflected in the Carbon Registry.
-- In the case of 2 above,
-  - Credit issuance identified by the event name: "Upload Final Monitoring Report" in the ITMO Platform.
-
-#### <b>Field Mapping</b>
-
-<b>Company</b>
-| **Name in the Carbon Registry** | **Mandatory in the Carbon Registry** | **Name in the ITMO Platform** |
-| --- | --- | --- |
-| Tax ID (_taxId_) | Yes | company |
-| Name (_name_) | Yes | company |
-| Email (_email_) | Yes | Set default : nce.digital+[_organisation_]@undp.org |
-| Phone Number (_phoneNo_) | Yes | Set default : 00 |
-| Website | | |
-| Address | | Set default : Country if the Registry |
-| Logo | | |
-| Country (_country_) | | Set default : Country of the Registry |
-| Role (_companyRole_) | Yes | Set default : ProgrammeDeveloper |
-
-<br><b>User</b>
-| Name in the Carbon Registry | Mandatory in the Carbon Registry | Name in the ITMO Platform |
-| --- | --- | --- |
-| Email (_email_) | Yes | Set default : nce.digital+[_organisation_]@undp.org |
-| Role (_role_) | Yes | Set default : Admin |
-| Phone Number (_phoneNo_) | | Set default : 00 |
-
-<br><b>Project</b>
-| **Name in the Carbon Registry** | **Mandatory in the Carbon Registry** | **Name in the ITMO Platform** |
-| --- | --- | --- |
-| Project Name (title) | Yes | Name |
-| External ID (externalId) | Yes | id |
-| Credit Issuance Serial Number | | |
-| Current Status | | Set default : Pending |
-| Applicant Type | | Set default : Project Developer |
-| Sector (_sector_) | Yes | [Sector](#itmo-sector-mapping) |
-| Sectoral Scope (_sectoralScope_) | Yes | [Sector](#itmo-sector-mapping)|
-| Project Start Date (_startTime_) | Yes | createdAt |
-| Project End Date (_endTime_) | Yes | createdAt + 10 years |
-| Geographical Location (Regional) (_geographicalLocation_) | Yes | country _(Name not mentioned as ISO3 or actual name)_ |
-| Buyer Country Eligibility | | |
-| Project Cost (USD) (_programmeCostUSD_) | Yes | Set default : Null |
-| Financing Type | | |
-| Grant Equivalent Amount | | |
-| Carbon Price (Dollars per ton) | | |
-| Company | | company |
-| Company Tax ID (_proponentTaxVatId_) | Yes | company |
-| Company Percentage (_proponentPercentage_) | Yes | Set default : 100% |
-| Type of Mitigation Action/Activity (_typeOfMitigation_) | Yes | [Sector](#itmo-sector-mapping) |
-| GHGs Covered (_greenHouseGasses_) | Yes | Set default : CO2 |
-| Credits Authorised | | Set default : 100 |
-| Credits Issued | | Set default : 10 |
-| Credits Transferred | | |
-| Credits Frozen | | |
-| Credits Retired | | |
-| Credits authorised for international transfer and use (Total cumulative maximum amount of Mitigation Outcomes for which international transfer and use is authorized) | | |
-| Crediting Period (years) | | |
-| Project Materials | | Files \* |
-| Project Materials | | Files \* |
-| **Credit Calculation Fields / Mitigation Type Calculation** | | |
-| **Agriculture** | | |
-| Land Area | | |
-| Land Area Unit | | |
-| **Solar** | | |
-| energy generation | | |
-| energy generation unit | | |
-| consumer group | | |
-
-#### <b>ITMO Sector Mapping</b>
-
-| ITMO Sector Field Value | Sector      | Sectoral Scope      | Type Of Mitigation  |
-| ----------------------- | ----------- | ------------------- | ------------------- |
-| energy-distribution     | Energy      | Energy Distribution | Energy Distribution |
-| agriculture             | Agriculture | Agriculture         | Agriculture         |
-| energy-industries       | Energy      | Energy Industry     | EE Industry         |
-| Default                 | Other       | Energy Industry     | EE Industry         |
-
-#### <b>Assumptions</b>
-
-- Project estimated credit amount is 100.
-- Project issued credit amount is always 10.
-
-#### <b>Docker Integration Setup</b>
-
-1. Append `data-importer` to `docker-compose` file `replicator` service `RUN_MODULE` env variable with comma separated.
-2. Update following env variables in the `docker-compose` file `replicator` service.
-   - ITMO_API_KEY
-   - ITMO_EMAIL
-   - ITMO_PASSWORD
-   - ITMO_ENDPOINT
-3. Projects will import on each docker restart.
 
 <a name="user"></a>
 

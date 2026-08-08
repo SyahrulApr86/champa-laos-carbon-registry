@@ -7,6 +7,7 @@ import { TxType } from "../enum/txtype.enum";
 import { ProgrammeStage } from "../enum/programme-status.enum";
 import { EntitySubject } from "./entity.subject";
 import { MitigationProperties } from "../dto/mitigation.properties";
+import { NumberTransformer } from "../functions/number.transformer.decorator";
 
 @Entity()
 export class Programme implements EntitySubject {
@@ -53,25 +54,25 @@ export class Programme implements EntitySubject {
   @Column({ type: "bigint" })
   endTime: number;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   creditEst: number;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   emissionReductionExpected: number;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   emissionReductionAchieved: number;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   creditChange: number;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   creditIssued: number;
 
   // @Column({type: "decimal", precision: 10, scale: PRECISION, nullable: true})
   // creditPending: number;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   creditBalance: number;
 
   @Column("real", { array: true, nullable: true })

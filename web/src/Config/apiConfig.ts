@@ -175,10 +175,10 @@ export const API_PATHS = {
   TOTAL_RETIERED_CREDITS: "stats/programme/totalRetiredCredits",
   RETIREMENTS_BY_DATE: "stats/programme/queryRetirementsByDate",
   //SIGN
-  SIGNS_UPDATE: "Settings/signs/update",
-  CEO_SIGN: (ceoSign: string) => `Settings/query?id=${ceoSign}`,
-  CHAIRMAN_SIGN: (chairmanSign: string) => `Settings/query?id=${chairmanSign}`,
-  PREVIEW_CERTIFICATE: (type: string) => `Settings/certificates?type=${type}`,
+  SIGNS_UPDATE: "national/Settings/signs/update",
+  CEO_SIGN: (ceoSign: string) => `national/Settings/query?id=${ceoSign}`,
+  CHAIRMAN_SIGN: (chairmanSign: string) => `national/Settings/query?id=${chairmanSign}`,
+  PREVIEW_CERTIFICATE: (type: string) => `national/Settings/certificates?type=${type}`,
   //VALIDATION
   CREATE_VALIDATION_AGGREMENT: "national/programmeSl/createValidationAgreement",
   CREATE_VALIIDATION_REPORT: "national/programmeSL/validation/create",

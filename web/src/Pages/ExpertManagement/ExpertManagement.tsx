@@ -72,7 +72,7 @@ const ExpertManagement = () => {
     setLoading(true);
     try {
       const response = await expertManagementApi.list(connection, search, status);
-      setRows(response.data?.data ?? []);
+      setRows(response.data ?? []);
     } catch (error) {
       setRows([]);
       message.error(getErrorMessage(error, "Failed to load expert roster."));

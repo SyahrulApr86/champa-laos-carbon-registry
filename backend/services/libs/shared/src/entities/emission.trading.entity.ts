@@ -17,10 +17,10 @@ export class EmissionTradingEntity implements EntitySubject {
   @Column()
   buyerCompanyId: number;
 
-  @Column({ type: "decimal", precision: 18, scale: 2 })
+  @Column({ type: "decimal", precision: 18, scale: 2, transformer: NumberTransformer })
   units: number;
 
-  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true, transformer: NumberTransformer })
   valueLAK: number;
 
   @Column({ type: "varchar", nullable: true, default: "LAK" })

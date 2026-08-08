@@ -64,7 +64,7 @@ const GuidanceDocumentManagement = () => {
     setLoading(true);
     try {
       const response = await guidanceDocumentManagementApi.list(connection, search, status);
-      setRows(response.data?.data ?? []);
+      setRows(response.data ?? []);
     } catch (error) {
       setRows([]);
       message.error(getErrorMessage(error, "Failed to load guidance documents."));

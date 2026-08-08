@@ -35,7 +35,7 @@ export class EmissionCeilingEntity implements EntitySubject {
   @Column({ type: "varchar", nullable: true })
   availability: string;
 
-  @Column({ type: "decimal", precision: 18, scale: 2 })
+  @Column({ type: "decimal", precision: 18, scale: 2, transformer: NumberTransformer })
   units: number;
 
   @Column({ type: "bigint", transformer: NumberTransformer })

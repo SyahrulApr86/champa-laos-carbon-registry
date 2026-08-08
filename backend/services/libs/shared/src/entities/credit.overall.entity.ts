@@ -2,6 +2,7 @@ import { PRECISION } from '@undp/carbon-credit-calculator/dist/esm/calculator';
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { TxType } from '../enum/txtype.enum';
 import { EntitySubject } from './entity.subject';
+import { NumberTransformer } from '../functions/number.transformer.decorator';
 
 @Entity()
 export class CreditOverall implements EntitySubject {
@@ -19,6 +20,6 @@ export class CreditOverall implements EntitySubject {
     })
     txType: TxType;
 
-    @Column({type: "decimal", precision: 10, scale: PRECISION})
+    @Column({type: "decimal", precision: 10, scale: PRECISION, transformer: NumberTransformer})
     credit: number;
 }

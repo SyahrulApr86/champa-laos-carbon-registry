@@ -7,6 +7,7 @@ import {
 import { EntitySubject } from "./entity.subject";
 import { CreditAuditLogType } from "../enum/credit.audit.log.type.enum";
 import { PRECISION } from "@undp/carbon-credit-calculator/dist/esm/calculator";
+import { NumberTransformer } from "../functions/number.transformer.decorator";
 
 @Entity()
 export class CreditAuditLog implements EntitySubject {
@@ -30,7 +31,7 @@ export class CreditAuditLog implements EntitySubject {
   @Column({ nullable: true })
   country: string;
 
-  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true })
+  @Column({ type: "decimal", precision: 10, scale: PRECISION, nullable: true, transformer: NumberTransformer })
   credits: number;
 
   @CreateDateColumn({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })

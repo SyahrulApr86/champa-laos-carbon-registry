@@ -65,7 +65,7 @@ export class RecognizedMitigationEntity implements EntitySubject {
   @Column()
   region: string;
 
-  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true, transformer: NumberTransformer })
   estimatedReductionTco2e: number;
 
   @Column({

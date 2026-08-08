@@ -27,10 +27,10 @@ export class ReddPlusEntity implements EntitySubject {
   @Column({ type: "text", nullable: true })
   description: string;
 
-  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true, transformer: NumberTransformer })
   forestAreaHectares: number;
 
-  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true, transformer: NumberTransformer })
   estimatedEmissionReductionTco2e: number;
 
   @Column()

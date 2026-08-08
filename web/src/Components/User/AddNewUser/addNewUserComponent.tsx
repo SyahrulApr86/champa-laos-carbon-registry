@@ -405,7 +405,6 @@ export const AddNewUserComponent = (props: any) => {
                     international
                     // value={contactNoInput}
                     defaultCountry="LK"
-                    countryCallingCodeEditable={false}
                     onChange={(v) => {}}
                     countries={countries}
                   />

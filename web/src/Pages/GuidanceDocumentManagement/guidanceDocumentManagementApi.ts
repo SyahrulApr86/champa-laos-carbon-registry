@@ -45,7 +45,7 @@ export const guidanceDocumentManagementApi = {
       `${BASE_PATH}/admin?search=${encodeURIComponent(search)}${
         status ? `&status=${encodeURIComponent(status)}` : ""
       }`
-    ) as Promise<{ data: GuidanceDocumentListResponse }>,
+    ) as Promise<{ data: GuidanceDocumentRecord[] }>,
   detail: (connection: ConnectionProps, id: number) =>
     connection.get(`${BASE_PATH}/admin/${id}`) as Promise<{
       data: { document: GuidanceDocumentRecord; versions: GuidanceDocumentRecord[] };

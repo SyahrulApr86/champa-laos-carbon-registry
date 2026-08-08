@@ -6,6 +6,7 @@ import { SectoralScope } from "@undp/serial-number-gen";
 import { Ministry } from "../enum/ministry.enum";
 import { GovDepartment } from "../enum/govDep.enum";
 import { ProponentCategory } from "../enum/proponent.category.enum";
+import { NumberTransformer } from "../functions/number.transformer.decorator";
 
 @Entity()
 export class Company implements EntitySubject {
@@ -108,10 +109,10 @@ export class Company implements EntitySubject {
   @Column("varchar", { array: true, nullable: true })
   sectoralScope: SectoralScope[];
 
-  @Column({ type: "bigint", nullable: true })
+  @Column({ type: "bigint", nullable: true, transformer: NumberTransformer })
   omgePercentage: number;
 
-  @Column({ type: "bigint", nullable: true })
+  @Column({ type: "bigint", nullable: true, transformer: NumberTransformer })
   nationalSopValue: number;
 
   @Column({

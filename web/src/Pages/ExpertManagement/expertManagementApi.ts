@@ -45,7 +45,7 @@ export const expertManagementApi = {
       `${BASE_PATH}/admin?search=${encodeURIComponent(search)}${
         status ? `&status=${encodeURIComponent(status)}` : ""
       }`
-    ) as Promise<{ data: ExpertListResponse }>,
+    ) as Promise<{ data: ExpertRecord[] }>,
   detail: (connection: ConnectionProps, id: number) =>
     connection.get(`${BASE_PATH}/admin/${id}`) as Promise<{
       data: ExpertRecord;

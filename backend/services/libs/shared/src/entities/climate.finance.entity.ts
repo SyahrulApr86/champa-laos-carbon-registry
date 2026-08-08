@@ -40,10 +40,22 @@ export class ClimateFinanceEntity implements EntitySubject {
   @Column({ type: "bigint", transformer: NumberTransformer, nullable: true })
   dateClosing: number;
 
-  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  @Column({
+    type: "decimal",
+    precision: 18,
+    scale: 2,
+    nullable: true,
+    transformer: NumberTransformer,
+  })
   amountLAK: number;
 
-  @Column({ type: "decimal", precision: 18, scale: 2, nullable: true })
+  @Column({
+    type: "decimal",
+    precision: 18,
+    scale: 2,
+    nullable: true,
+    transformer: NumberTransformer,
+  })
   amountUSD: number;
 
   @Column({
